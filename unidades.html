@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -28,7 +27,6 @@
       min-height: 100vh;
     }
 
-    /* HEADER - Mismo estilo que el index (horizontal) */
     header {
       display: flex;
       align-items: center;
@@ -40,17 +38,8 @@
       gap: 20px;
       z-index: 10;
     }
-    .logo-area {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-    }
-    header img {
-      width: 140px;
-      height: 70px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
+    .logo-area { display: flex; align-items: center; gap: 20px; }
+    header img { width: 140px; height: 70px; object-fit: cover; border-radius: 10px; }
     header h1 {
       font-family: 'Cinzel', serif;
       font-size: 1.6em;
@@ -58,7 +47,7 @@
       margin: 0;
       letter-spacing: 2px;
       text-transform: uppercase;
-      text-shadow: 0 0 18px rgba(0, 229, 255, 0.6);
+      text-shadow: 0 0 18px rgba(0,229,255,0.6);
       white-space: nowrap;
     }
     .nav-menu {
@@ -87,7 +76,6 @@
       box-shadow: 0 0 12px rgba(0,229,255,0.5);
     }
 
-    /* HERO UNIDADES */
     .hero-unidades {
       background: linear-gradient(135deg, #0d1b2e 0%, #0a0e1a 70%);
       padding: 60px 50px 50px;
@@ -98,78 +86,47 @@
     .hero-unidades::before {
       content: '';
       position: absolute;
-      top: -80px;
-      left: 50%;
+      top: -80px; left: 50%;
       transform: translateX(-50%);
-      width: 600px;
-      height: 300px;
+      width: 600px; height: 300px;
       border-radius: 50%;
       background: radial-gradient(circle, rgba(0,229,255,0.07) 0%, transparent 70%);
       pointer-events: none;
     }
     .hero-unidades .subtitulo {
-      font-size: 0.85em;
-      color: var(--cian);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 12px;
+      font-size: 0.85em; color: var(--cian);
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 12px;
     }
     .hero-unidades h2 {
-      font-family: 'Cinzel', serif;
-      font-size: 2.4em;
-      color: var(--blanco);
-      margin-bottom: 12px;
+      font-family: 'Cinzel', serif; font-size: 2.4em;
+      color: var(--blanco); margin-bottom: 12px;
     }
     .hero-unidades p {
-      color: var(--gris);
-      max-width: 600px;
-      margin: 0 auto;
-      line-height: 1.8;
-      font-size: 0.95em;
+      color: var(--gris); max-width: 600px; margin: 0 auto;
+      line-height: 1.8; font-size: 0.95em;
     }
 
-    /* TABS */
     .tabs-wrapper {
       background: var(--azul-navy);
       border-bottom: 1px solid rgba(0,229,255,0.15);
-      position: sticky;
-      top: 0;
-      z-index: 50;
+      position: sticky; top: 0; z-index: 50;
     }
-    .tabs {
-      display: flex;
-      justify-content: center;
-      max-width: 900px;
-      margin: 0 auto;
-    }
+    .tabs { display: flex; justify-content: center; max-width: 900px; margin: 0 auto; }
     .tab-btn {
-      flex: 1;
-      padding: 20px 10px;
-      background: none;
-      border: none;
-      color: var(--gris);
-      font-family: 'Cinzel', serif;
-      font-size: 0.9em;
-      letter-spacing: 1px;
-      cursor: pointer;
-      transition: all 0.3s;
-      border-bottom: 3px solid transparent;
-      text-transform: uppercase;
+      flex: 1; padding: 20px 10px; background: none; border: none;
+      color: var(--gris); font-family: 'Cinzel', serif; font-size: 0.9em;
+      letter-spacing: 1px; cursor: pointer; transition: all 0.3s;
+      border-bottom: 3px solid transparent; text-transform: uppercase;
     }
     .tab-btn:hover { color: var(--cian); }
     .tab-btn.active {
-      color: var(--cian);
-      border-bottom: 3px solid var(--cian);
+      color: var(--cian); border-bottom: 3px solid var(--cian);
       text-shadow: 0 0 12px rgba(0,229,255,0.5);
     }
 
-    /* CONTENIDO */
     .unidad-contenido {
-      display: none;
-      max-width: 1000px;
-      margin: 0 auto;
-      padding: 60px 40px;
-      animation: fadeUp 0.5s ease forwards;
+      display: none; max-width: 1000px; margin: 0 auto;
+      padding: 60px 40px; animation: fadeUp 0.5s ease forwards;
     }
     .unidad-contenido.activo { display: block; }
 
@@ -178,69 +135,39 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* HEADER UNIDAD - estilo único con gradiente y borde neón */
     .unidad-header {
-      display: flex;
-      align-items: center;
-      gap: 25px;
-      margin-bottom: 45px;
-      padding: 20px 30px;
+      display: flex; align-items: center; gap: 25px;
+      margin-bottom: 45px; padding: 20px 30px;
       background: linear-gradient(135deg, rgba(0,229,255,0.05) 0%, rgba(0,0,0,0) 100%);
-      border-radius: 20px;
-      border-left: 5px solid var(--cian);
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-      transition: all 0.3s;
+      border-radius: 20px; border-left: 5px solid var(--cian);
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3); transition: all 0.3s;
     }
     .unidad-header:hover {
       border-left-width: 8px;
       background: linear-gradient(135deg, rgba(0,229,255,0.1) 0%, rgba(0,0,0,0) 100%);
     }
     .unidad-numero {
-      font-family: 'Cinzel', serif;
-      font-size: 4em;
-      color: rgba(0,229,255,0.15);
-      line-height: 1;
-      flex-shrink: 0;
-      font-weight: bold;
+      font-family: 'Cinzel', serif; font-size: 4em;
+      color: rgba(0,229,255,0.15); line-height: 1; flex-shrink: 0; font-weight: bold;
     }
     .unidad-info .etiqueta {
-      font-size: 0.78em;
-      color: var(--cian);
-      letter-spacing: 4px;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-      opacity: 0.8;
+      font-size: 0.78em; color: var(--cian);
+      letter-spacing: 4px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.8;
     }
     .unidad-info h3 {
-      font-family: 'Cinzel', serif;
-      font-size: 1.9em;
-      color: var(--blanco);
-      margin-bottom: 10px;
+      font-family: 'Cinzel', serif; font-size: 1.9em; margin-bottom: 10px;
       background: linear-gradient(135deg, #fff, var(--cian));
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-      display: inline-block;
+      background-clip: text; -webkit-background-clip: text;
+      color: transparent; display: inline-block;
     }
-    .unidad-info p {
-      color: var(--gris);
-      line-height: 1.7;
-      font-size: 0.95em;
-      max-width: 90%;
-    }
+    .unidad-info p { color: var(--gris); line-height: 1.7; font-size: 0.95em; max-width: 90%; }
 
-    /* SEMANAS */
-    .semanas-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 25px;
-    }
+    .semanas-grid { display: flex; flex-direction: column; gap: 18px; }
 
     .semana-card {
       background: var(--azul-navy);
       border: 1px solid rgba(0,229,255,0.12);
-      border-radius: 14px;
-      overflow: hidden;
+      border-radius: 14px; overflow: hidden;
       transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
     }
     .semana-card:hover {
@@ -249,202 +176,166 @@
       box-shadow: 0 12px 35px rgba(0,229,255,0.1);
     }
     .semana-card.completada { border-color: rgba(0,229,255,0.35); }
-    .semana-card.completada .semana-header {
-      background: linear-gradient(90deg, rgba(0,229,255,0.13), transparent);
-    }
-    /* Semanas pendientes (próximamente) no tienen completado */
-    .semana-card.pendiente .semana-numero {
-      border-color: #4a6a8a;
-      color: #4a6a8a;
-    }
-    .semana-card.pendiente .semana-header {
-      opacity: 0.85;
-    }
-    .semana-card.pendiente .semana-titulo {
-      color: #7a9bc0;
-    }
+    .semana-card.completada .semana-header { background: linear-gradient(90deg, rgba(0,229,255,0.13), transparent); }
+    .semana-card.pendiente .semana-numero { border-color: #4a6a8a; color: #4a6a8a; }
+    .semana-card.pendiente .semana-header { opacity: 0.85; }
+    .semana-card.pendiente .semana-titulo { color: #7a9bc0; }
 
     .semana-header {
-      display: flex;
-      align-items: center;
-      gap: 15px;
+      display: flex; align-items: center; gap: 15px;
       padding: 18px 22px;
       background: linear-gradient(90deg, rgba(0,229,255,0.08), transparent);
       border-bottom: 1px solid rgba(0,229,255,0.1);
-      cursor: pointer;
-      user-select: none;
+      cursor: pointer; user-select: none;
     }
     .semana-numero {
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
+      width: 36px; height: 36px; border-radius: 50%;
       border: 2px solid var(--cian);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: 'Cinzel', serif;
-      font-size: 0.85em;
-      color: var(--cian);
-      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Cinzel', serif; font-size: 0.85em;
+      color: var(--cian); flex-shrink: 0;
       transition: background 0.3s, color 0.3s;
     }
     .semana-card.completada .semana-numero {
-      background: var(--cian);
-      color: var(--azul-navy);
-      font-weight: bold;
+      background: var(--cian); color: var(--azul-navy); font-weight: bold;
     }
-    .semana-titulo {
-      flex: 1;
-      font-size: 0.92em;
-      font-weight: 700;
-      color: var(--blanco);
-      letter-spacing: 0.5px;
-    }
-    .semana-arrow {
-      color: var(--cian);
-      font-size: 0.8em;
-      transition: transform 0.3s;
-    }
+    .semana-titulo { flex: 1; font-size: 0.92em; font-weight: 700; color: var(--blanco); letter-spacing: 0.5px; }
+    .semana-arrow { color: var(--cian); font-size: 0.8em; transition: transform 0.3s; }
     .semana-card.abierta .semana-arrow { transform: rotate(180deg); }
 
-    .semana-body {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.4s ease;
-    }
-    .semana-card.abierta .semana-body { max-height: 800px; }
+    .semana-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+    .semana-card.abierta .semana-body { max-height: 2000px; }
     .semana-body-inner { padding: 20px 22px; }
 
-    /* Mensaje de "Próximamente" */
     .proximamente-msg {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 25px 15px;
-      color: #7a9bc0;
-      text-align: center;
-      background: rgba(0,0,0,0.2);
-      border-radius: 12px;
-      font-size: 0.9em;
+      display: flex; flex-direction: column; align-items: center; gap: 12px;
+      padding: 25px 15px; color: #7a9bc0; text-align: center;
+      background: rgba(0,0,0,0.2); border-radius: 12px; font-size: 0.9em;
     }
-    .proximamente-msg span:first-child {
-      font-size: 2.3em;
-    }
+    .proximamente-msg span:first-child { font-size: 2.3em; }
 
-    /* ACTIVIDADES (solo semanas activas) */
     .actividad-lista { list-style: none; }
     .actividad-lista li {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      color: var(--gris);
-      font-size: 0.9em;
-      line-height: 1.6;
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
+      color: var(--gris); font-size: 0.9em; line-height: 1.6;
     }
     .actividad-lista li:last-child { border-bottom: none; }
     .act-icono { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
-    .act-texto strong {
-      display: block;
-      color: var(--blanco);
-      font-size: 0.92em;
-      margin-bottom: 3px;
-    }
+    .act-texto strong { display: block; color: var(--blanco); font-size: 0.92em; margin-bottom: 3px; }
     .badge {
-      display: inline-block;
-      padding: 3px 10px;
-      border-radius: 20px;
-      font-size: 0.72em;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      margin-top: 6px;
+      display: inline-block; padding: 3px 10px; border-radius: 20px;
+      font-size: 0.72em; letter-spacing: 1px; text-transform: uppercase; margin-top: 6px;
     }
     .badge-teoria     { background: rgba(0,229,255,0.1);  color: var(--cian);  border: 1px solid rgba(0,229,255,0.3); }
     .badge-practica   { background: rgba(0,255,150,0.08); color: #00ff96;      border: 1px solid rgba(0,255,150,0.25); }
     .badge-tarea      { background: rgba(255,200,0,0.08); color: #ffd000;      border: 1px solid rgba(255,200,0,0.25); }
     .badge-evaluacion { background: rgba(255,80,80,0.08); color: #ff6b6b;      border: 1px solid rgba(255,80,80,0.25); }
 
-    /* ARCHIVOS GITHUB */
+    /* ── ARCHIVOS GITHUB ── */
     .gh-archivos-section {
       margin-top: 14px;
       border-top: 1px solid rgba(0,229,255,0.12);
       padding-top: 14px;
     }
     .gh-archivos-titulo {
-      font-size: 0.78em;
-      color: var(--cian);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
+      font-size: 0.78em; color: var(--cian);
+      letter-spacing: 1.5px; text-transform: uppercase;
+      margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
     }
-    .gh-archivos-lista {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
+    .gh-archivos-lista { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
     .gh-archivo-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
       background: rgba(0,229,255,0.04);
       border: 1px solid rgba(0,229,255,0.1);
-      border-radius: 8px;
-      padding: 8px 10px;
-      font-size: 0.82em;
-      transition: border-color 0.2s, background 0.2s;
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
     }
-    .gh-archivo-item:hover {
-      border-color: rgba(0,229,255,0.35);
-      background: rgba(0,229,255,0.08);
+    .gh-archivo-item:hover { border-color: rgba(0,229,255,0.35); }
+
+    /* Fila principal del archivo */
+    .gh-archivo-fila {
+      display: flex; align-items: center; gap: 8px;
+      padding: 9px 12px;
+      background: rgba(0,229,255,0.03);
     }
-    .gh-archivo-nombre {
-      flex: 1;
-      color: #c8ddf0;
-      word-break: break-all;
-    }
-    .gh-archivo-size {
-      color: #4a6a8a;
-      font-size: 0.85em;
-      white-space: nowrap;
-    }
-    .gh-btn-dl {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      padding: 4px 10px;
-      background: rgba(0,229,255,0.08);
-      border: 1px solid rgba(0,229,255,0.25);
+    .gh-archivo-nombre { flex: 1; color: #c8ddf0; word-break: break-all; font-size: 0.83em; }
+    .gh-archivo-size   { color: #4a6a8a; font-size: 0.8em; white-space: nowrap; }
+
+    /* Botones de acción */
+    .gh-acciones { display: flex; gap: 5px; flex-shrink: 0; }
+    .gh-btn {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 4px 9px;
       border-radius: 20px;
+      font-size: 0.75em; font-weight: 700;
+      text-decoration: none; cursor: pointer;
+      transition: all 0.2s; border: 1px solid; white-space: nowrap;
+    }
+    .gh-btn-ver {
+      background: rgba(0,229,255,0.06);
+      border-color: rgba(0,229,255,0.25);
       color: var(--cian);
-      font-size: 0.78em;
-      font-weight: 700;
-      text-decoration: none;
-      transition: all 0.2s;
-      white-space: nowrap;
     }
-    .gh-btn-dl:hover {
-      background: rgba(0,229,255,0.2);
-      border-color: var(--cian);
+    .gh-btn-ver:hover { background: rgba(0,229,255,0.18); border-color: var(--cian); }
+    .gh-btn-ver.activo { background: rgba(0,229,255,0.22); border-color: var(--cian); }
+    .gh-btn-dl {
+      background: rgba(0,180,120,0.07);
+      border-color: rgba(0,255,150,0.25);
+      color: #00ff96;
     }
-    .gh-sin-archivos {
-      color: #3a5a7a;
-      font-size: 0.8em;
-      font-style: italic;
-      padding: 4px 2px;
+    .gh-btn-dl:hover { background: rgba(0,255,150,0.15); border-color: #00ff96; }
+
+    /* Zona de previsualización */
+    .gh-preview {
+      display: none;
+      border-top: 1px solid rgba(0,229,255,0.12);
+      padding: 12px;
+      background: rgba(0,0,0,0.25);
     }
-    .gh-loading {
-      color: #3a6080;
-      font-size: 0.8em;
-      display: flex;
-      align-items: center;
-      gap: 7px;
+    .gh-preview.visible { display: block; }
+
+    /* Imagen */
+    .gh-preview img {
+      max-width: 100%; max-height: 480px;
+      border-radius: 8px; display: block; margin: 0 auto;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
+
+    /* PDF / iframe */
+    .gh-preview iframe {
+      width: 100%; height: 520px; border: none;
+      border-radius: 8px; display: block;
+      background: #fff;
+    }
+
+    /* Texto / código */
+    .gh-preview pre {
+      background: #06101e;
+      border: 1px solid rgba(0,229,255,0.12);
+      border-radius: 8px; padding: 14px;
+      color: #a8d8ea; font-size: 0.8em;
+      line-height: 1.6; overflow-x: auto;
+      white-space: pre-wrap; word-break: break-all;
+      max-height: 400px; overflow-y: auto;
+    }
+
+    /* Mensaje sin preview */
+    .gh-preview-no {
+      text-align: center; padding: 22px 10px;
+      color: #4a6a8a; font-size: 0.83em;
+    }
+    .gh-preview-no span { font-size: 2em; display: block; margin-bottom: 8px; }
+
+    /* Loading preview */
+    .gh-preview-loading {
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px; padding: 20px; color: #3a7090; font-size: 0.83em;
+    }
+
+    .gh-sin-archivos { color: #3a5a7a; font-size: 0.8em; font-style: italic; padding: 4px 2px; }
+    .gh-loading { color: #3a6080; font-size: 0.8em; display: flex; align-items: center; gap: 7px; }
     .gh-mini-spin {
       width: 12px; height: 12px;
       border: 1.5px solid rgba(0,229,255,0.25);
@@ -455,96 +346,61 @@
     }
     @keyframes ghspin { to { transform: rotate(360deg); } }
 
-    /* PROGRESO UNIDAD */
+    /* PROGRESO */
     .progreso-unidad {
-      margin-top: 40px;
-      background: var(--azul-navy);
+      margin-top: 40px; background: var(--azul-navy);
       border: 1px solid rgba(0,229,255,0.12);
-      border-radius: 14px;
-      padding: 25px 30px;
+      border-radius: 14px; padding: 25px 30px;
     }
     .progreso-unidad h4 {
-      font-family: 'Cinzel', serif;
-      font-size: 1em;
-      color: var(--cian);
-      margin-bottom: 15px;
-      letter-spacing: 1px;
+      font-family: 'Cinzel', serif; font-size: 1em;
+      color: var(--cian); margin-bottom: 15px; letter-spacing: 1px;
     }
     .progreso-barra-fondo {
-      background: var(--azul-medio);
-      border-radius: 20px;
-      height: 12px;
-      overflow: hidden;
-      margin-bottom: 10px;
+      background: var(--azul-medio); border-radius: 20px;
+      height: 12px; overflow: hidden; margin-bottom: 10px;
     }
     .progreso-barra-relleno {
-      height: 100%;
-      border-radius: 20px;
-      width: 0%;
+      height: 100%; border-radius: 20px; width: 0%;
       background: linear-gradient(90deg, #005f73, var(--cian));
       box-shadow: 0 0 12px rgba(0,229,255,0.4);
       transition: width 0.7s ease;
     }
     .progreso-info {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.82em;
-      color: var(--gris);
-      align-items: center;
+      display: flex; justify-content: space-between;
+      font-size: 0.82em; color: var(--gris); align-items: center;
     }
     .progreso-porcentaje {
-      font-family: 'Cinzel', serif;
-      font-size: 1.4em;
-      color: var(--cian);
-      text-shadow: 0 0 10px rgba(0,229,255,0.4);
+      font-family: 'Cinzel', serif; font-size: 1.4em;
+      color: var(--cian); text-shadow: 0 0 10px rgba(0,229,255,0.4);
     }
-    .semana-indicadores {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 14px;
-    }
+    .semana-indicadores { display: flex; gap: 10px; margin-bottom: 14px; }
     .sem-dot {
-      flex: 1;
-      height: 6px;
-      border-radius: 10px;
-      background: var(--azul-medio);
-      transition: background 0.5s;
+      flex: 1; height: 6px; border-radius: 10px;
+      background: var(--azul-medio); transition: background 0.5s;
     }
     .sem-dot.hecha { background: var(--cian); box-shadow: 0 0 8px rgba(0,229,255,0.5); }
     .badge-completado {
-      display: none;
-      align-items: center;
-      gap: 8px;
-      background: rgba(0,229,255,0.1);
-      border: 1px solid rgba(0,229,255,0.3);
-      border-radius: 8px;
-      padding: 10px 16px;
-      margin-top: 14px;
-      font-size: 0.88em;
-      color: var(--cian);
+      display: none; align-items: center; gap: 8px;
+      background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.3);
+      border-radius: 8px; padding: 10px 16px; margin-top: 14px;
+      font-size: 0.88em; color: var(--cian);
     }
     .badge-completado.visible { display: flex; }
 
     .divisor {
-      width: 100%;
-      height: 1px;
+      width: 100%; height: 1px;
       background: linear-gradient(to right, transparent, var(--cian), transparent);
     }
 
     footer {
-      background-color: var(--azul-navy);
-      text-align: center;
-      padding: 20px;
-      color: var(--cian);
+      background-color: var(--azul-navy); text-align: center;
+      padding: 20px; color: var(--cian);
       border-top: 1px solid rgba(0,229,255,0.15);
     }
 
     @media (max-width: 900px) {
-      header {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-      }
+      header { flex-direction: column; align-items: center; text-align: center; }
       .logo-area { flex-direction: column; }
       header h1 { white-space: normal; font-size: 1.4em; }
       .nav-menu { flex-wrap: wrap; justify-content: center; border-radius: 20px; }
@@ -552,10 +408,10 @@
       .unidad-info p { max-width: 100%; }
     }
     @media (max-width: 768px) {
-      .semanas-grid { grid-template-columns: 1fr; }
       .tabs { overflow-x: auto; }
       .tab-btn { font-size: 0.75em; padding: 15px 8px; }
       .unidad-contenido { padding: 40px 20px; }
+      .gh-preview iframe { height: 380px; }
     }
   </style>
 </head>
@@ -656,7 +512,6 @@
 <footer>© 2026 Universidad Peruana Los Andes</footer>
 
 <script>
-  /* ── CONFIGURACIÓN GITHUB (solo semanas activas 1-6) ── */
   const GH_PUBLIC = {
     owner:  'Eduardo22906',
     repo:   'portafolio-bd2',
@@ -666,10 +521,7 @@
   };
 
   let GH = null;
-  try {
-    const raw = localStorage.getItem('gh_cfg');
-    if (raw) GH = JSON.parse(raw);
-  } catch(e) {}
+  try { const raw = localStorage.getItem('gh_cfg'); if (raw) GH = JSON.parse(raw); } catch(e) {}
   if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
 
   function ghPath(rel) {
@@ -680,11 +532,11 @@
   function fileEmoji(name) {
     const ext = (name.split('.').pop() || '').toLowerCase();
     const m = {
-      pdf:'📄', png:'🖼', jpg:'🖼', jpeg:'🖼', gif:'🖼',
+      pdf:'📄', png:'🖼', jpg:'🖼', jpeg:'🖼', gif:'🖼', svg:'🖼', webp:'🖼',
       mp4:'🎬', mp3:'🎵', zip:'🗜', rar:'🗜',
       doc:'📝', docx:'📝', xls:'📊', xlsx:'📊',
-      ppt:'📋', pptx:'📋', txt:'📃',
-      js:'💻', html:'💻', css:'💻', py:'💻', sql:'🗄'
+      ppt:'📋', pptx:'📋', txt:'📃', md:'📃',
+      js:'💻', html:'💻', css:'💻', py:'💻', sql:'🗄', json:'💻', xml:'💻', csv:'📊'
     };
     return m[ext] || '📎';
   }
@@ -696,12 +548,75 @@
     return (b / 1048576).toFixed(1) + ' MB';
   }
 
+  // Determina qué tipo de previsualización se puede hacer
+  function tipoPreview(name) {
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    if (['png','jpg','jpeg','gif','svg','webp'].includes(ext)) return 'imagen';
+    if (ext === 'pdf') return 'pdf';
+    if (['txt','md','sql','py','js','html','css','json','xml','csv'].includes(ext)) return 'texto';
+    if (['doc','docx','xls','xlsx','ppt','pptx'].includes(ext)) return 'office';
+    return 'ninguno';
+  }
+
+  // Toggle de previsualización
+  async function togglePreview(btnEl, previewEl, downloadUrl, fileName) {
+    const tipo = tipoPreview(fileName);
+    const yaAbierto = previewEl.classList.contains('visible');
+
+    if (yaAbierto) {
+      previewEl.classList.remove('visible');
+      btnEl.classList.remove('activo');
+      btnEl.textContent = '👁 Ver';
+      return;
+    }
+
+    // Abrir
+    previewEl.classList.add('visible');
+    btnEl.classList.add('activo');
+    btnEl.textContent = '✕ Cerrar';
+
+    // Si ya tiene contenido, no regenerar
+    if (previewEl.dataset.loaded === 'true') return;
+    previewEl.dataset.loaded = 'true';
+
+    previewEl.innerHTML = '<div class="gh-preview-loading"><span class="gh-mini-spin"></span> Cargando previsualización...</div>';
+
+    if (tipo === 'imagen') {
+      previewEl.innerHTML = `<img src="${downloadUrl}" alt="${fileName}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'gh-preview-no\\'><span>⚠️</span>No se pudo cargar la imagen.</div>'">`;
+
+    } else if (tipo === 'pdf') {
+      // Usamos Google Docs Viewer para PDFs de GitHub (evita problemas CORS)
+      const visorUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(downloadUrl)}&embedded=true`;
+      previewEl.innerHTML = `<iframe src="${visorUrl}" title="${fileName}"></iframe>`;
+
+    } else if (tipo === 'office') {
+      // Office Viewer de Microsoft
+      const visorUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(downloadUrl)}`;
+      previewEl.innerHTML = `<iframe src="${visorUrl}" title="${fileName}"></iframe>`;
+
+    } else if (tipo === 'texto') {
+      try {
+        const r = await fetch(downloadUrl);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const texto = await r.text();
+        const pre = document.createElement('pre');
+        pre.textContent = texto.length > 8000 ? texto.slice(0, 8000) + '\n\n… (archivo truncado para previsualización)' : texto;
+        previewEl.innerHTML = '';
+        previewEl.appendChild(pre);
+      } catch(e) {
+        previewEl.innerHTML = `<div class="gh-preview-no"><span>⚠️</span>No se pudo cargar el texto: ${e.message}</div>`;
+      }
+
+    } else {
+      previewEl.innerHTML = `<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong>Descargar</strong> para abrirlo.</div>`;
+    }
+  }
+
   const semanasCompletadas = { 1:{}, 2:{}, 3:{}, 4:{} };
 
-  // Títulos: solo semanas 1-6 tienen contenido; del 7 al 16 son "--------- Próximamente ---------"
   const titulosPorSemanaGlobal = {};
   for (let i = 1; i <= 16; i++) {
-    if (i === 1) titulosPorSemanaGlobal[i] = "Introducción a la Arquitectura de BD";
+    if      (i === 1) titulosPorSemanaGlobal[i] = "Introducción a la Arquitectura de BD";
     else if (i === 2) titulosPorSemanaGlobal[i] = "Gestor de BD";
     else if (i === 3) titulosPorSemanaGlobal[i] = "Diseño de Arquitectura de BD";
     else if (i === 4) titulosPorSemanaGlobal[i] = "Tipo de Arquitectura de BD";
@@ -710,7 +625,7 @@
     else titulosPorSemanaGlobal[i] = "--------- Próximamente ---------";
   }
 
-  // Construcción de tarjetas (semanas globales)
+  // Construir tarjetas
   for (let u = 1; u <= 4; u++) {
     const grid = document.getElementById(`semanas-grid-${u}`);
     if (!grid) continue;
@@ -722,38 +637,33 @@
       const card = document.createElement('div');
       card.className = `semana-card ${esPendiente ? 'pendiente' : ''}`;
       card.id = `u${u}s${s}`;
-      
-      let bodyHTML = '';
-      if (esPendiente) {
-        bodyHTML = `
-          <div class="semana-body">
-            <div class="semana-body-inner">
-              <div class="proximamente-msg">
-                <span>⏳</span>
-                <strong>Contenido en preparación</strong>
-                <p>Los materiales y recursos de esta semana estarán disponibles próximamente.</p>
-              </div>
-            </div>
-          </div>
-        `;
-      } else {
-        bodyHTML = `
-          <div class="semana-body">
-            <div class="semana-body-inner">
-              <ul class="actividad-lista">
-                <li><span class="act-icono">📖</span><div class="act-texto"><strong>Material y recursos</strong>Archivos subidos en GitHub (carpeta unidad${u}/semana${s}).<span class="badge badge-teoria">Teoría/Práctica</span></div></li>
-              </ul>
-              <div class="gh-archivos-section">
-                <div class="gh-archivos-titulo">📎 Archivos</div>
-                <div id="gh-u${u}s${s}" class="gh-loading"><span class="gh-mini-spin"></span>Cargando...</div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-      
+
+      let bodyHTML = esPendiente
+        ? `<div class="semana-body"><div class="semana-body-inner">
+             <div class="proximamente-msg">
+               <span>⏳</span>
+               <strong>Contenido en preparación</strong>
+               <p>Los materiales y recursos de esta semana estarán disponibles próximamente.</p>
+             </div>
+           </div></div>`
+        : `<div class="semana-body"><div class="semana-body-inner">
+             <ul class="actividad-lista">
+               <li><span class="act-icono">📖</span>
+                 <div class="act-texto">
+                   <strong>Material y recursos</strong>
+                   Archivos subidos en GitHub (carpeta unidad${u}/semana${s}).
+                   <span class="badge badge-teoria">Teoría/Práctica</span>
+                 </div>
+               </li>
+             </ul>
+             <div class="gh-archivos-section">
+               <div class="gh-archivos-titulo">📎 Archivos</div>
+               <div id="gh-u${u}s${s}" class="gh-loading"><span class="gh-mini-spin"></span>Cargando...</div>
+             </div>
+           </div></div>`;
+
       card.innerHTML = `
-        <div class="semana-header" onclick="toggleSemana('u${u}s${s}')" data-pendiente="${esPendiente}">
+        <div class="semana-header" onclick="toggleSemana('u${u}s${s}')">
           <div class="semana-numero">S${globalWeek}</div>
           <div class="semana-titulo">Semana ${globalWeek} — ${tituloSemana}</div>
           <div class="semana-arrow">▼</div>
@@ -765,68 +675,48 @@
   }
 
   function marcarSemanaCompletada(unidad, semana, completada) {
-    // Solo tiene efecto si la semana NO es pendiente (globalWeek < 7)
     const globalWeek = (unidad - 1) * 4 + semana;
     if (globalWeek >= 7) return;
-    
     const card = document.getElementById(`u${unidad}s${semana}`);
     if (!card) return;
     semanasCompletadas[unidad][semana] = completada;
     const numeroDiv = card.querySelector('.semana-numero');
-    if (completada) {
-      card.classList.add('completada');
-      numeroDiv.textContent = '✓';
-    } else {
-      card.classList.remove('completada');
-      numeroDiv.textContent = `S${globalWeek}`;
-    }
+    if (completada) { card.classList.add('completada'); numeroDiv.textContent = '✓'; }
+    else { card.classList.remove('completada'); numeroDiv.textContent = `S${globalWeek}`; }
     actualizarProgresoUnidad(unidad);
   }
 
   function actualizarProgresoUnidad(unidad) {
-    let completadas = 0;
-    // Solo contar semanas que no sean pendientes (globalWeek < 7) y además completadas
+    let completadas = 0, totalActivas = 0;
     for (let s = 1; s <= 4; s++) {
-      const globalWeek = (unidad - 1) * 4 + s;
-      if (globalWeek >= 7) continue; // pendientes no cuentan para progreso
+      const gw = (unidad - 1) * 4 + s;
+      if (gw >= 7) continue;
+      totalActivas++;
       if (semanasCompletadas[unidad][s]) completadas++;
     }
-    // Total de semanas "activas" en la unidad (las que tienen contenido real)
-    let totalActivas = 0;
-    for (let s = 1; s <= 4; s++) {
-      const globalWeek = (unidad - 1) * 4 + s;
-      if (globalWeek < 7) totalActivas++;
-    }
-    if (totalActivas === 0) totalActivas = 4; // fallback, pero no debería ocurrir para unidad1 y 2 parcial
-    
-    const porcentaje = Math.round((completadas / totalActivas) * 100);
+    if (totalActivas === 0) totalActivas = 4;
+    const pct = Math.round((completadas / totalActivas) * 100);
+
     const barra = document.getElementById(`barra-${unidad}`);
     const pctSpan = document.getElementById(`pct-${unidad}`);
     const textoSpan = document.getElementById(`texto-${unidad}`);
     const dotsContainer = document.getElementById(`dots-${unidad}`);
     const completadoDiv = document.getElementById(`completado-${unidad}`);
 
-    if (barra) barra.style.width = porcentaje + '%';
-    if (pctSpan) pctSpan.textContent = porcentaje + '%';
+    if (barra) barra.style.width = pct + '%';
+    if (pctSpan) pctSpan.textContent = pct + '%';
     if (textoSpan) textoSpan.textContent = `${completadas} de ${totalActivas} semanas completadas`;
     if (dotsContainer) {
-      const dots = dotsContainer.querySelectorAll('.sem-dot');
-      // Reiniciar estilos
-      dots.forEach(dot => dot.classList.remove('hecha'));
-      // Marcar según completadas reales (solo las primeras completadas)
-      for (let i = 0; i < completadas; i++) {
-        if (dots[i]) dots[i].classList.add('hecha');
-      }
+      dotsContainer.querySelectorAll('.sem-dot').forEach((d, i) => {
+        d.classList.toggle('hecha', i < completadas);
+      });
     }
-    if (completadoDiv) {
-      if (completadas === totalActivas && totalActivas > 0) completadoDiv.classList.add('visible');
-      else completadoDiv.classList.remove('visible');
-    }
+    if (completadoDiv) completadoDiv.classList.toggle('visible', completadas === totalActivas && totalActivas > 0);
   }
 
   async function cargarArchivosGH(unidad, semana, forceReload = false) {
     const globalWeek = (unidad - 1) * 4 + semana;
-    if (globalWeek >= 7) return; // No se cargan archivos para semanas pendientes
+    if (globalWeek >= 7) return;
     const slotId = `gh-u${unidad}s${semana}`;
     const container = document.getElementById(slotId);
     if (!container) return;
@@ -836,15 +726,12 @@
       container.innerHTML = '<span class="gh-sin-archivos">Sin conexión a GitHub configurada</span>';
       return;
     }
-
     if (container.getAttribute('data-loading') === 'true' && !forceReload) return;
     container.setAttribute('data-loading', 'true');
-
     container.className = 'gh-loading';
     container.innerHTML = '<span class="gh-mini-spin"></span>Cargando...';
 
-    const relFolder = `unidad${unidad}/semana${semana}`;
-    const fullPath  = ghPath(relFolder);
+    const fullPath = ghPath(`unidad${unidad}/semana${semana}`);
     const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${fullPath}?ref=${GH.branch || 'main'}`;
 
     try {
@@ -874,21 +761,35 @@
 
       marcarSemanaCompletada(unidad, semana, true);
 
+      // Construir lista con botones Ver + Descargar y zona de preview
       container.className = '';
       const ul = document.createElement('ul');
       ul.className = 'gh-archivos-lista';
-      files.forEach(f => {
+
+      files.forEach((f, idx) => {
+        const tipo = tipoPreview(f.name);
         const li = document.createElement('li');
         li.className = 'gh-archivo-item';
+
+        const previewId = `prev-${unidad}-${semana}-${idx}`;
+
         li.innerHTML = `
-          <span style="font-size:1.1em">${fileEmoji(f.name)}</span>
-          <span class="gh-archivo-nombre">${f.name}</span>
-          <span class="gh-archivo-size">${fmtSize(f.size)}</span>
-          <a href="${f.download_url}" target="_blank" class="gh-btn-dl">↓ Descargar</a>
+          <div class="gh-archivo-fila">
+            <span style="font-size:1.15em;flex-shrink:0">${fileEmoji(f.name)}</span>
+            <span class="gh-archivo-nombre">${f.name}</span>
+            <span class="gh-archivo-size">${fmtSize(f.size)}</span>
+            <div class="gh-acciones">
+              <button class="gh-btn gh-btn-ver" id="btn-${previewId}" onclick="togglePreview(this, document.getElementById('${previewId}'), '${f.download_url}', '${f.name}')">👁 Ver</button>
+              <a href="${f.download_url}" target="_blank" download class="gh-btn gh-btn-dl">↓ Descargar</a>
+            </div>
+          </div>
+          <div class="gh-preview" id="${previewId}"></div>
         `;
         ul.appendChild(li);
       });
+
       container.parentNode.replaceChild(ul, container);
+
     } catch(e) {
       container.className = '';
       container.innerHTML = `<span style="color:#ff6b6b;font-size:.78em">Error al cargar: ${e.message}</span>`;
@@ -899,31 +800,20 @@
   window.toggleSemana = function(id) {
     const card = document.getElementById(id);
     if (!card) return;
-    const isPendiente = card.classList.contains('pendiente');
     card.classList.toggle('abierta');
     const match = id.match(/^u(\d)s(\d)$/);
-    if (match && !isPendiente) {
-      const unidad = parseInt(match[1]);
-      const semana = parseInt(match[2]);
-      if (card.classList.contains('abierta')) {
-        cargarArchivosGH(unidad, semana);
-      }
+    if (match && !card.classList.contains('pendiente') && card.classList.contains('abierta')) {
+      cargarArchivosGH(parseInt(match[1]), parseInt(match[2]));
     }
   };
 
   async function cargarEstadoInicial() {
     if (!GH || !GH.owner || !GH.repo) return;
     const promesas = [];
-    for (let u = 1; u <= 4; u++) {
-      for (let s = 1; s <= 4; s++) {
-        const globalWeek = (u-1)*4 + s;
-        if (globalWeek < 7) { // solo semanas 1-6
-          promesas.push(cargarArchivosGH(u, s, true));
-        }
-      }
-    }
+    for (let u = 1; u <= 4; u++)
+      for (let s = 1; s <= 4; s++)
+        if ((u-1)*4+s < 7) promesas.push(cargarArchivosGH(u, s, true));
     await Promise.all(promesas);
-    // Inicializar progreso de unidades (las que tienen semanas activas)
     for (let u = 1; u <= 4; u++) actualizarProgresoUnidad(u);
   }
 
@@ -935,14 +825,11 @@
   };
 
   window.addEventListener('load', async () => {
-    try {
-      const raw = localStorage.getItem('gh_cfg');
-      if (raw) GH = JSON.parse(raw);
-    } catch(e) {}
+    try { const raw = localStorage.getItem('gh_cfg'); if (raw) GH = JSON.parse(raw); } catch(e) {}
     if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
 
     const heroP = document.querySelector('.hero-unidades p');
-    if (heroP) heroP.innerHTML = '✅ Semanas activas: 1 a 6 con contenido. Semanas 7 a 16 en preparación. Cargando progreso...';
+    if (heroP) heroP.innerHTML = '✅ Semanas activas: 1 a 6. Cargando progreso...';
     await cargarEstadoInicial();
     if (heroP) heroP.innerHTML = '✅ Semanas 1 a 6 disponibles · Semanas 7 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
 
