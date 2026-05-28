@@ -1,0 +1,1081 @@
+-- ============================================================
+--  MI BASE DE DATOS
+-- ============================================================
+
+USE master;
+GO
+
+IF EXISTS (SELECT name FROM sys.databases WHERE name = N'InventarioEquipos')
+BEGIN
+    ALTER DATABASE InventarioEquipos SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE InventarioEquipos;
+END
+GO
+
+CREATE DATABASE InventarioEquipos;
+GO
+
+USE InventarioEquipos;
+GO
+
+-- ============================================================
+-- TABLAS INDEPENDIENTES
+-- ============================================================
+
+CREATE TABLE dbo.SISTEMA_OPERATIVO (
+    Id_Sistema_Operativo  INT            NOT NULL IDENTITY(1,1),
+    Sistema_Operativo     NVARCHAR(100)  NOT NULL,
+    Sistema_Licencia      NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_SistemaOperativo PRIMARY KEY (Id_Sistema_Operativo)
+);
+GO
+
+CREATE TABLE dbo.ALMACEN (
+    Id_Codigo_Almacen  INT            NOT NULL IDENTITY(1,1),
+    Dependencia        NVARCHAR(150)  NOT NULL,
+    Fecha              DATE           NOT NULL,
+    Codigo_Tecnologia  NVARCHAR(50)   NOT NULL,
+    Usuario            NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_Almacen PRIMARY KEY (Id_Codigo_Almacen)
+);
+GO
+
+CREATE TABLE dbo.DISCO_DURO (
+    Id_DiscoDuro        INT            NOT NULL IDENTITY(1,1),
+    DiscoDuro_Capacidad NVARCHAR(50)   NOT NULL,
+    DiscoDuro_Marca     NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_DiscoDuro PRIMARY KEY (Id_DiscoDuro)
+);
+GO
+
+CREATE TABLE dbo.PROCESADOR (
+    Codigo_Procesador    INT           NOT NULL IDENTITY(1,1),
+    Procesador_Velocidad NVARCHAR(50)  NOT NULL,
+    CONSTRAINT PK_Procesador PRIMARY KEY (Codigo_Procesador)
+);
+GO
+
+CREATE TABLE dbo.GPU (
+    Codigo_GPU  INT           NOT NULL IDENTITY(1,1),
+    GPU_Memoria NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_GPU PRIMARY KEY (Codigo_GPU)
+);
+GO
+
+CREATE TABLE dbo.GENERAL (
+    Id_General  INT            NOT NULL IDENTITY(1,1),
+    Observacion NVARCHAR(500)  NULL,
+    Estado      NVARCHAR(50)   NOT NULL,
+    Firma       NVARCHAR(150)  NULL,
+    CONSTRAINT PK_General PRIMARY KEY (Id_General)
+);
+GO
+
+CREATE TABLE dbo.MONITOR (
+    Nro_Serie_Monitor NVARCHAR(50)   NOT NULL,
+    Modelo            NVARCHAR(100)  NOT NULL,
+    Marca             NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_Monitor PRIMARY KEY (Nro_Serie_Monitor)
+);
+GO
+
+CREATE TABLE dbo.TECLADO (
+    Nro_Serie_Teclado NVARCHAR(50)   NOT NULL,
+    Modelo            NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_Teclado PRIMARY KEY (Nro_Serie_Teclado)
+);
+GO
+
+CREATE TABLE dbo.MOUSE (
+    Nro_Serie_Mouse NVARCHAR(50)   NOT NULL,
+    Modelo          NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_Mouse PRIMARY KEY (Nro_Serie_Mouse)
+);
+GO
+
+CREATE TABLE dbo.PARLANTE (
+    Nro_Serie_Parlante NVARCHAR(50)   NOT NULL,
+    Modelo             NVARCHAR(100)  NOT NULL,
+    CONSTRAINT PK_Parlante PRIMARY KEY (Nro_Serie_Parlante)
+);
+GO
+
+CREATE TABLE dbo.ACCESO_REMOTO (
+    Codigo_Anidesk NVARCHAR(50)   NOT NULL,
+    Contrasena     NVARCHAR(255)  NOT NULL,
+    CONSTRAINT PK_AccesoRemoto PRIMARY KEY (Codigo_Anidesk)
+);
+GO
+
+-- ============================================================
+-- TABLAS CON DEPENDENCIAS DE PRIMER NIVEL
+-- ============================================================
+
+CREATE TABLE dbo.SOFTWARE (
+    Id_Software          INT            NOT NULL IDENTITY(1,1),
+    Id_Sistema_Operativo INT            NOT NULL,
+    Ofimatica            NVARCHAR(100)  NULL,
+    Antivirus            NVARCHAR(100)  NULL,
+    Navegador            NVARCHAR(100)  NULL,
+    Desarrollo           NVARCHAR(100)  NULL,
+    Disenio              NVARCHAR(100)  NULL,
+    CONSTRAINT PK_Software PRIMARY KEY (Id_Software),
+    CONSTRAINT FK_Software_SistemaOperativo
+        FOREIGN KEY (Id_Sistema_Operativo)
+        REFERENCES dbo.SISTEMA_OPERATIVO (Id_Sistema_Operativo)
+);
+GO
+
+CREATE TABLE dbo.HARWARE (
+    Id_Harware        INT            NOT NULL IDENTITY(1,1),
+    Id_DiscoDuro      INT            NOT NULL,
+    Codigo_Procesador INT            NOT NULL,
+    Codigo_GPU        INT            NOT NULL,
+    Tipo              NVARCHAR(100)  NOT NULL,
+    Marca_y_Modelo    NVARCHAR(150)  NOT NULL,
+    Nro_de_Serie      NVARCHAR(100)  NOT NULL,
+    Ram               NVARCHAR(50)   NOT NULL,
+    Unidad_CD_DVDRW   NVARCHAR(50)   NULL,
+    Regulador         NVARCHAR(100)  NULL,
+    CONSTRAINT PK_Harware PRIMARY KEY (Id_Harware),
+    CONSTRAINT FK_Harware_DiscoDuro
+        FOREIGN KEY (Id_DiscoDuro)
+        REFERENCES dbo.DISCO_DURO (Id_DiscoDuro),
+    CONSTRAINT FK_Harware_Procesador
+        FOREIGN KEY (Codigo_Procesador)
+        REFERENCES dbo.PROCESADOR (Codigo_Procesador),
+    CONSTRAINT FK_Harware_GPU
+        FOREIGN KEY (Codigo_GPU)
+        REFERENCES dbo.GPU (Codigo_GPU)
+);
+GO
+
+CREATE TABLE dbo.ACCESORIO (
+    Id_Accesorio       INT           NOT NULL IDENTITY(1,1),
+    Nro_Serie_Monitor  NVARCHAR(50)  NOT NULL,
+    Nro_Serie_Teclado  NVARCHAR(50)  NOT NULL,
+    Nro_Serie_Mouse    NVARCHAR(50)  NOT NULL,
+    Nro_Serie_Parlante NVARCHAR(50)  NOT NULL,
+    CONSTRAINT PK_Accesorio PRIMARY KEY (Id_Accesorio),
+    CONSTRAINT FK_Accesorio_Monitor
+        FOREIGN KEY (Nro_Serie_Monitor)
+        REFERENCES dbo.MONITOR (Nro_Serie_Monitor),
+    CONSTRAINT FK_Accesorio_Teclado
+        FOREIGN KEY (Nro_Serie_Teclado)
+        REFERENCES dbo.TECLADO (Nro_Serie_Teclado),
+    CONSTRAINT FK_Accesorio_Mouse
+        FOREIGN KEY (Nro_Serie_Mouse)
+        REFERENCES dbo.MOUSE (Nro_Serie_Mouse),
+    CONSTRAINT FK_Accesorio_Parlante
+        FOREIGN KEY (Nro_Serie_Parlante)
+        REFERENCES dbo.PARLANTE (Nro_Serie_Parlante)
+);
+GO
+
+-- ============================================================
+-- TABLA CENTRAL
+-- ============================================================
+
+CREATE TABLE dbo.EQUIPO_INVENTARIO (
+    Id_Inventario     INT           NOT NULL IDENTITY(1,1),
+    Id_Accesorio      INT           NOT NULL,
+    Id_Software       INT           NOT NULL,
+    Id_Codigo_Almacen INT           NOT NULL,
+    Codigo_Anidesk    NVARCHAR(50)  NOT NULL,
+    Id_General        INT           NOT NULL,
+    Id_Harware        INT           NOT NULL,
+    CONSTRAINT PK_EquipoInventario PRIMARY KEY (Id_Inventario),
+    CONSTRAINT FK_EqInv_Accesorio
+        FOREIGN KEY (Id_Accesorio)      REFERENCES dbo.ACCESORIO (Id_Accesorio),
+    CONSTRAINT FK_EqInv_Software
+        FOREIGN KEY (Id_Software)       REFERENCES dbo.SOFTWARE (Id_Software),
+    CONSTRAINT FK_EqInv_Almacen
+        FOREIGN KEY (Id_Codigo_Almacen) REFERENCES dbo.ALMACEN (Id_Codigo_Almacen),
+    CONSTRAINT FK_EqInv_AccesoRemoto
+        FOREIGN KEY (Codigo_Anidesk)    REFERENCES dbo.ACCESO_REMOTO (Codigo_Anidesk),
+    CONSTRAINT FK_EqInv_General
+        FOREIGN KEY (Id_General)        REFERENCES dbo.GENERAL (Id_General),
+    CONSTRAINT FK_EqInv_Harware
+        FOREIGN KEY (Id_Harware)        REFERENCES dbo.HARWARE (Id_Harware)
+);
+GO
+
+PRINT '>>> 15 tablas creadas correctamente.';
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN SISTEMA_OPERATIVO
+-- ============================================================
+
+INSERT INTO dbo.SISTEMA_OPERATIVO (Sistema_Operativo, Sistema_Licencia) VALUES
+('Windows 11 Pro',              'Licencia OEM'),
+('Windows 11 Home',             'Licencia OEM'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 10 Home',             'Licencia OEM'),
+('Windows 10 Pro',              'Licencia por Volumen'),
+('Windows 11 Pro',              'Licencia por Volumen'),
+('Windows 10 Enterprise',       'Licencia por Volumen'),
+('Windows 11 Enterprise',       'Licencia por Volumen'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 11 Pro',              'Licencia OEM'),
+('Windows 10 Home',             'Licencia OEM'),
+('Windows 11 Home',             'Licencia OEM'),
+('Windows 10 Pro',              'Licencia por Volumen'),
+('Windows 11 Pro',              'Licencia por Volumen'),
+('Windows 10 Enterprise',       'Licencia por Volumen'),
+('Windows 11 Enterprise',       'Licencia por Volumen'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 11 Pro',              'Licencia OEM'),
+('Windows 10 Pro',              'Licencia por Volumen'),
+('Windows 11 Pro',              'Licencia por Volumen'),
+('Windows 10 Home',             'Licencia OEM'),
+('Windows 11 Home',             'Licencia OEM'),
+('Windows 10 Enterprise',       'Licencia por Volumen'),
+('Windows 11 Enterprise',       'Licencia por Volumen'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 11 Pro',              'Licencia OEM'),
+('Windows 10 Pro',              'Licencia por Volumen'),
+('Windows 11 Pro',              'Licencia por Volumen'),
+('Windows 10 Home',             'Licencia OEM'),
+('Windows 11 Home',             'Licencia OEM'),
+('Windows 10 Enterprise',       'Licencia por Volumen'),
+('Windows 11 Enterprise',       'Licencia por Volumen'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 11 Pro',              'Licencia OEM'),
+('Windows 10 Pro',              'Licencia por Volumen'),
+('Windows 11 Pro',              'Licencia por Volumen'),
+('Windows 10 Home',             'Licencia OEM'),
+('Windows 11 Home',             'Licencia OEM'),
+('Windows 10 Enterprise',       'Licencia por Volumen'),
+('Windows 11 Enterprise',       'Licencia por Volumen'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 11 Pro',              'Licencia OEM'),
+('Windows 10 Pro',              'Licencia por Volumen'),
+('Windows 11 Pro',              'Licencia por Volumen'),
+('Windows 10 Home',             'Licencia OEM'),
+('Windows 11 Home',             'Licencia OEM'),
+('Windows 10 Enterprise',       'Licencia por Volumen'),
+('Windows 11 Enterprise',       'Licencia por Volumen'),
+('Windows 10 Pro',              'Licencia OEM'),
+('Windows 11 Pro',              'Licencia OEM');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN ALMACEN
+-- ============================================================
+
+INSERT INTO dbo.ALMACEN (Dependencia, Fecha, Codigo_Tecnologia, Usuario) VALUES
+('Gerencia General',                        '2025-01-10', 'TEC-001', 'admin.sistemas'),
+('Subgerencia de Administracion',           '2025-01-10', 'TEC-002', 'admin.sistemas'),
+('Oficina de Recursos Humanos',             '2025-01-11', 'TEC-003', 'admin.sistemas'),
+('Oficina de Contabilidad',                 '2025-01-11', 'TEC-004', 'admin.sistemas'),
+('Oficina de Tesoreria',                    '2025-01-12', 'TEC-005', 'admin.sistemas'),
+('Oficina de Logistica',                    '2025-01-12', 'TEC-006', 'admin.sistemas'),
+('Oficina de Abastecimiento',               '2025-01-13', 'TEC-007', 'admin.sistemas'),
+('Oficina de Presupuesto',                  '2025-01-13', 'TEC-008', 'admin.sistemas'),
+('Oficina de Planificacion',                '2025-01-14', 'TEC-009', 'admin.sistemas'),
+('Oficina de Estadistica e Informatica',    '2025-01-14', 'TEC-010', 'admin.sistemas'),
+('Unidad de Tecnologia de Informacion',     '2025-01-15', 'TEC-011', 'it.soporte'),
+('Oficina de Asesoria Juridica',            '2025-01-15', 'TEC-012', 'admin.sistemas'),
+('Oficina de Comunicaciones',               '2025-01-16', 'TEC-013', 'admin.sistemas'),
+('Oficina de Imagen Institucional',         '2025-01-16', 'TEC-014', 'admin.sistemas'),
+('Unidad de Archivo Central',               '2025-01-17', 'TEC-015', 'admin.sistemas'),
+('Subgerencia de Operaciones',              '2025-01-17', 'TEC-016', 'jefe.operaciones'),
+('Departamento de Produccion',              '2025-01-20', 'TEC-017', 'jefe.operaciones'),
+('Departamento de Control de Calidad',      '2025-01-20', 'TEC-018', 'jefe.operaciones'),
+('Departamento de Mantenimiento',           '2025-01-21', 'TEC-019', 'jefe.mantenimiento'),
+('Departamento de Seguridad',               '2025-01-21', 'TEC-020', 'admin.sistemas'),
+('Unidad de Proyectos Especiales',          '2025-01-22', 'TEC-021', 'jefe.proyectos'),
+('Oficina de Gestion Ambiental',            '2025-01-22', 'TEC-022', 'admin.sistemas'),
+('Oficina de Bienestar Social',             '2025-01-23', 'TEC-023', 'admin.sistemas'),
+('Unidad de Capacitacion',                  '2025-01-23', 'TEC-024', 'admin.sistemas'),
+('Departamento de Ventas',                  '2025-01-24', 'TEC-025', 'jefe.ventas'),
+('Departamento de Marketing',               '2025-01-24', 'TEC-026', 'jefe.ventas'),
+('Oficina de Atencion al Cliente',          '2025-01-27', 'TEC-027', 'jefe.ventas'),
+('Departamento de Compras',                 '2025-01-27', 'TEC-028', 'jefe.logistica'),
+('Almacen Central',                         '2025-01-28', 'TEC-029', 'jefe.logistica'),
+('Almacen Secundario Norte',                '2025-01-28', 'TEC-030', 'jefe.logistica'),
+('Subgerencia de Finanzas',                 '2025-01-29', 'TEC-031', 'gerente.finanzas'),
+('Unidad de Auditoria Interna',             '2025-01-29', 'TEC-032', 'gerente.finanzas'),
+('Oficina de Cobranzas',                    '2025-01-30', 'TEC-033', 'gerente.finanzas'),
+('Unidad de Facturacion',                   '2025-01-30', 'TEC-034', 'gerente.finanzas'),
+('Departamento de Creditos',                '2025-02-03', 'TEC-035', 'gerente.finanzas'),
+('Oficina de Relaciones Laborales',         '2025-02-03', 'TEC-036', 'admin.sistemas'),
+('Unidad de Nominas',                       '2025-02-04', 'TEC-037', 'admin.sistemas'),
+('Departamento de Ingenieria',              '2025-02-04', 'TEC-038', 'jefe.ingenieria'),
+('Laboratorio de Pruebas',                  '2025-02-05', 'TEC-039', 'jefe.ingenieria'),
+('Sala de Servidores Principal',            '2025-02-05', 'TEC-040', 'it.soporte'),
+('Sala de Servidores Secundaria',           '2025-02-06', 'TEC-041', 'it.soporte'),
+('Oficina de Helpdesk',                     '2025-02-06', 'TEC-042', 'it.soporte'),
+('Departamento de Desarrollo de Software',  '2025-02-07', 'TEC-043', 'it.desarrollo'),
+('Departamento de Base de Datos',           '2025-02-07', 'TEC-044', 'it.desarrollo'),
+('Unidad de Ciberseguridad',                '2025-02-10', 'TEC-045', 'it.seguridad'),
+('Oficina de Redes y Comunicaciones',       '2025-02-10', 'TEC-046', 'it.redes'),
+('Departamento de Investigacion',           '2025-02-11', 'TEC-047', 'jefe.investigacion'),
+('Unidad de Innovacion',                    '2025-02-11', 'TEC-048', 'jefe.investigacion'),
+('Sala de Conferencias Principal',          '2025-02-12', 'TEC-049', 'admin.sistemas'),
+('Recepcion y Mesa de Partes',              '2025-02-12', 'TEC-050', 'admin.sistemas');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN DISCO_DURO
+-- ============================================================
+
+INSERT INTO dbo.DISCO_DURO (DiscoDuro_Capacidad, DiscoDuro_Marca) VALUES
+('256 GB SSD',   'Samsung'),
+('512 GB SSD',   'Samsung'),
+('1 TB SSD',     'Samsung'),
+('256 GB SSD',   'Kingston'),
+('512 GB SSD',   'Kingston'),
+('1 TB SSD',     'Kingston'),
+('256 GB SSD',   'WD'),
+('512 GB SSD',   'WD'),
+('1 TB SSD',     'WD'),
+('2 TB HDD',     'WD'),
+('256 GB SSD',   'Crucial'),
+('512 GB SSD',   'Crucial'),
+('1 TB SSD',     'Crucial'),
+('500 GB HDD',   'Seagate'),
+('1 TB HDD',     'Seagate'),
+('2 TB HDD',     'Seagate'),
+('256 GB SSD',   'Toshiba'),
+('512 GB SSD',   'Toshiba'),
+('1 TB HDD',     'Toshiba'),
+('2 TB HDD',     'Toshiba'),
+('256 GB SSD',   'SanDisk'),
+('512 GB SSD',   'SanDisk'),
+('1 TB SSD',     'SanDisk'),
+('256 GB SSD',   'Samsung'),
+('512 GB SSD',   'Samsung'),
+('1 TB SSD',     'WD'),
+('2 TB HDD',     'Seagate'),
+('256 GB SSD',   'Kingston'),
+('512 GB SSD',   'Crucial'),
+('1 TB SSD',     'Samsung'),
+('256 GB SSD',   'WD'),
+('512 GB SSD',   'WD'),
+('1 TB SSD',     'Kingston'),
+('2 TB HDD',     'WD'),
+('256 GB SSD',   'Crucial'),
+('512 GB SSD',   'Samsung'),
+('1 TB HDD',     'Seagate'),
+('2 TB HDD',     'Toshiba'),
+('256 GB SSD',   'SanDisk'),
+('512 GB SSD',   'Crucial'),
+('1 TB SSD',     'WD'),
+('256 GB SSD',   'Samsung'),
+('512 GB SSD',   'Kingston'),
+('1 TB SSD',     'SanDisk'),
+('2 TB HDD',     'Seagate'),
+('256 GB SSD',   'Toshiba'),
+('512 GB SSD',   'WD'),
+('1 TB SSD',     'Samsung'),
+('2 TB HDD',     'WD'),
+('256 GB SSD',   'Crucial');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN PROCESADOR
+-- ============================================================
+
+INSERT INTO dbo.PROCESADOR (Procesador_Velocidad) VALUES
+('Intel Core i3-10100 3.6 GHz'),
+('Intel Core i3-12100 3.3 GHz'),
+('Intel Core i5-10400 2.9 GHz'),
+('Intel Core i5-11400 2.6 GHz'),
+('Intel Core i5-12400 2.5 GHz'),
+('Intel Core i5-13400 2.5 GHz'),
+('Intel Core i7-10700 2.9 GHz'),
+('Intel Core i7-11700 2.5 GHz'),
+('Intel Core i7-12700 2.1 GHz'),
+('Intel Core i7-13700 2.1 GHz'),
+('Intel Core i9-10900 2.8 GHz'),
+('Intel Core i9-12900 2.4 GHz'),
+('AMD Ryzen 3 3200G 3.6 GHz'),
+('AMD Ryzen 3 4300G 3.8 GHz'),
+('AMD Ryzen 5 3600 3.6 GHz'),
+('AMD Ryzen 5 4600G 3.7 GHz'),
+('AMD Ryzen 5 5600G 3.9 GHz'),
+('AMD Ryzen 5 5600X 3.7 GHz'),
+('AMD Ryzen 7 3700X 3.6 GHz'),
+('AMD Ryzen 7 5700G 3.8 GHz'),
+('AMD Ryzen 7 5800X 3.8 GHz'),
+('AMD Ryzen 9 5900X 3.7 GHz'),
+('AMD Ryzen 9 7900X 4.7 GHz'),
+('Intel Core i5-12400 2.5 GHz'),
+('Intel Core i5-13400 2.5 GHz'),
+('Intel Core i7-12700 2.1 GHz'),
+('Intel Core i7-13700 2.1 GHz'),
+('AMD Ryzen 5 5600G 3.9 GHz'),
+('AMD Ryzen 7 5800X 3.8 GHz'),
+('Intel Core i3-12100 3.3 GHz'),
+('Intel Core i5-11400 2.6 GHz'),
+('Intel Core i5-12400 2.5 GHz'),
+('Intel Core i7-11700 2.5 GHz'),
+('Intel Core i7-12700 2.1 GHz'),
+('AMD Ryzen 5 5600X 3.7 GHz'),
+('AMD Ryzen 7 5700G 3.8 GHz'),
+('Intel Core i5-13400 2.5 GHz'),
+('Intel Core i7-13700 2.1 GHz'),
+('AMD Ryzen 5 5600G 3.9 GHz'),
+('AMD Ryzen 9 5900X 3.7 GHz'),
+('Intel Core i3-10100 3.6 GHz'),
+('Intel Core i5-10400 2.9 GHz'),
+('Intel Core i7-10700 2.9 GHz'),
+('AMD Ryzen 3 4300G 3.8 GHz'),
+('AMD Ryzen 5 4600G 3.7 GHz'),
+('Intel Core i5-12400 2.5 GHz'),
+('Intel Core i7-12700 2.1 GHz'),
+('AMD Ryzen 5 5600X 3.7 GHz'),
+('AMD Ryzen 7 5800X 3.8 GHz'),
+('Intel Core i9-12900 2.4 GHz');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN GPU
+-- ============================================================
+
+INSERT INTO dbo.GPU (GPU_Memoria) VALUES
+('Intel UHD Graphics 630 - 2 GB compartida'),
+('Intel UHD Graphics 730 - 2 GB compartida'),
+('Intel UHD Graphics 770 - 2 GB compartida'),
+('AMD Radeon RX 550 - 2 GB GDDR5'),
+('AMD Radeon RX 560 - 4 GB GDDR5'),
+('AMD Radeon RX 570 - 4 GB GDDR5'),
+('AMD Radeon RX 580 - 8 GB GDDR5'),
+('NVIDIA GeForce GT 710 - 2 GB DDR3'),
+('NVIDIA GeForce GT 1030 - 2 GB GDDR5'),
+('NVIDIA GeForce GTX 1050 Ti - 4 GB GDDR5'),
+('NVIDIA GeForce GTX 1060 - 6 GB GDDR5'),
+('NVIDIA GeForce GTX 1650 - 4 GB GDDR6'),
+('NVIDIA GeForce GTX 1660 - 6 GB GDDR5'),
+('NVIDIA GeForce RTX 2060 - 6 GB GDDR6'),
+('NVIDIA GeForce RTX 3050 - 8 GB GDDR6'),
+('AMD Radeon RX 6600 - 8 GB GDDR6'),
+('NVIDIA GeForce RTX 3060 - 12 GB GDDR6'),
+('AMD Radeon (Ryzen) - 512 MB integrada'),
+('AMD Radeon (Ryzen) - 1 GB integrada'),
+('Intel UHD Graphics 630 - 2 GB compartida'),
+('Intel UHD Graphics 730 - 2 GB compartida'),
+('NVIDIA GeForce GT 1030 - 2 GB GDDR5'),
+('NVIDIA GeForce GTX 1050 Ti - 4 GB GDDR5'),
+('NVIDIA GeForce GTX 1650 - 4 GB GDDR6'),
+('AMD Radeon RX 570 - 4 GB GDDR5'),
+('AMD Radeon RX 580 - 8 GB GDDR5'),
+('NVIDIA GeForce RTX 2060 - 6 GB GDDR6'),
+('NVIDIA GeForce RTX 3050 - 8 GB GDDR6'),
+('Intel UHD Graphics 770 - 2 GB compartida'),
+('AMD Radeon RX 560 - 4 GB GDDR5'),
+('NVIDIA GeForce GTX 1660 - 6 GB GDDR5'),
+('NVIDIA GeForce RTX 3060 - 12 GB GDDR6'),
+('AMD Radeon RX 6600 - 8 GB GDDR6'),
+('Intel UHD Graphics 630 - 2 GB compartida'),
+('AMD Radeon (Ryzen) - 512 MB integrada'),
+('NVIDIA GeForce GT 710 - 2 GB DDR3'),
+('Intel UHD Graphics 730 - 2 GB compartida'),
+('NVIDIA GeForce GTX 1050 Ti - 4 GB GDDR5'),
+('AMD Radeon RX 550 - 2 GB GDDR5'),
+('NVIDIA GeForce GTX 1650 - 4 GB GDDR6'),
+('Intel UHD Graphics 770 - 2 GB compartida'),
+('NVIDIA GeForce RTX 3050 - 8 GB GDDR6'),
+('AMD Radeon RX 580 - 8 GB GDDR5'),
+('NVIDIA GeForce GTX 1060 - 6 GB GDDR5'),
+('AMD Radeon RX 6600 - 8 GB GDDR6'),
+('NVIDIA GeForce RTX 3060 - 12 GB GDDR6'),
+('Intel UHD Graphics 630 - 2 GB compartida'),
+('AMD Radeon (Ryzen) - 1 GB integrada'),
+('NVIDIA GeForce GTX 1660 - 6 GB GDDR5'),
+('AMD Radeon RX 570 - 4 GB GDDR5');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN GENERAL
+-- ============================================================
+
+INSERT INTO dbo.GENERAL (Observacion, Estado, Firma) VALUES
+('Equipo en buen estado, sin observaciones.',          'Operativo',       'Juan Perez Quispe'),
+('Pantalla con leve rayado en el bisel.',               'Operativo',       'Maria Gutierrez Lima'),
+('Teclado con tecla Intro algo desgastada.',            'Operativo',       'Carlos Ramos Torres'),
+('Equipo recibido en perfectas condiciones.',           'Operativo',       'Ana Flores Diaz'),
+('Mouse con doble clic intermitente.',                  'En Mantenimiento','Luis Chavez Vega'),
+('Sin observaciones al momento del inventario.',        'Operativo',       'Rosa Mendoza Pari'),
+('CPU con ruido leve en el ventilador.',                'En Mantenimiento','Pedro Huanca Rios'),
+('Equipo asignado a personal nuevo.',                   'Operativo',       'Elena Ccari Mamani'),
+('Parlante izquierdo sin sonido.',                      'En Mantenimiento','Jorge Quispe Huallpa'),
+('Equipo en perfecto estado de funcionamiento.',        'Operativo',       'Sandra Lozano Cruz'),
+('Monitor con pixel muerto en esquina inferior.',       'Operativo',       'Miguel Avendano Salas'),
+('Equipo recondicionado, operativo al 100%.',           'Operativo',       'Patricia Torres Yucra'),
+('Cable de alimentacion deteriorado, reemplazado.',     'Operativo',       'Raul Condori Apaza'),
+('Sin observaciones.',                                  'Operativo',       'Lucia Vargas Soto'),
+('Equipo de baja, pendiente de retiro.',                'De Baja',         'Omar Huanca Leon'),
+('Disco duro con sectores defectuosos leves.',          'En Mantenimiento','Beatriz Quispe Coa'),
+('Equipo operativo, asignado a practicante.',           'Operativo',       'Fernando Silva Marca'),
+('Sin observaciones al momento del inventario.',        'Operativo',       'Gabriela Pinto Lazo'),
+('RAM ampliada de 4 GB a 8 GB.',                        'Operativo',       'Hector Mamani Cori'),
+('Monitor externo reemplazado por falla.',              'Operativo',       'Isabel Quispe Flores'),
+('Equipo en almacen, pendiente de asignacion.',         'En Almacen',      'Jose Tapia Ramos'),
+('Sin observaciones.',                                  'Operativo',       'Carmen Apaza Tito'),
+('Teclado reemplazado por derrame de liquido.',         'Operativo',       'Antonio Marca Huanca'),
+('Equipo recibido de otra dependencia.',                'Operativo',       'Nadia Quispe Solano'),
+('Ventilador de CPU reemplazado.',                      'Operativo',       'Victor Caro Diaz'),
+('Sin observaciones.',                                  'Operativo',       'Silvia Ramos Quispe'),
+('Equipo de baja por obsolescencia.',                   'De Baja',         'Roberto Layme Torres'),
+('Mouse inalambrico sin receptor USB.',                 'En Mantenimiento','Diana Cruz Pinto'),
+('Equipo en perfectas condiciones.',                    'Operativo',       'Ernesto Huanca Puma'),
+('Sin observaciones al momento del inventario.',        'Operativo',       'Veronica Quispe Ccoa'),
+('Fuente de poder reemplazada.',                        'Operativo',       'Marco Flores Apaza'),
+('Equipo asignado a jefatura.',                         'Operativo',       'Claudia Mamani Ramos'),
+('Sin observaciones.',                                  'Operativo',       'Andres Tapia Cori'),
+('Pantalla con brillo irregular en extremo derecho.',   'En Mantenimiento','Paola Quispe Lima'),
+('Equipo en almacen, sin asignar.',                     'En Almacen',      'Sebastian Cruz Vega'),
+('Sin observaciones.',                                  'Operativo',       'Natalia Ramos Diaz'),
+('Equipo recondicionado tras mantenimiento mayor.',     'Operativo',       'Guillermo Pinto Salas'),
+('USB trasero sin funcionar, reparado.',                'Operativo',       'Angela Huanca Rios'),
+('Sin observaciones.',                                  'Operativo',       'Cristian Quispe Leon'),
+('Equipo de baja, sin componentes utiles.',             'De Baja',         'Miriam Torres Yucra'),
+('Sin observaciones al momento del inventario.',        'Operativo',       'Nicolas Condori Apaza'),
+('Equipo asignado a practicante de IT.',                'Operativo',       'Valeria Vargas Soto'),
+('Teclado con teclas faltantes, reemplazado.',          'Operativo',       'Diego Silva Marca'),
+('Sin observaciones.',                                  'Operativo',       'Alejandra Pinto Lazo'),
+('Equipo en almacen esperando reparacion.',             'En Almacen',      'Fabian Mamani Cori'),
+('Sin observaciones.',                                  'Operativo',       'Lorena Quispe Flores'),
+('Monitor reemplazado por pantalla rota.',              'Operativo',       'Rodrigo Tapia Ramos'),
+('Sin observaciones al momento del inventario.',        'Operativo',       'Stephanie Apaza Tito'),
+('Equipo con bateria interna de BIOS agotada.',         'En Mantenimiento','Javier Marca Huanca'),
+('Sin observaciones.',                                  'Operativo',       'Monica Quispe Solano');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN MONITOR
+-- ============================================================
+
+INSERT INTO dbo.MONITOR (Nro_Serie_Monitor, Modelo, Marca) VALUES
+('MON-2025-001', 'V246HQL',          'Acer'),
+('MON-2025-002', 'V246HQL',          'Acer'),
+('MON-2025-003', 'K242HQL',          'Acer'),
+('MON-2025-004', 'HP V22i G5',       'HP'),
+('MON-2025-005', 'HP V24i G5',       'HP'),
+('MON-2025-006', 'HP P24h G5',       'HP'),
+('MON-2025-007', 'HP P27h G5',       'HP'),
+('MON-2025-008', 'E2223HN',          'Dell'),
+('MON-2025-009', 'E2423HN',          'Dell'),
+('MON-2025-010', 'P2422H',           'Dell'),
+('MON-2025-011', 'S2421HN',          'Dell'),
+('MON-2025-012', 'LG 22MK430H',      'LG'),
+('MON-2025-013', 'LG 24MK430H',      'LG'),
+('MON-2025-014', 'LG 27MK600M',      'LG'),
+('MON-2025-015', 'Samsung F24T350',   'Samsung'),
+('MON-2025-016', 'Samsung F27T350',   'Samsung'),
+('MON-2025-017', 'Samsung S24R350',   'Samsung'),
+('MON-2025-018', 'Viewsonic VA2431',  'ViewSonic'),
+('MON-2025-019', 'Viewsonic VA2715',  'ViewSonic'),
+('MON-2025-020', 'AOC 22B2HM',        'AOC'),
+('MON-2025-021', 'AOC 24B2XH',        'AOC'),
+('MON-2025-022', 'AOC 27B2H',         'AOC'),
+('MON-2025-023', 'V246HQL',          'Acer'),
+('MON-2025-024', 'HP V22i G5',       'HP'),
+('MON-2025-025', 'E2423HN',          'Dell'),
+('MON-2025-026', 'LG 22MK430H',      'LG'),
+('MON-2025-027', 'Samsung F24T350',   'Samsung'),
+('MON-2025-028', 'Viewsonic VA2431',  'ViewSonic'),
+('MON-2025-029', 'AOC 22B2HM',        'AOC'),
+('MON-2025-030', 'HP V24i G5',       'HP'),
+('MON-2025-031', 'P2422H',           'Dell'),
+('MON-2025-032', 'LG 24MK430H',      'LG'),
+('MON-2025-033', 'Samsung F27T350',   'Samsung'),
+('MON-2025-034', 'AOC 24B2XH',        'AOC'),
+('MON-2025-035', 'K242HQL',          'Acer'),
+('MON-2025-036', 'HP P24h G5',       'HP'),
+('MON-2025-037', 'E2223HN',          'Dell'),
+('MON-2025-038', 'LG 27MK600M',      'LG'),
+('MON-2025-039', 'Samsung S24R350',   'Samsung'),
+('MON-2025-040', 'Viewsonic VA2715',  'ViewSonic'),
+('MON-2025-041', 'AOC 27B2H',         'AOC'),
+('MON-2025-042', 'HP P27h G5',       'HP'),
+('MON-2025-043', 'S2421HN',          'Dell'),
+('MON-2025-044', 'LG 22MK430H',      'LG'),
+('MON-2025-045', 'Samsung F24T350',   'Samsung'),
+('MON-2025-046', 'AOC 22B2HM',        'AOC'),
+('MON-2025-047', 'V246HQL',          'Acer'),
+('MON-2025-048', 'HP V22i G5',       'HP'),
+('MON-2025-049', 'E2423HN',          'Dell'),
+('MON-2025-050', 'LG 24MK430H',      'LG');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN TECLADO
+-- ============================================================
+
+INSERT INTO dbo.TECLADO (Nro_Serie_Teclado, Modelo) VALUES
+('TEC-KB-001', 'Logitech K120'),
+('TEC-KB-002', 'Logitech K120'),
+('TEC-KB-003', 'Logitech K270 Inalambrico'),
+('TEC-KB-004', 'Logitech MK270 Combo'),
+('TEC-KB-005', 'HP Classic Wired KB'),
+('TEC-KB-006', 'HP Classic Wired KB'),
+('TEC-KB-007', 'HP 125 Wired KB'),
+('TEC-KB-008', 'Dell KB216 Wired'),
+('TEC-KB-009', 'Dell KB216 Wired'),
+('TEC-KB-010', 'Dell KM636 Inalambrico'),
+('TEC-KB-011', 'Microsoft Wired KB 600'),
+('TEC-KB-012', 'Microsoft Wired KB 600'),
+('TEC-KB-013', 'Genius KB-100'),
+('TEC-KB-014', 'Genius SlimStar 126'),
+('TEC-KB-015', 'Genius SlimStar 126'),
+('TEC-KB-016', 'A4Tech KK-3'),
+('TEC-KB-017', 'A4Tech FK10'),
+('TEC-KB-018', 'Lenovo Essential Wired'),
+('TEC-KB-019', 'Lenovo Essential Wired'),
+('TEC-KB-020', 'Logitech K120'),
+('TEC-KB-021', 'HP Classic Wired KB'),
+('TEC-KB-022', 'Dell KB216 Wired'),
+('TEC-KB-023', 'Microsoft Wired KB 600'),
+('TEC-KB-024', 'Genius KB-100'),
+('TEC-KB-025', 'Logitech K270 Inalambrico'),
+('TEC-KB-026', 'HP 125 Wired KB'),
+('TEC-KB-027', 'Dell KM636 Inalambrico'),
+('TEC-KB-028', 'A4Tech KK-3'),
+('TEC-KB-029', 'Logitech MK270 Combo'),
+('TEC-KB-030', 'Lenovo Essential Wired'),
+('TEC-KB-031', 'Logitech K120'),
+('TEC-KB-032', 'HP Classic Wired KB'),
+('TEC-KB-033', 'Dell KB216 Wired'),
+('TEC-KB-034', 'Genius SlimStar 126'),
+('TEC-KB-035', 'A4Tech FK10'),
+('TEC-KB-036', 'Microsoft Wired KB 600'),
+('TEC-KB-037', 'Logitech K120'),
+('TEC-KB-038', 'HP 125 Wired KB'),
+('TEC-KB-039', 'Dell KB216 Wired'),
+('TEC-KB-040', 'Genius KB-100'),
+('TEC-KB-041', 'Logitech MK270 Combo'),
+('TEC-KB-042', 'A4Tech KK-3'),
+('TEC-KB-043', 'Lenovo Essential Wired'),
+('TEC-KB-044', 'Logitech K270 Inalambrico'),
+('TEC-KB-045', 'Dell KM636 Inalambrico'),
+('TEC-KB-046', 'Microsoft Wired KB 600'),
+('TEC-KB-047', 'HP Classic Wired KB'),
+('TEC-KB-048', 'Genius SlimStar 126'),
+('TEC-KB-049', 'Logitech K120'),
+('TEC-KB-050', 'A4Tech FK10');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN MOUSE
+-- ============================================================
+
+INSERT INTO dbo.MOUSE (Nro_Serie_Mouse, Modelo) VALUES
+('MOU-2025-001', 'Logitech B100'),
+('MOU-2025-002', 'Logitech B100'),
+('MOU-2025-003', 'Logitech M100'),
+('MOU-2025-004', 'Logitech M185 Inalambrico'),
+('MOU-2025-005', 'HP X500 Wired'),
+('MOU-2025-006', 'HP X500 Wired'),
+('MOU-2025-007', 'HP Wireless Mouse 200'),
+('MOU-2025-008', 'Dell MS116 Wired'),
+('MOU-2025-009', 'Dell MS116 Wired'),
+('MOU-2025-010', 'Dell WM126 Inalambrico'),
+('MOU-2025-011', 'Microsoft Basic Optical Mouse'),
+('MOU-2025-012', 'Microsoft Basic Optical Mouse'),
+('MOU-2025-013', 'Genius DX-110'),
+('MOU-2025-014', 'Genius NX-110'),
+('MOU-2025-015', 'A4Tech OP-560'),
+('MOU-2025-016', 'A4Tech G3-200N Inalambrico'),
+('MOU-2025-017', 'Lenovo Optical Mouse'),
+('MOU-2025-018', 'Lenovo Optical Mouse'),
+('MOU-2025-019', 'Rapoo M10 Inalambrico'),
+('MOU-2025-020', 'Logitech B100'),
+('MOU-2025-021', 'HP X500 Wired'),
+('MOU-2025-022', 'Dell MS116 Wired'),
+('MOU-2025-023', 'Microsoft Basic Optical Mouse'),
+('MOU-2025-024', 'Genius DX-110'),
+('MOU-2025-025', 'Logitech M185 Inalambrico'),
+('MOU-2025-026', 'HP Wireless Mouse 200'),
+('MOU-2025-027', 'Dell WM126 Inalambrico'),
+('MOU-2025-028', 'A4Tech OP-560'),
+('MOU-2025-029', 'Logitech M100'),
+('MOU-2025-030', 'Lenovo Optical Mouse'),
+('MOU-2025-031', 'Logitech B100'),
+('MOU-2025-032', 'HP X500 Wired'),
+('MOU-2025-033', 'Dell MS116 Wired'),
+('MOU-2025-034', 'Genius NX-110'),
+('MOU-2025-035', 'A4Tech G3-200N Inalambrico'),
+('MOU-2025-036', 'Microsoft Basic Optical Mouse'),
+('MOU-2025-037', 'Logitech B100'),
+('MOU-2025-038', 'HP Wireless Mouse 200'),
+('MOU-2025-039', 'Dell MS116 Wired'),
+('MOU-2025-040', 'Genius DX-110'),
+('MOU-2025-041', 'Logitech M185 Inalambrico'),
+('MOU-2025-042', 'A4Tech OP-560'),
+('MOU-2025-043', 'Lenovo Optical Mouse'),
+('MOU-2025-044', 'Logitech M100'),
+('MOU-2025-045', 'Dell WM126 Inalambrico'),
+('MOU-2025-046', 'Microsoft Basic Optical Mouse'),
+('MOU-2025-047', 'HP X500 Wired'),
+('MOU-2025-048', 'Genius NX-110'),
+('MOU-2025-049', 'Logitech B100'),
+('MOU-2025-050', 'Rapoo M10 Inalambrico');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN PARLANTE
+-- ============================================================
+
+INSERT INTO dbo.PARLANTE (Nro_Serie_Parlante, Modelo) VALUES
+('PAR-2025-001', 'Logitech S120'),
+('PAR-2025-002', 'Logitech S120'),
+('PAR-2025-003', 'Logitech S150'),
+('PAR-2025-004', 'Genius SP-HF160'),
+('PAR-2025-005', 'Genius SP-HF160'),
+('PAR-2025-006', 'Genius SP-U115'),
+('PAR-2025-007', 'HP DHS-2101'),
+('PAR-2025-008', 'HP DHS-2101'),
+('PAR-2025-009', 'Creative SBS A35'),
+('PAR-2025-010', 'Creative SBS A35'),
+('PAR-2025-011', 'Anker A3143'),
+('PAR-2025-012', 'Anker A3143'),
+('PAR-2025-013', 'Edifier R1000T4'),
+('PAR-2025-014', 'Edifier R980T'),
+('PAR-2025-015', 'Sony SRS-XB13'),
+('PAR-2025-016', 'Logitech S120'),
+('PAR-2025-017', 'Genius SP-HF160'),
+('PAR-2025-018', 'HP DHS-2101'),
+('PAR-2025-019', 'Creative SBS A35'),
+('PAR-2025-020', 'Anker A3143'),
+('PAR-2025-021', 'Logitech S150'),
+('PAR-2025-022', 'Genius SP-U115'),
+('PAR-2025-023', 'Edifier R1000T4'),
+('PAR-2025-024', 'Sony SRS-XB13'),
+('PAR-2025-025', 'Logitech S120'),
+('PAR-2025-026', 'HP DHS-2101'),
+('PAR-2025-027', 'Genius SP-HF160'),
+('PAR-2025-028', 'Creative SBS A35'),
+('PAR-2025-029', 'Anker A3143'),
+('PAR-2025-030', 'Edifier R980T'),
+('PAR-2025-031', 'Logitech S120'),
+('PAR-2025-032', 'Genius SP-HF160'),
+('PAR-2025-033', 'HP DHS-2101'),
+('PAR-2025-034', 'Creative SBS A35'),
+('PAR-2025-035', 'Logitech S150'),
+('PAR-2025-036', 'Anker A3143'),
+('PAR-2025-037', 'Sony SRS-XB13'),
+('PAR-2025-038', 'Genius SP-U115'),
+('PAR-2025-039', 'Edifier R1000T4'),
+('PAR-2025-040', 'Logitech S120'),
+('PAR-2025-041', 'HP DHS-2101'),
+('PAR-2025-042', 'Genius SP-HF160'),
+('PAR-2025-043', 'Creative SBS A35'),
+('PAR-2025-044', 'Anker A3143'),
+('PAR-2025-045', 'Logitech S150'),
+('PAR-2025-046', 'Edifier R980T'),
+('PAR-2025-047', 'Sony SRS-XB13'),
+('PAR-2025-048', 'HP DHS-2101'),
+('PAR-2025-049', 'Logitech S120'),
+('PAR-2025-050', 'Genius SP-HF160');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN ACCESO_REMOTO
+-- ============================================================
+
+INSERT INTO dbo.ACCESO_REMOTO (Codigo_Anidesk, Contrasena) VALUES
+('AND-100001', 'Xk9#mP2!Lq'),
+('AND-100002', 'Rj7@nW5$Tz'),
+('AND-100003', 'Bv3!cQ8#Yw'),
+('AND-100004', 'Lp6$dR1@Nm'),
+('AND-100005', 'Hn2#eS4!Kx'),
+('AND-100006', 'Wq8@fT7$Oj'),
+('AND-100007', 'Mc5!gU9#Pb'),
+('AND-100008', 'Yd1$hV3@Rc'),
+('AND-100009', 'Zf4#iW6!Sd'),
+('AND-100010', 'Ak7@jX2$Te'),
+('AND-100011', 'Qn9!kY8#Uf'),
+('AND-100012', 'Vr3$lZ5@Wg'),
+('AND-100013', 'Cs6#mA1!Xh'),
+('AND-100014', 'Dt2@nB4$Yi'),
+('AND-100015', 'Eu8!oC7#Zj'),
+('AND-100016', 'Fw5$pD3@Ak'),
+('AND-100017', 'Gx1#qE9!Bl'),
+('AND-100018', 'Hy4@rF6$Cm'),
+('AND-100019', 'Iz7!sG2#Dn'),
+('AND-100020', 'Ja3$tH8@Eo'),
+('AND-100021', 'Kb6#uI5!Fp'),
+('AND-100022', 'Lc9@vJ1$Gq'),
+('AND-100023', 'Md2!wK4#Hr'),
+('AND-100024', 'Ne8$xL7@Is'),
+('AND-100025', 'Of5#yM3!Jt'),
+('AND-100026', 'Pg1@zN9$Ku'),
+('AND-100027', 'Qh4!aO6#Lv'),
+('AND-100028', 'Ri7$bP2@Mw'),
+('AND-100029', 'Sj3#cQ8!Nx'),
+('AND-100030', 'Tk9@dR5$Oy'),
+('AND-100031', 'Ul2!eS1#Pz'),
+('AND-100032', 'Vm6$fT4@Qa'),
+('AND-100033', 'Wn8#gU7!Rb'),
+('AND-100034', 'Xo5@hV3$Sc'),
+('AND-100035', 'Yp1!iW9#Td'),
+('AND-100036', 'Zq4$jX6@Ue'),
+('AND-100037', 'Ar7#kY2!Vf'),
+('AND-100038', 'Bs3@lZ8$Wg'),
+('AND-100039', 'Ct9!mA5#Xh'),
+('AND-100040', 'Du6$nB1@Yi'),
+('AND-100041', 'Ev2#oC4!Zj'),
+('AND-100042', 'Fw8@pD7$Ak'),
+('AND-100043', 'Gx5!qE3#Bl'),
+('AND-100044', 'Hy1$rF9@Cm'),
+('AND-100045', 'Iz4#sG6!Dn'),
+('AND-100046', 'Ja7@tH2$Eo'),
+('AND-100047', 'Kb3!uI8#Fp'),
+('AND-100048', 'Lc9$vJ5@Gq'),
+('AND-100049', 'Md2#wK1!Hr'),
+('AND-100050', 'Ne6@xL4$Is');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN SOFTWARE - depende de SISTEMA_OPERATIVO
+-- ============================================================
+
+INSERT INTO dbo.SOFTWARE (Id_Sistema_Operativo, Ofimatica, Antivirus, Navegador, Desarrollo, Disenio) VALUES
+(1,  'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(2,  'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(3,  'Microsoft Office 2019',     'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(4,  'LibreOffice 7.5',           'Windows Defender',  'Google Chrome',   NULL,              NULL),
+(5,  'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'Visual Studio',   NULL),
+(6,  'Microsoft Office 2021',     'ESET NOD32',        'Microsoft Edge',  'VS Code',         NULL),
+(7,  'Microsoft Office 2019',     'Kaspersky',         'Google Chrome',   'SQL Server 2019', NULL),
+(8,  'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              'Adobe Photoshop'),
+(9,  'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(10, 'Microsoft Office 2021',     'Windows Defender',  'Google Chrome',   NULL,              NULL),
+(11, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'VS Code',         NULL),
+(12, 'Microsoft Office 2019',     'Kaspersky',         'Mozilla Firefox', NULL,              NULL),
+(13, 'LibreOffice 7.5',           'Avast Free',        'Google Chrome',   NULL,              NULL),
+(14, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'Visual Studio',   NULL),
+(15, 'Microsoft Office 2019',     'Windows Defender',  'Microsoft Edge',  NULL,              NULL),
+(16, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   'SQL Server 2022', NULL),
+(17, 'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(18, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   NULL,              'Adobe Illustrator'),
+(19, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(20, 'Microsoft Office 2019',     'Windows Defender',  'Microsoft Edge',  NULL,              NULL),
+(21, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'VS Code',         NULL),
+(22, 'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(23, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(24, 'Microsoft Office 2019',     'ESET NOD32',        'Google Chrome',   NULL,              NULL),
+(25, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   'Visual Studio',   'Adobe Photoshop'),
+(26, 'LibreOffice 7.5',           'Windows Defender',  'Mozilla Firefox', NULL,              NULL),
+(27, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'SQL Server 2019', NULL),
+(28, 'Microsoft Office 2019',     'Kaspersky',         'Microsoft Edge',  NULL,              NULL),
+(29, 'Microsoft Office 2021',     'Avast Free',        'Google Chrome',   NULL,              NULL),
+(30, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'VS Code',         NULL),
+(31, 'LibreOffice 7.5',           'Windows Defender',  'Mozilla Firefox', NULL,              NULL),
+(32, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              'Adobe Illustrator'),
+(33, 'Microsoft Office 2019',     'ESET NOD32',        'Google Chrome',   NULL,              NULL),
+(34, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   'SQL Server 2022', NULL),
+(35, 'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(36, 'Microsoft Office 2021',     'Windows Defender',  'Google Chrome',   NULL,              NULL),
+(37, 'Microsoft Office 2021',     'ESET NOD32',        'Microsoft Edge',  'Visual Studio',   NULL),
+(38, 'Microsoft Office 2019',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(39, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'VS Code',         NULL),
+(40, 'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(41, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(42, 'Microsoft Office 2019',     'Windows Defender',  'Microsoft Edge',  NULL,              NULL),
+(43, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'SQL Server 2019', NULL),
+(44, 'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(45, 'Microsoft Office 2021',     'Kaspersky',         'Google Chrome',   NULL,              'Adobe Photoshop'),
+(46, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'VS Code',         NULL),
+(47, 'Microsoft Office 2019',     'Kaspersky',         'Google Chrome',   NULL,              NULL),
+(48, 'Microsoft Office 2021',     'Windows Defender',  'Microsoft Edge',  NULL,              NULL),
+(49, 'LibreOffice 7.5',           'Avast Free',        'Mozilla Firefox', NULL,              NULL),
+(50, 'Microsoft Office 2021',     'ESET NOD32',        'Google Chrome',   'Visual Studio',   NULL);
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN HARWARE - depende de DISCO_DURO, PROCESADOR, GPU
+-- ============================================================
+
+INSERT INTO dbo.HARWARE (Id_DiscoDuro, Codigo_Procesador, Codigo_GPU, Tipo, Marca_y_Modelo, Nro_de_Serie, Ram, Unidad_CD_DVDRW, Regulador) VALUES
+(1,  1,  1,  'Desktop', 'Lenovo ThinkCentre M70s',   'LEN-MC-20250001', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(2,  3,  3,  'Desktop', 'HP ProDesk 400 G7',         'HP-PD-20250002',  '8 GB DDR4',  NULL,       'APC 650VA'),
+(3,  5,  5,  'Desktop', 'Dell OptiPlex 3080',        'DEL-OP-20250003', '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(4,  2,  2,  'Desktop', 'Lenovo ThinkCentre M80s',   'LEN-MC-20250004', '8 GB DDR4',  NULL,       'APC 650VA'),
+(5,  7,  7,  'Desktop', 'HP ProDesk 600 G6',         'HP-PD-20250005',  '16 GB DDR4', 'DVD-RW',   'Soltek 1000VA'),
+(6,  9,  9,  'Desktop', 'Dell OptiPlex 5090',        'DEL-OP-20250006', '16 GB DDR4', NULL,       'APC 650VA'),
+(7,  11, 11, 'Desktop', 'HP EliteDesk 800 G6',       'HP-ED-20250007',  '32 GB DDR4', NULL,       'APC 1500VA'),
+(8,  13, 13, 'Desktop', 'Lenovo ThinkCentre M90s',   'LEN-MC-20250008', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(9,  4,  4,  'Desktop', 'Dell OptiPlex 3090',        'DEL-OP-20250009', '8 GB DDR4',  NULL,       'APC 650VA'),
+(10, 6,  6,  'Desktop', 'HP ProDesk 400 G8',         'HP-PD-20250010',  '16 GB DDR4', 'DVD-RW',   'Soltek 1000VA'),
+(11, 8,  8,  'Desktop', 'Dell OptiPlex 5080',        'DEL-OP-20250011', '16 GB DDR4', NULL,       'APC 650VA'),
+(12, 10, 10, 'Desktop', 'Lenovo ThinkCentre M70q',   'LEN-MC-20250012', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(13, 12, 12, 'Desktop', 'HP ProDesk 600 G5',         'HP-PD-20250013',  '16 GB DDR4', NULL,       'APC 650VA'),
+(14, 15, 15, 'Desktop', 'Dell Precision 3450',       'DEL-PR-20250014', '32 GB DDR4', NULL,       'APC 1500VA'),
+(15, 16, 16, 'Desktop', 'HP Z2 Tower G8',            'HP-Z2-20250015',  '32 GB DDR4', 'DVD-RW',   'APC 1500VA'),
+(16, 18, 18, 'Desktop', 'Lenovo ThinkStation P340',  'LEN-PS-20250016', '16 GB DDR4', NULL,       'Soltek 1200VA'),
+(17, 20, 20, 'Desktop', 'HP ProDesk 405 G8',         'HP-PD-20250017',  '8 GB DDR4',  NULL,       'APC 650VA'),
+(18, 22, 22, 'Desktop', 'Dell OptiPlex 7090',        'DEL-OP-20250018', '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(19, 14, 14, 'Desktop', 'Lenovo ThinkCentre M75s',   'LEN-MC-20250019', '8 GB DDR4',  NULL,       'APC 650VA'),
+(20, 17, 17, 'Desktop', 'HP ProDesk 400 G7',         'HP-PD-20250020',  '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(21, 19, 19, 'Desktop', 'Dell OptiPlex 5080',        'DEL-OP-20250021', '16 GB DDR4', 'DVD-RW',   'APC 650VA'),
+(22, 21, 21, 'Desktop', 'HP EliteDesk 705 G8',       'HP-ED-20250022',  '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(23, 23, 23, 'Desktop', 'Lenovo ThinkCentre M90s',   'LEN-MC-20250023', '32 GB DDR4', NULL,       'APC 1500VA'),
+(24, 25, 25, 'Desktop', 'Dell OptiPlex 3090',        'DEL-OP-20250024', '8 GB DDR4',  NULL,       'APC 650VA'),
+(25, 27, 27, 'Desktop', 'HP ProDesk 600 G6',         'HP-PD-20250025',  '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(26, 29, 29, 'Desktop', 'Dell OptiPlex 5090',        'DEL-OP-20250026', '16 GB DDR4', NULL,       'APC 650VA'),
+(27, 31, 31, 'Desktop', 'Lenovo ThinkCentre M80s',   'LEN-MC-20250027', '8 GB DDR4',  'DVD-RW',   'Soltek 1000VA'),
+(28, 33, 33, 'Desktop', 'HP ProDesk 400 G8',         'HP-PD-20250028',  '8 GB DDR4',  NULL,       'APC 650VA'),
+(29, 35, 35, 'Desktop', 'Dell OptiPlex 3080',        'DEL-OP-20250029', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(30, 37, 37, 'Desktop', 'HP ProDesk 600 G5',         'HP-PD-20250030',  '16 GB DDR4', NULL,       'APC 650VA'),
+(31, 39, 39, 'Desktop', 'Lenovo ThinkCentre M70q',   'LEN-MC-20250031', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(32, 41, 41, 'Desktop', 'Dell Precision 3450',       'DEL-PR-20250032', '32 GB DDR4', 'DVD-RW',   'APC 1500VA'),
+(33, 43, 43, 'Desktop', 'HP Z2 Tower G8',            'HP-Z2-20250033',  '32 GB DDR4', NULL,       'APC 1500VA'),
+(34, 45, 45, 'Desktop', 'Lenovo ThinkStation P340',  'LEN-PS-20250034', '16 GB DDR4', NULL,       'Soltek 1200VA'),
+(35, 47, 47, 'Desktop', 'HP ProDesk 405 G8',         'HP-PD-20250035',  '8 GB DDR4',  NULL,       'APC 650VA'),
+(36, 49, 49, 'Desktop', 'Dell OptiPlex 7090',        'DEL-OP-20250036', '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(37, 24, 24, 'Desktop', 'Lenovo ThinkCentre M75s',   'LEN-MC-20250037', '8 GB DDR4',  NULL,       'APC 650VA'),
+(38, 26, 26, 'Desktop', 'HP ProDesk 400 G7',         'HP-PD-20250038',  '16 GB DDR4', 'DVD-RW',   'Soltek 1000VA'),
+(39, 28, 28, 'Desktop', 'Dell OptiPlex 5080',        'DEL-OP-20250039', '16 GB DDR4', NULL,       'APC 650VA'),
+(40, 30, 30, 'Desktop', 'HP EliteDesk 705 G8',       'HP-ED-20250040',  '32 GB DDR4', NULL,       'APC 1500VA'),
+(41, 32, 32, 'Desktop', 'Lenovo ThinkCentre M90s',   'LEN-MC-20250041', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(42, 34, 34, 'Desktop', 'Dell OptiPlex 3090',        'DEL-OP-20250042', '8 GB DDR4',  NULL,       'APC 650VA'),
+(43, 36, 36, 'Desktop', 'HP ProDesk 600 G6',         'HP-PD-20250043',  '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(44, 38, 38, 'Desktop', 'Dell OptiPlex 5090',        'DEL-OP-20250044', '16 GB DDR4', 'DVD-RW',   'APC 650VA'),
+(45, 40, 40, 'Desktop', 'Lenovo ThinkCentre M80s',   'LEN-MC-20250045', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(46, 42, 42, 'Desktop', 'HP ProDesk 400 G8',         'HP-PD-20250046',  '8 GB DDR4',  NULL,       'APC 650VA'),
+(47, 44, 44, 'Desktop', 'Dell OptiPlex 3080',        'DEL-OP-20250047', '16 GB DDR4', NULL,       'Soltek 1000VA'),
+(48, 46, 46, 'Desktop', 'HP ProDesk 600 G5',         'HP-PD-20250048',  '16 GB DDR4', NULL,       'APC 650VA'),
+(49, 48, 48, 'Desktop', 'Lenovo ThinkCentre M70q',   'LEN-MC-20250049', '8 GB DDR4',  NULL,       'Soltek 1000VA'),
+(50, 50, 50, 'Desktop', 'Dell Precision 3450',       'DEL-PR-20250050', '32 GB DDR4', 'DVD-RW',   'APC 1500VA');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN ACCESORIO - depende de MONITOR, TECLADO, MOUSE, PARLANTE
+-- ============================================================
+
+INSERT INTO dbo.ACCESORIO (Nro_Serie_Monitor, Nro_Serie_Teclado, Nro_Serie_Mouse, Nro_Serie_Parlante) VALUES
+('MON-2025-001','TEC-KB-001','MOU-2025-001','PAR-2025-001'),
+('MON-2025-002','TEC-KB-002','MOU-2025-002','PAR-2025-002'),
+('MON-2025-003','TEC-KB-003','MOU-2025-003','PAR-2025-003'),
+('MON-2025-004','TEC-KB-004','MOU-2025-004','PAR-2025-004'),
+('MON-2025-005','TEC-KB-005','MOU-2025-005','PAR-2025-005'),
+('MON-2025-006','TEC-KB-006','MOU-2025-006','PAR-2025-006'),
+('MON-2025-007','TEC-KB-007','MOU-2025-007','PAR-2025-007'),
+('MON-2025-008','TEC-KB-008','MOU-2025-008','PAR-2025-008'),
+('MON-2025-009','TEC-KB-009','MOU-2025-009','PAR-2025-009'),
+('MON-2025-010','TEC-KB-010','MOU-2025-010','PAR-2025-010'),
+('MON-2025-011','TEC-KB-011','MOU-2025-011','PAR-2025-011'),
+('MON-2025-012','TEC-KB-012','MOU-2025-012','PAR-2025-012'),
+('MON-2025-013','TEC-KB-013','MOU-2025-013','PAR-2025-013'),
+('MON-2025-014','TEC-KB-014','MOU-2025-014','PAR-2025-014'),
+('MON-2025-015','TEC-KB-015','MOU-2025-015','PAR-2025-015'),
+('MON-2025-016','TEC-KB-016','MOU-2025-016','PAR-2025-016'),
+('MON-2025-017','TEC-KB-017','MOU-2025-017','PAR-2025-017'),
+('MON-2025-018','TEC-KB-018','MOU-2025-018','PAR-2025-018'),
+('MON-2025-019','TEC-KB-019','MOU-2025-019','PAR-2025-019'),
+('MON-2025-020','TEC-KB-020','MOU-2025-020','PAR-2025-020'),
+('MON-2025-021','TEC-KB-021','MOU-2025-021','PAR-2025-021'),
+('MON-2025-022','TEC-KB-022','MOU-2025-022','PAR-2025-022'),
+('MON-2025-023','TEC-KB-023','MOU-2025-023','PAR-2025-023'),
+('MON-2025-024','TEC-KB-024','MOU-2025-024','PAR-2025-024'),
+('MON-2025-025','TEC-KB-025','MOU-2025-025','PAR-2025-025'),
+('MON-2025-026','TEC-KB-026','MOU-2025-026','PAR-2025-026'),
+('MON-2025-027','TEC-KB-027','MOU-2025-027','PAR-2025-027'),
+('MON-2025-028','TEC-KB-028','MOU-2025-028','PAR-2025-028'),
+('MON-2025-029','TEC-KB-029','MOU-2025-029','PAR-2025-029'),
+('MON-2025-030','TEC-KB-030','MOU-2025-030','PAR-2025-030'),
+('MON-2025-031','TEC-KB-031','MOU-2025-031','PAR-2025-031'),
+('MON-2025-032','TEC-KB-032','MOU-2025-032','PAR-2025-032'),
+('MON-2025-033','TEC-KB-033','MOU-2025-033','PAR-2025-033'),
+('MON-2025-034','TEC-KB-034','MOU-2025-034','PAR-2025-034'),
+('MON-2025-035','TEC-KB-035','MOU-2025-035','PAR-2025-035'),
+('MON-2025-036','TEC-KB-036','MOU-2025-036','PAR-2025-036'),
+('MON-2025-037','TEC-KB-037','MOU-2025-037','PAR-2025-037'),
+('MON-2025-038','TEC-KB-038','MOU-2025-038','PAR-2025-038'),
+('MON-2025-039','TEC-KB-039','MOU-2025-039','PAR-2025-039'),
+('MON-2025-040','TEC-KB-040','MOU-2025-040','PAR-2025-040'),
+('MON-2025-041','TEC-KB-041','MOU-2025-041','PAR-2025-041'),
+('MON-2025-042','TEC-KB-042','MOU-2025-042','PAR-2025-042'),
+('MON-2025-043','TEC-KB-043','MOU-2025-043','PAR-2025-043'),
+('MON-2025-044','TEC-KB-044','MOU-2025-044','PAR-2025-044'),
+('MON-2025-045','TEC-KB-045','MOU-2025-045','PAR-2025-045'),
+('MON-2025-046','TEC-KB-046','MOU-2025-046','PAR-2025-046'),
+('MON-2025-047','TEC-KB-047','MOU-2025-047','PAR-2025-047'),
+('MON-2025-048','TEC-KB-048','MOU-2025-048','PAR-2025-048'),
+('MON-2025-049','TEC-KB-049','MOU-2025-049','PAR-2025-049'),
+('MON-2025-050','TEC-KB-050','MOU-2025-050','PAR-2025-050');
+GO
+
+-- ============================================================
+-- INSERTAR 50 DATOS EN EQUIPO_INVENTARIO - tabla central
+-- Relaciona: ACCESORIO, SOFTWARE, ALMACEN, ACCESO_REMOTO, GENERAL, HARWARE
+-- ============================================================
+
+INSERT INTO dbo.EQUIPO_INVENTARIO (Id_Accesorio, Id_Software, Id_Codigo_Almacen, Codigo_Anidesk, Id_General, Id_Harware) VALUES
+(1,  1,  1,  'AND-100001', 1,  1),
+(2,  2,  2,  'AND-100002', 2,  2),
+(3,  3,  3,  'AND-100003', 3,  3),
+(4,  4,  4,  'AND-100004', 4,  4),
+(5,  5,  5,  'AND-100005', 5,  5),
+(6,  6,  6,  'AND-100006', 6,  6),
+(7,  7,  7,  'AND-100007', 7,  7),
+(8,  8,  8,  'AND-100008', 8,  8),
+(9,  9,  9,  'AND-100009', 9,  9),
+(10, 10, 10, 'AND-100010', 10, 10),
+(11, 11, 11, 'AND-100011', 11, 11),
+(12, 12, 12, 'AND-100012', 12, 12),
+(13, 13, 13, 'AND-100013', 13, 13),
+(14, 14, 14, 'AND-100014', 14, 14),
+(15, 15, 15, 'AND-100015', 15, 15),
+(16, 16, 16, 'AND-100016', 16, 16),
+(17, 17, 17, 'AND-100017', 17, 17),
+(18, 18, 18, 'AND-100018', 18, 18),
+(19, 19, 19, 'AND-100019', 19, 19),
+(20, 20, 20, 'AND-100020', 20, 20),
+(21, 21, 21, 'AND-100021', 21, 21),
+(22, 22, 22, 'AND-100022', 22, 22),
+(23, 23, 23, 'AND-100023', 23, 23),
+(24, 24, 24, 'AND-100024', 24, 24),
+(25, 25, 25, 'AND-100025', 25, 25),
+(26, 26, 26, 'AND-100026', 26, 26),
+(27, 27, 27, 'AND-100027', 27, 27),
+(28, 28, 28, 'AND-100028', 28, 28),
+(29, 29, 29, 'AND-100029', 29, 29),
+(30, 30, 30, 'AND-100030', 30, 30),
+(31, 31, 31, 'AND-100031', 31, 31),
+(32, 32, 32, 'AND-100032', 32, 32),
+(33, 33, 33, 'AND-100033', 33, 33),
+(34, 34, 34, 'AND-100034', 34, 34),
+(35, 35, 35, 'AND-100035', 35, 35),
+(36, 36, 36, 'AND-100036', 36, 36),
+(37, 37, 37, 'AND-100037', 37, 37),
+(38, 38, 38, 'AND-100038', 38, 38),
+(39, 39, 39, 'AND-100039', 39, 39),
+(40, 40, 40, 'AND-100040', 40, 40),
+(41, 41, 41, 'AND-100041', 41, 41),
+(42, 42, 42, 'AND-100042', 42, 42),
+(43, 43, 43, 'AND-100043', 43, 43),
+(44, 44, 44, 'AND-100044', 44, 44),
+(45, 45, 45, 'AND-100045', 45, 45),
+(46, 46, 46, 'AND-100046', 46, 46),
+(47, 47, 47, 'AND-100047', 47, 47),
+(48, 48, 48, 'AND-100048', 48, 48),
+(49, 49, 49, 'AND-100049', 49, 49),
+(50, 50, 50, 'AND-100050', 50, 50);
+GO
+
+-- ============================================================
+-- VERIFICACION FINAL
+-- ============================================================
+
+SELECT 'SISTEMA_OPERATIVO' AS Tabla, COUNT(*) AS Registros FROM dbo.SISTEMA_OPERATIVO UNION ALL
+SELECT 'ALMACEN',           COUNT(*) FROM dbo.ALMACEN           UNION ALL
+SELECT 'DISCO_DURO',        COUNT(*) FROM dbo.DISCO_DURO         UNION ALL
+SELECT 'PROCESADOR',        COUNT(*) FROM dbo.PROCESADOR         UNION ALL
+SELECT 'GPU',               COUNT(*) FROM dbo.GPU                UNION ALL
+SELECT 'GENERAL',           COUNT(*) FROM dbo.GENERAL            UNION ALL
+SELECT 'MONITOR',           COUNT(*) FROM dbo.MONITOR            UNION ALL
+SELECT 'TECLADO',           COUNT(*) FROM dbo.TECLADO            UNION ALL
+SELECT 'MOUSE',             COUNT(*) FROM dbo.MOUSE              UNION ALL
+SELECT 'PARLANTE',          COUNT(*) FROM dbo.PARLANTE           UNION ALL
+SELECT 'ACCESO_REMOTO',     COUNT(*) FROM dbo.ACCESO_REMOTO      UNION ALL
+SELECT 'SOFTWARE',          COUNT(*) FROM dbo.SOFTWARE           UNION ALL
+SELECT 'HARWARE',           COUNT(*) FROM dbo.HARWARE            UNION ALL
+SELECT 'ACCESORIO',         COUNT(*) FROM dbo.ACCESORIO          UNION ALL
+SELECT 'EQUIPO_INVENTARIO', COUNT(*) FROM dbo.EQUIPO_INVENTARIO;
+GO
