@@ -433,7 +433,7 @@
 <section class="hero-unidades">
   <p class="subtitulo">✦ Base de Datos II</p>
   <h2>Unidades del Curso</h2>
-  <p>Semana 1 a 8 disponibles · Semana 9 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
+  <p>Semana 1 a 12 disponibles · Semana 13 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
 </section>
 
 <div class="divisor"></div>
@@ -488,7 +488,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD III</p>
       <h3>UNIDAD 03</h3>
-      <p>Programación en Base de Datos con PL/SQL. Contenido en preparación. (Semanas 9 a 12 - Próximamente)</p>
+      <p>Programación en Base de Datos con PL/SQL. (Semanas 9 a 12 disponibles)</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-3"></div>
@@ -614,6 +614,10 @@
     else if (i === 6) titulosPorSemanaGlobal[i] = "Base de Datos de Microsoft SQL Server 2022";
     else if (i === 7) titulosPorSemanaGlobal[i] = "Operaciones de Mantenimiento de Datos";
     else if (i === 8) titulosPorSemanaGlobal[i] = "Introducción a las Consultas";
+    else if (i === 9) titulosPorSemanaGlobal[i] = "...";
+    else if (i === 10) titulosPorSemanaGlobal[i] = "...";
+    else if (i === 11) titulosPorSemanaGlobal[i] = "...";
+    else if (i === 12) titulosPorSemanaGlobal[i] = "...";
     else titulosPorSemanaGlobal[i] = "--------- Próximamente ---------";
   }
 
@@ -625,7 +629,7 @@
     for (let s = 1; s <= 4; s++) {
       const globalWeek = (u - 1) * 4 + s;
       const tituloSemana = titulosPorSemanaGlobal[globalWeek];
-      const esPendiente = globalWeek >= 9;   // semanas 9 a 16 como pendientes (próximamente)
+      const esPendiente = globalWeek >= 13;   // semanas 13 a 16 como pendientes (próximamente)
       const card = document.createElement('div');
       card.className = `semana-card ${esPendiente ? 'pendiente' : ''}`;
       card.id = `u${u}s${s}`;
@@ -668,7 +672,7 @@
 
   function marcarSemanaCompletada(unidad, semana, completada) {
     const globalWeek = (unidad - 1) * 4 + semana;
-    if (globalWeek >= 9) return;
+    if (globalWeek >= 13) return;
     const card = document.getElementById(`u${unidad}s${semana}`);
     if (!card) return;
     semanasCompletadas[unidad][semana] = completada;
@@ -682,7 +686,7 @@
     let completadas = 0, totalActivas = 0;
     for (let s = 1; s <= 4; s++) {
       const gw = (unidad - 1) * 4 + s;
-      if (gw >= 9) continue;
+      if (gw >= 13) continue;
       totalActivas++;
       if (semanasCompletadas[unidad][s]) completadas++;
     }
@@ -708,7 +712,7 @@
 
   async function cargarArchivosGH(unidad, semana, forceReload = false) {
     const globalWeek = (unidad - 1) * 4 + semana;
-    if (globalWeek >= 9) return;
+    if (globalWeek >= 13) return;
     const slotId = `gh-u${unidad}s${semana}`;
     const container = document.getElementById(slotId);
     if (!container) return;
@@ -800,7 +804,7 @@
     const promesas = [];
     for (let u = 1; u <= 4; u++)
       for (let s = 1; s <= 4; s++)
-        if ((u-1)*4+s < 9) promesas.push(cargarArchivosGH(u, s, true));
+        if ((u-1)*4+s < 13) promesas.push(cargarArchivosGH(u, s, true));
     await Promise.all(promesas);
     for (let u = 1; u <= 4; u++) actualizarProgresoUnidad(u);
   }
@@ -817,9 +821,9 @@
     if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
 
     const heroP = document.querySelector('.hero-unidades p');
-    if (heroP) heroP.innerHTML = '✅ Semanas activas: 1 a 8. Cargando progreso...';
+    if (heroP) heroP.innerHTML = '✅ Semanas activas: 1 a 12. Cargando progreso...';
     await cargarEstadoInicial();
-    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 8 disponibles · Semanas 9 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
+    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 12 disponibles · Semanas 13 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
 
     const ua = localStorage.getItem('unidadActiva');
     if (ua && ua >= 1 && ua <= 4) {
