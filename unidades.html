@@ -433,7 +433,7 @@
 <section class="hero-unidades">
   <p class="subtitulo">✦ Base de Datos II</p>
   <h2>Unidades del Curso</h2>
-  <p>Semana 1 a 12 disponibles · Semana 13 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
+  <p>Semana 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
 </section>
 
 <div class="divisor"></div>
@@ -474,7 +474,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD II</p>
       <h3>UNIDAD 02</h3>
-      <p>SQL Server: introducción, administración, mantenimiento de datos y consultas. (Semanas 5 a 8 disponibles)</p>
+      <p>SQL Server: introducción, administración, mantenimiento de datos y consultas. (Semanas 5 a 8)</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-2"></div>
@@ -488,7 +488,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD III</p>
       <h3>UNIDAD 03</h3>
-      <p>Programación en Base de Datos con PL/SQL. (Semanas 9 a 12 disponibles)</p>
+      <p>Programación en Base de Datos con PL/SQL. (Semanas 9 a 12)</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-3"></div>
@@ -502,7 +502,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD IV</p>
       <h3>UNIDAD 04</h3>
-      <p>Administración, seguridad, transacciones y proyecto final. Material en desarrollo. (Semanas 13 a 16 - Próximamente)</p>
+      <p>Administración, seguridad, transacciones y proyecto final. (Semanas 13 a 16)</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-4"></div>
@@ -598,241 +598,4 @@
         previewEl.innerHTML = `<div class="gh-preview-no"><span>⚠️</span>No se pudo cargar el texto: ${e.message}</div>`;
       }
     } else {
-      previewEl.innerHTML = `<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong>Descargar</strong> para abrirlo.</div>`;
-    }
-  }
-
-  const semanasCompletadas = { 1:{}, 2:{}, 3:{}, 4:{} };
-
-  const titulosPorSemanaGlobal = {};
-  for (let i = 1; i <= 16; i++) {
-    if      (i === 1) titulosPorSemanaGlobal[i] = "Introducción a la Arquitectura de BD";
-    else if (i === 2) titulosPorSemanaGlobal[i] = "Gestor de BD";
-    else if (i === 3) titulosPorSemanaGlobal[i] = "Diseño de Arquitectura de BD";
-    else if (i === 4) titulosPorSemanaGlobal[i] = "Tipo de Arquitectura de BD";
-    else if (i === 5) titulosPorSemanaGlobal[i] = "Introducción a SQL Server";
-    else if (i === 6) titulosPorSemanaGlobal[i] = "Base de Datos de Microsoft SQL Server 2022";
-    else if (i === 7) titulosPorSemanaGlobal[i] = "Operaciones de Mantenimiento de Datos";
-    else if (i === 8) titulosPorSemanaGlobal[i] = "Introducción a las Consultas";
-    else if (i === 9) titulosPorSemanaGlobal[i] = "...";
-    else if (i === 10) titulosPorSemanaGlobal[i] = "...";
-    else if (i === 11) titulosPorSemanaGlobal[i] = "...";
-    else if (i === 12) titulosPorSemanaGlobal[i] = "...";
-    else titulosPorSemanaGlobal[i] = "--------- Próximamente ---------";
-  }
-
-  // Construir tarjetas
-  for (let u = 1; u <= 4; u++) {
-    const grid = document.getElementById(`semanas-grid-${u}`);
-    if (!grid) continue;
-    grid.innerHTML = '';
-    for (let s = 1; s <= 4; s++) {
-      const globalWeek = (u - 1) * 4 + s;
-      const tituloSemana = titulosPorSemanaGlobal[globalWeek];
-      const esPendiente = globalWeek >= 13;   // semanas 13 a 16 como pendientes (próximamente)
-      const card = document.createElement('div');
-      card.className = `semana-card ${esPendiente ? 'pendiente' : ''}`;
-      card.id = `u${u}s${s}`;
-
-      let bodyHTML = esPendiente
-        ? `<div class="semana-body"><div class="semana-body-inner">
-             <div class="proximamente-msg">
-               <span>⏳</span>
-               <strong>Contenido en preparación</strong>
-               <p>Los materiales y recursos de esta semana estarán disponibles próximamente.</p>
-             </div>
-           </div></div>`
-        : `<div class="semana-body"><div class="semana-body-inner">
-             <ul class="actividad-lista">
-               <li><span class="act-icono">📖</span>
-                 <div class="act-texto">
-                   <strong>Material y recursos</strong>
-                   Archivos subidos en GitHub (carpeta unidad${u}/semana${s}).
-                   <span class="badge badge-teoria">Teoría/Práctica</span>
-                 </div>
-               </li>
-             </ul>
-             <div class="gh-archivos-section">
-               <div class="gh-archivos-titulo">📎 Archivos</div>
-               <div id="gh-u${u}s${s}" class="gh-loading"><span class="gh-mini-spin"></span>Cargando...</div>
-             </div>
-           </div></div>`;
-
-      card.innerHTML = `
-        <div class="semana-header" onclick="toggleSemana('u${u}s${s}')">
-          <div class="semana-numero">S${globalWeek}</div>
-          <div class="semana-titulo">Semana ${globalWeek} — ${tituloSemana}</div>
-          <div class="semana-arrow">▼</div>
-        </div>
-        ${bodyHTML}
-      `;
-      grid.appendChild(card);
-    }
-  }
-
-  function marcarSemanaCompletada(unidad, semana, completada) {
-    const globalWeek = (unidad - 1) * 4 + semana;
-    if (globalWeek >= 13) return;
-    const card = document.getElementById(`u${unidad}s${semana}`);
-    if (!card) return;
-    semanasCompletadas[unidad][semana] = completada;
-    const numeroDiv = card.querySelector('.semana-numero');
-    if (completada) { card.classList.add('completada'); numeroDiv.textContent = '✓'; }
-    else { card.classList.remove('completada'); numeroDiv.textContent = `S${globalWeek}`; }
-    actualizarProgresoUnidad(unidad);
-  }
-
-  function actualizarProgresoUnidad(unidad) {
-    let completadas = 0, totalActivas = 0;
-    for (let s = 1; s <= 4; s++) {
-      const gw = (unidad - 1) * 4 + s;
-      if (gw >= 13) continue;
-      totalActivas++;
-      if (semanasCompletadas[unidad][s]) completadas++;
-    }
-    if (totalActivas === 0) totalActivas = 4;
-    const pct = Math.round((completadas / totalActivas) * 100);
-
-    const barra = document.getElementById(`barra-${unidad}`);
-    const pctSpan = document.getElementById(`pct-${unidad}`);
-    const textoSpan = document.getElementById(`texto-${unidad}`);
-    const dotsContainer = document.getElementById(`dots-${unidad}`);
-    const completadoDiv = document.getElementById(`completado-${unidad}`);
-
-    if (barra) barra.style.width = pct + '%';
-    if (pctSpan) pctSpan.textContent = pct + '%';
-    if (textoSpan) textoSpan.textContent = `${completadas} de ${totalActivas} semanas completadas`;
-    if (dotsContainer) {
-      dotsContainer.querySelectorAll('.sem-dot').forEach((d, i) => {
-        d.classList.toggle('hecha', i < completadas);
-      });
-    }
-    if (completadoDiv) completadoDiv.classList.toggle('visible', completadas === totalActivas && totalActivas > 0);
-  }
-
-  async function cargarArchivosGH(unidad, semana, forceReload = false) {
-    const globalWeek = (unidad - 1) * 4 + semana;
-    if (globalWeek >= 13) return;
-    const slotId = `gh-u${unidad}s${semana}`;
-    const container = document.getElementById(slotId);
-    if (!container) return;
-
-    if (!GH || !GH.owner || !GH.repo) {
-      container.className = '';
-      container.innerHTML = '<span class="gh-sin-archivos">Sin conexión a GitHub configurada</span>';
-      return;
-    }
-    if (container.getAttribute('data-loading') === 'true' && !forceReload) return;
-    container.setAttribute('data-loading', 'true');
-    container.className = 'gh-loading';
-    container.innerHTML = '<span class="gh-mini-spin"></span>Cargando...';
-
-    const fullPath = ghPath(`unidad${unidad}/semana${semana}`);
-    const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${fullPath}?ref=${GH.branch || 'main'}`;
-
-    try {
-      const headers = { 'Accept': 'application/vnd.github+json' };
-      if (GH.token) headers['Authorization'] = 'Bearer ' + GH.token;
-      const r = await fetch(url, { headers });
-
-      if (r.status === 404) {
-        container.className = '';
-        container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
-        marcarSemanaCompletada(unidad, semana, false);
-        container.removeAttribute('data-loading');
-        return;
-      }
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-
-      const items = await r.json();
-      const files = items.filter(i => i.type === 'file');
-
-      if (!files.length) {
-        container.className = '';
-        container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
-        marcarSemanaCompletada(unidad, semana, false);
-        container.removeAttribute('data-loading');
-        return;
-      }
-
-      marcarSemanaCompletada(unidad, semana, true);
-
-      container.className = '';
-      const ul = document.createElement('ul');
-      ul.className = 'gh-archivos-lista';
-
-      files.forEach((f, idx) => {
-        const previewId = `prev-${unidad}-${semana}-${idx}`;
-        const li = document.createElement('li');
-        li.className = 'gh-archivo-item';
-        li.innerHTML = `
-          <div class="gh-archivo-fila">
-            <span style="font-size:1.15em;flex-shrink:0">${fileEmoji(f.name)}</span>
-            <span class="gh-archivo-nombre">${f.name}</span>
-            <span class="gh-archivo-size">${fmtSize(f.size)}</span>
-            <div class="gh-acciones">
-              <button class="gh-btn gh-btn-ver" id="btn-${previewId}" onclick="togglePreview(this, document.getElementById('${previewId}'), '${f.download_url}', '${f.name}')">👁 Ver</button>
-              <a href="${f.download_url}" target="_blank" download class="gh-btn gh-btn-dl">↓ Descargar</a>
-            </div>
-          </div>
-          <div class="gh-preview" id="${previewId}"></div>
-        `;
-        ul.appendChild(li);
-      });
-
-      container.parentNode.replaceChild(ul, container);
-
-    } catch(e) {
-      container.className = '';
-      container.innerHTML = `<span style="color:#ff6b6b;font-size:.78em">Error al cargar: ${e.message}</span>`;
-      container.removeAttribute('data-loading');
-    }
-  }
-
-  window.toggleSemana = function(id) {
-    const card = document.getElementById(id);
-    if (!card) return;
-    card.classList.toggle('abierta');
-    const match = id.match(/^u(\d)s(\d)$/);
-    if (match && !card.classList.contains('pendiente') && card.classList.contains('abierta')) {
-      cargarArchivosGH(parseInt(match[1]), parseInt(match[2]));
-    }
-  };
-
-  async function cargarEstadoInicial() {
-    if (!GH || !GH.owner || !GH.repo) return;
-    const promesas = [];
-    for (let u = 1; u <= 4; u++)
-      for (let s = 1; s <= 4; s++)
-        if ((u-1)*4+s < 13) promesas.push(cargarArchivosGH(u, s, true));
-    await Promise.all(promesas);
-    for (let u = 1; u <= 4; u++) actualizarProgresoUnidad(u);
-  }
-
-  window.mostrarUnidad = function(num, btn) {
-    document.querySelectorAll('.unidad-contenido').forEach(u => u.classList.remove('activo'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('unidad-' + num).classList.add('activo');
-    btn.classList.add('active');
-  };
-
-  window.addEventListener('load', async () => {
-    try { const raw = localStorage.getItem('gh_cfg'); if (raw) GH = JSON.parse(raw); } catch(e) {}
-    if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
-
-    const heroP = document.querySelector('.hero-unidades p');
-    if (heroP) heroP.innerHTML = '✅ Semanas activas: 1 a 12. Cargando progreso...';
-    await cargarEstadoInicial();
-    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 12 disponibles · Semanas 13 a 16 (Próximamente). El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
-
-    const ua = localStorage.getItem('unidadActiva');
-    if (ua && ua >= 1 && ua <= 4) {
-      const tab = document.querySelectorAll('.tab-btn')[ua - 1];
-      if (tab) mostrarUnidad(parseInt(ua), tab);
-      localStorage.removeItem('unidadActiva');
-    }
-  });
-</script>
-
-</body>
-</html>
+      previewEl.innerHTML = `<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong
