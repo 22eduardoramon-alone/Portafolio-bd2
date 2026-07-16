@@ -624,7 +624,7 @@
     else if (i === 16) titulosPorSemanaGlobal[i] = "Proyecto Final";
   }
 
-  // Construir tarjetas
+  // Construir tarjetas - Eliminada la sección "Material y recursos"
   for (let u = 1; u <= 4; u++) {
     const grid = document.getElementById(`semanas-grid-${u}`);
     if (!grid) continue;
@@ -637,7 +637,6 @@
       card.className = 'semana-card';
       card.id = `u${u}s${s}`;
 
-      // Todas las semanas ahora tienen la misma estructura (sin el mensaje de "próximamente")
       card.innerHTML = `
         <div class="semana-header" onclick="toggleSemana('u${u}s${s}')">
           <div class="semana-numero">S${globalWeek}</div>
@@ -646,16 +645,6 @@
         </div>
         <div class="semana-body">
           <div class="semana-body-inner">
-            <ul class="actividad-lista">
-              <li>
-                <span class="act-icono">📖</span>
-                <div class="act-texto">
-                  <strong>Material y recursos</strong>
-                  Archivos subidos en GitHub (carpeta unidad${u}/semana${s}).
-                  <span class="badge badge-teoria">Teoría/Práctica</span>
-                </div>
-              </li>
-            </ul>
             <div class="gh-archivos-section">
               <div class="gh-archivos-titulo">📎 Archivos</div>
               <div id="gh-u${u}s${s}" class="gh-loading">
