@@ -632,7 +632,7 @@
     for (let s = 1; s <= 4; s++) {
       const globalWeek = (u - 1) * 4 + s;
       const tituloSemana = titulosPorSemanaGlobal[globalWeek];
-      
+
       const card = document.createElement('div');
       card.className = 'semana-card';
       card.id = `u${u}s${s}`;
@@ -664,12 +664,12 @@
     if (!card) return;
     semanasCompletadas[unidad][semana] = completada;
     const numeroDiv = card.querySelector('.semana-numero');
-    if (completada) { 
-      card.classList.add('completada'); 
-      numeroDiv.textContent = '✓'; 
-    } else { 
-      card.classList.remove('completada'); 
-      numeroDiv.textContent = `S${globalWeek}`; 
+    if (completada) {
+      card.classList.add('completada');
+      numeroDiv.textContent = '✓';
+    } else {
+      card.classList.remove('completada');
+      numeroDiv.textContent = `S${globalWeek}`;
     }
     actualizarProgresoUnidad(unidad);
   }
@@ -698,7 +698,11 @@
     if (completadoDiv) completadoDiv.classList.toggle('visible', completadas === 4);
   }
 
-  // ---- Carga optimizada: UN solo fetch para todo el repo, con caché ----
+  // ============================================================
+  //  CARGA DE ARCHIVOS — AHORA VÍA jsDelivr (sin límite de peticiones)
+  //  Antes se usaba api.github.com, que solo permite 60 peticiones/hora
+  //  por IP sin autenticación y por eso aparecía el error HTTP 403.
+  // ============================================================
   let ARBOL_GH = null; // cache en memoria durante esta carga de página
 
   async function obtenerArbolGH(forceReload = false) {
@@ -721,22 +725,24 @@
       } catch (e) { /* localStorage corrupto o bloqueado, seguimos con fetch */ }
     }
 
-    const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/git/trees/${branch}?recursive=1`;
-    const headers = { 'Accept': 'application/vnd.github+json' };
-    if (GH.token) headers['Authorization'] = 'Bearer ' + GH.token;
+    // jsDelivr expone un listado plano de todos los archivos de un repo público
+    // de GitHub, sin necesidad de token y sin límite de peticiones por IP.
+    const url = `https://data.jsdelivr.com/v1/package/gh/${GH.owner}/${GH.repo}@${branch}/flat`;
 
-    const r = await fetch(url, { headers });
+    const r = await fetch(url);
     if (!r.ok) throw new Error('HTTP ' + r.status);
 
     const data = await r.json();
-    const archivos = (data.tree || [])
-      .filter(item => item.type === 'blob')
-      .map(item => ({
-        name: item.path.split('/').pop(),
-        path: item.path,
+    const archivos = (data.files || []).map(item => {
+      // jsDelivr devuelve rutas tipo "/unidad1/semana1/archivo.pdf"
+      const path = item.name.replace(/^\//, '');
+      return {
+        name: path.split('/').pop(),
+        path: path,
         size: item.size || 0,
-        download_url: `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${branch}/${item.path}`
-      }));
+        download_url: `https://cdn.jsdelivr.net/gh/${GH.owner}/${GH.repo}@${branch}/${path}`
+      };
+    });
 
     ARBOL_GH = archivos;
     try { localStorage.setItem(cacheKey, JSON.stringify({ datos: archivos, fecha: Date.now() })); } catch (e) {}
