@@ -517,7 +517,7 @@
     repo:   'Portafolio-bd2',
     branch: 'main',
     root:   '',
-    token:  ''
+    token:  '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'
   };
 
   let GH = null;
@@ -632,7 +632,7 @@
     for (let s = 1; s <= 4; s++) {
       const globalWeek = (u - 1) * 4 + s;
       const tituloSemana = titulosPorSemanaGlobal[globalWeek];
-
+      
       const card = document.createElement('div');
       card.className = 'semana-card';
       card.id = `u${u}s${s}`;
@@ -664,12 +664,12 @@
     if (!card) return;
     semanasCompletadas[unidad][semana] = completada;
     const numeroDiv = card.querySelector('.semana-numero');
-    if (completada) {
-      card.classList.add('completada');
-      numeroDiv.textContent = '✓';
-    } else {
-      card.classList.remove('completada');
-      numeroDiv.textContent = `S${globalWeek}`;
+    if (completada) { 
+      card.classList.add('completada'); 
+      numeroDiv.textContent = '✓'; 
+    } else { 
+      card.classList.remove('completada'); 
+      numeroDiv.textContent = `S${globalWeek}`; 
     }
     actualizarProgresoUnidad(unidad);
   }
@@ -698,58 +698,8 @@
     if (completadoDiv) completadoDiv.classList.toggle('visible', completadas === 4);
   }
 
-  // ============================================================
-  //  CARGA DE ARCHIVOS — AHORA VÍA jsDelivr (sin límite de peticiones)
-  //  Antes se usaba api.github.com, que solo permite 60 peticiones/hora
-  //  por IP sin autenticación y por eso aparecía el error HTTP 403.
-  // ============================================================
-  let ARBOL_GH = null; // cache en memoria durante esta carga de página
-
-  async function obtenerArbolGH(forceReload = false) {
-    if (ARBOL_GH && !forceReload) return ARBOL_GH;
-
-    const branch = GH.branch || 'main';
-    const cacheKey = `gh_tree_${GH.owner}_${GH.repo}_${branch}`;
-    const cacheTiempoMs = 5 * 60 * 1000; // 5 minutos
-
-    if (!forceReload) {
-      try {
-        const cacheado = localStorage.getItem(cacheKey);
-        if (cacheado) {
-          const { datos, fecha } = JSON.parse(cacheado);
-          if (Date.now() - fecha < cacheTiempoMs) {
-            ARBOL_GH = datos;
-            return ARBOL_GH;
-          }
-        }
-      } catch (e) { /* localStorage corrupto o bloqueado, seguimos con fetch */ }
-    }
-
-    // jsDelivr expone un listado plano de todos los archivos de un repo público
-    // de GitHub, sin necesidad de token y sin límite de peticiones por IP.
-    const url = `https://data.jsdelivr.com/v1/package/gh/${GH.owner}/${GH.repo}@${branch}/flat`;
-
-    const r = await fetch(url);
-    if (!r.ok) throw new Error('HTTP ' + r.status);
-
-    const data = await r.json();
-    const archivos = (data.files || []).map(item => {
-      // jsDelivr devuelve rutas tipo "/unidad1/semana1/archivo.pdf"
-      const path = item.name.replace(/^\//, '');
-      return {
-        name: path.split('/').pop(),
-        path: path,
-        size: item.size || 0,
-        download_url: `https://cdn.jsdelivr.net/gh/${GH.owner}/${GH.repo}@${branch}/${path}`
-      };
-    });
-
-    ARBOL_GH = archivos;
-    try { localStorage.setItem(cacheKey, JSON.stringify({ datos: archivos, fecha: Date.now() })); } catch (e) {}
-    return ARBOL_GH;
-  }
-
   async function cargarArchivosGH(unidad, semana, forceReload = false) {
+    const globalWeek = (unidad - 1) * 4 + semana;
     const slotId = `gh-u${unidad}s${semana}`;
     const container = document.getElementById(slotId);
     if (!container) return;
@@ -764,11 +714,25 @@
     container.className = 'gh-loading';
     container.innerHTML = '<span class="gh-mini-spin"></span>Cargando...';
 
-    const prefijo = ghPath(`unidad${unidad}/semana${semana}`) + '/';
+    const fullPath = ghPath(`unidad${unidad}/semana${semana}`);
+    const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${fullPath}?ref=${GH.branch || 'main'}`;
 
     try {
-      const todos = await obtenerArbolGH(forceReload);
-      const files = todos.filter(f => f.path.startsWith(prefijo));
+      const headers = { 'Accept': 'application/vnd.github+json' };
+      if (GH.token) headers['Authorization'] = 'Bearer ' + GH.token;
+      const r = await fetch(url, { headers });
+
+      if (r.status === 404) {
+        container.className = '';
+        container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
+        marcarSemanaCompletada(unidad, semana, false);
+        container.removeAttribute('data-loading');
+        return;
+      }
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+
+      const items = await r.json();
+      const files = items.filter(i => i.type === 'file');
 
       if (!files.length) {
         container.className = '';
@@ -824,15 +788,10 @@
 
   async function cargarEstadoInicial() {
     if (!GH || !GH.owner || !GH.repo) return;
-    try {
-      await obtenerArbolGH(); // una sola petición para todo el repo (usa caché si es reciente)
-    } catch (e) {
-      // Si falla el árbol completo, cada tarjeta mostrará su propio error al intentar leer ARBOL_GH vacío
-    }
     const promesas = [];
     for (let u = 1; u <= 4; u++)
       for (let s = 1; s <= 4; s++)
-        promesas.push(cargarArchivosGH(u, s, false));
+        promesas.push(cargarArchivosGH(u, s, true));
     await Promise.all(promesas);
     for (let u = 1; u <= 4; u++) actualizarProgresoUnidad(u);
   }
