@@ -433,7 +433,6 @@
 <section class="hero-unidades">
   <p class="subtitulo">✦ Base de Datos II</p>
   <h2>Unidades del Curso</h2>
-  <p>Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
 </section>
 
 <div class="divisor"></div>
@@ -454,7 +453,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD I</p>
       <h3>UNIDAD 01</h3>
-      <p>Arquitectura, gestión y diseño de bases de datos. Explora los fundamentos de los sistemas gestores, los modelos arquitectónicos y las bases del modelado relacional. (Semanas 1 a 4)</p>
+      <p class="etiqueta">Arquitecturas de Bases de Datos y Configuración del Entorno Corporativo.</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-1"></div>
@@ -474,7 +473,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD II</p>
       <h3>UNIDAD 02</h3>
-      <p>SQL Server: introducción, administración, mantenimiento de datos y consultas. (Semanas 5 a 8)</p>
+      <p class="etiqueta">Administración de Instancias, Estructuras de Almacenamiento y Gestión de Datos Masivos</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-2"></div>
@@ -488,7 +487,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD III</p>
       <h3>UNIDAD 03</h3>
-      <p>Programación en Base de Datos con PL/SQL. (Semanas 9 a 12)</p>
+      <p class="etiqueta">Seguridad Corporativa, Conectividad de Red y Alta Disponibilidad de Datos.</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-3"></div>
@@ -502,7 +501,7 @@
     <div class="unidad-info">
       <p class="etiqueta">✦ UNIDAD IV</p>
       <h3>UNIDAD 04</h3>
-      <p>Administración, seguridad, transacciones y proyecto final. (Semanas 13 a 16)</p>
+      <p class="etiqueta">Monitoreo de Servidores, Optimización del Desempeño y Recuperación Basada en Flashback.</p>
     </div>
   </div>
   <div class="semanas-grid" id="semanas-grid-4"></div>
@@ -606,22 +605,22 @@
 
   const titulosPorSemanaGlobal = {};
   for (let i = 1; i <= 16; i++) {
-    if      (i === 1) titulosPorSemanaGlobal[i] = "Introducción a la Arquitectura de BD";
-    else if (i === 2) titulosPorSemanaGlobal[i] = "Gestor de BD";
-    else if (i === 3) titulosPorSemanaGlobal[i] = "Diseño de Arquitectura de BD";
-    else if (i === 4) titulosPorSemanaGlobal[i] = "Tipo de Arquitectura de BD";
-    else if (i === 5) titulosPorSemanaGlobal[i] = "Introducción a SQL Server";
-    else if (i === 6) titulosPorSemanaGlobal[i] = "Base de Datos de Microsoft SQL Server 2022";
-    else if (i === 7) titulosPorSemanaGlobal[i] = "Operaciones de Mantenimiento de Datos";
-    else if (i === 8) titulosPorSemanaGlobal[i] = "Introducción a las Consultas";
-    else if (i === 9) titulosPorSemanaGlobal[i] = "Introducción a PL/SQL";
-    else if (i === 10) titulosPorSemanaGlobal[i] = "Estructuras de Control en PL/SQL";
-    else if (i === 11) titulosPorSemanaGlobal[i] = "Cursores y Manejo de Excepciones";
-    else if (i === 12) titulosPorSemanaGlobal[i] = "Procedimientos y Funciones";
-    else if (i === 13) titulosPorSemanaGlobal[i] = "Administración de Bases de Datos";
-    else if (i === 14) titulosPorSemanaGlobal[i] = "Seguridad y Gestión de Usuarios";
-    else if (i === 15) titulosPorSemanaGlobal[i] = "Transacciones y Bloqueos";
-    else if (i === 16) titulosPorSemanaGlobal[i] = "Proyecto Final";
+    if      (i === 1) titulosPorSemanaGlobal[i] = "Formulación del Proyecto y Selección de la Arquitectura";
+    else if (i === 2) titulosPorSemanaGlobal[i] = "Despliegue y Configuración de Monitores de Datos (DBMS)";
+    else if (i === 3) titulosPorSemanaGlobal[i] = "Modelamiento Físico y Mecanismos de Integración";
+    else if (i === 4) titulosPorSemanaGlobal[i] = "Sustentación y Validación de la Infraestructura de Datos";
+    else if (i === 5) titulosPorSemanaGlobal[i] = "Configuración de la Instancia y Gestión de Memoria del Servidor";
+    else if (i === 6) titulosPorSemanaGlobal[i] = "Arquitectura Física de Almacenamiento y Distribución de Archivos";
+    else if (i === 7) titulosPorSemanaGlobal[i] = "Organización de Esquemas Lógicos y Estrategias de Indezación";
+    else if (i === 8) titulosPorSemanaGlobal[i] = "Sustentación y Pruebas de Carga de la Infraestructura de Almacenamiento";
+    else if (i === 9) titulosPorSemanaGlobal[i] = "Configuración de Conectividad de Red y SEGURIDAD DEL Entorno";
+    else if (i === 10) titulosPorSemanaGlobal[i] = "Gestión de Privilegios, Roles y Auditoría de Datos";
+    else if (i === 11) titulosPorSemanaGlobal[i] = "Estrategias de Backups Avanzados y Automatización (Jobs)";
+    else if (i === 12) titulosPorSemanaGlobal[i] = "Recuperación ante Fallos y Planes de Contingencia";
+    else if (i === 13) titulosPorSemanaGlobal[i] = "Auditoria, Monitoreo de Eventos y Diagnóstico de Alertas";
+    else if (i === 14) titulosPorSemanaGlobal[i] = "Afinamiento y Optimización del Desempeño de Consultas (Tuning)";
+    else if (i === 15) titulosPorSemanaGlobal[i] = "Implementación de Tecnologías de Recuperación Flachback";
+    else if (i === 16) titulosPorSemanaGlobal[i] = "Sustentación Final e Integración del Proyecto de la Asignatura";
   }
 
   // Construir tarjetas - Eliminada la sección "Material y recursos"
@@ -807,11 +806,6 @@
     try { const raw = localStorage.getItem('gh_cfg'); if (raw) GH = JSON.parse(raw); } catch(e) {}
     if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
 
-    const heroP = document.querySelector('.hero-unidades p');
-    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 16 disponibles. Cargando progreso...';
-    await cargarEstadoInicial();
-    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
-
     const ua = localStorage.getItem('unidadActiva');
     if (ua && ua >= 1 && ua <= 4) {
       const tab = document.querySelectorAll('.tab-btn')[ua - 1];
@@ -823,3 +817,4 @@
 
 </body>
 </html>
+
