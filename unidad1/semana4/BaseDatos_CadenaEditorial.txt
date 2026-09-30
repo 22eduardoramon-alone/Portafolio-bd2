@@ -1,0 +1,325 @@
+-- ==============================================================================
+-- ACTIVIDAD 02 - ENUNCIADO 01: CADENA EDITORIAL
+-- GESTOR: MICROSOFT SQL SERVER
+-- ==============================================================================
+
+USE master;
+GO
+
+-- 1. Crear la base de datos (se recrea si ya existe)
+IF DB_ID(N'CadenaEditorial') IS NOT NULL
+BEGIN
+    ALTER DATABASE CadenaEditorial SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE CadenaEditorial;
+END
+GO
+
+CREATE DATABASE CadenaEditorial;
+GO
+
+USE CadenaEditorial;
+GO
+
+-- ==============================================================================
+-- 2. CREACIÓN DE TABLAS
+-- ==============================================================================
+
+CREATE TABLE Sucursal (
+    CodigoSucursal VARCHAR(10)  NOT NULL,
+    Domicilio      VARCHAR(150) NOT NULL,
+    Telefono       VARCHAR(20)  NOT NULL,
+    CONSTRAINT PK_Sucursal PRIMARY KEY (CodigoSucursal)
+);
+GO
+
+CREATE TABLE Empleado (
+    NIF            VARCHAR(15) NOT NULL,
+    Nombre         VARCHAR(50) NOT NULL,
+    Apellidos      VARCHAR(50) NOT NULL,
+    Telefono       VARCHAR(20) NOT NULL,
+    CodigoSucursal VARCHAR(10) NOT NULL,
+    CONSTRAINT PK_Empleado PRIMARY KEY (NIF),
+    CONSTRAINT FK_Empleado_Sucursal FOREIGN KEY (CodigoSucursal)
+        REFERENCES Sucursal(CodigoSucursal)
+);
+GO
+
+CREATE TABLE Revista (
+    NumeroRegistro VARCHAR(20)  NOT NULL,
+    Titulo         VARCHAR(100) NOT NULL,
+    Periodicidad   VARCHAR(50)  NOT NULL,
+    Tipo           VARCHAR(50)  NOT NULL,
+    CONSTRAINT PK_Revista PRIMARY KEY (NumeroRegistro)
+);
+GO
+
+CREATE TABLE Sucursal_Revista (
+    CodigoSucursal VARCHAR(10) NOT NULL,
+    NumeroRegistro VARCHAR(20) NOT NULL,
+    CONSTRAINT PK_Sucursal_Revista PRIMARY KEY (CodigoSucursal, NumeroRegistro),
+    CONSTRAINT FK_SucRev_Sucursal FOREIGN KEY (CodigoSucursal)
+        REFERENCES Sucursal(CodigoSucursal),
+    CONSTRAINT FK_SucRev_Revista FOREIGN KEY (NumeroRegistro)
+        REFERENCES Revista(NumeroRegistro)
+);
+GO
+
+CREATE TABLE Periodista (
+    NIF          VARCHAR(15)  NOT NULL,
+    Nombre       VARCHAR(50)  NOT NULL,
+    Apellidos    VARCHAR(50)  NOT NULL,
+    Telefono     VARCHAR(20)  NOT NULL,
+    Especialidad VARCHAR(100) NOT NULL,
+    CONSTRAINT PK_Periodista PRIMARY KEY (NIF)
+);
+GO
+
+CREATE TABLE Periodista_Revista (
+    NIF_Periodista VARCHAR(15) NOT NULL,
+    NumeroRegistro VARCHAR(20) NOT NULL,
+    CONSTRAINT PK_Periodista_Revista PRIMARY KEY (NIF_Periodista, NumeroRegistro),
+    CONSTRAINT FK_PerRev_Periodista FOREIGN KEY (NIF_Periodista)
+        REFERENCES Periodista(NIF),
+    CONSTRAINT FK_PerRev_Revista FOREIGN KEY (NumeroRegistro)
+        REFERENCES Revista(NumeroRegistro)
+);
+GO
+
+-- Tabla nueva: artículos escritos por un periodista para una revista
+CREATE TABLE Articulo (
+    IdArticulo       INT IDENTITY(1,1) NOT NULL,
+    Titulo           VARCHAR(200) NOT NULL,
+    FechaPublicacion DATE         NOT NULL,
+    NIF_Periodista   VARCHAR(15)  NOT NULL,
+    NumeroRegistro   VARCHAR(20)  NOT NULL,
+    CONSTRAINT PK_Articulo PRIMARY KEY (IdArticulo),
+    CONSTRAINT FK_Articulo_Periodista FOREIGN KEY (NIF_Periodista)
+        REFERENCES Periodista(NIF),
+    CONSTRAINT FK_Articulo_Revista FOREIGN KEY (NumeroRegistro)
+        REFERENCES Revista(NumeroRegistro)
+);
+GO
+
+CREATE TABLE Seccion (
+    NumeroRegistro VARCHAR(20)  NOT NULL,
+    Titulo         VARCHAR(100) NOT NULL,
+    Extension      INT          NOT NULL,
+    CONSTRAINT PK_Seccion PRIMARY KEY (NumeroRegistro, Titulo),
+    CONSTRAINT FK_Seccion_Revista FOREIGN KEY (NumeroRegistro)
+        REFERENCES Revista(NumeroRegistro),
+    CONSTRAINT CK_Seccion_Extension CHECK (Extension > 0)
+);
+GO
+
+CREATE TABLE Ejemplar (
+    NumeroRegistro     VARCHAR(20) NOT NULL,
+    Fecha              DATE        NOT NULL,
+    NumeroPaginas      INT         NOT NULL,
+    EjemplaresVendidos INT         NOT NULL,
+    CONSTRAINT PK_Ejemplar PRIMARY KEY (NumeroRegistro, Fecha),
+    CONSTRAINT FK_Ejemplar_Revista FOREIGN KEY (NumeroRegistro)
+        REFERENCES Revista(NumeroRegistro),
+    CONSTRAINT CK_Ejemplar_Paginas CHECK (NumeroPaginas > 0),
+    CONSTRAINT CK_Ejemplar_Vendidos CHECK (EjemplaresVendidos >= 0)
+);
+GO
+
+-- ==============================================================================
+-- 3. ÍNDICES SOBRE CLAVES FORÁNEAS
+-- ==============================================================================
+CREATE INDEX IX_Empleado_Sucursal  ON Empleado(CodigoSucursal);
+CREATE INDEX IX_SucRev_Revista     ON Sucursal_Revista(NumeroRegistro);
+CREATE INDEX IX_PerRev_Revista     ON Periodista_Revista(NumeroRegistro);
+CREATE INDEX IX_Articulo_Periodista ON Articulo(NIF_Periodista);
+CREATE INDEX IX_Articulo_Revista    ON Articulo(NumeroRegistro);
+GO
+
+-- ==============================================================================
+-- 4. INSERCIÓN DE DATOS
+-- ==============================================================================
+
+-- Sucursal
+INSERT INTO Sucursal (CodigoSucursal, Domicilio, Telefono)
+VALUES
+('SUC001', 'Av. Arequipa 1010, Lima', '01-4101001'),
+('SUC002', 'Av. Brasil 1250, Lima', '01-4101002'),
+('SUC003', 'Av. Javier Prado 2200, Lima', '01-4101003'),
+('SUC004', 'Av. La Marina 1500, Lima', '01-4101004'),
+('SUC005', 'Av. Angamos 1800, Lima', '01-4101005'),
+('SUC006', 'Av. Colonial 1450, Callao', '01-4101006'),
+('SUC007', 'Av. Universitaria 3200, Lima', '01-4101007'),
+('SUC008', 'Av. Primavera 450, Lima', '01-4101008'),
+('SUC009', 'Av. Benavides 1750, Lima', '01-4101009'),
+('SUC010', 'Av. Alfonso Ugarte 950, Lima', '01-4101010'),
+('SUC011', 'Av. Grau 850, Lima', '01-4101011'),
+('SUC012', 'Av. Tacna 720, Lima', '01-4101012'),
+('SUC013', 'Av. Canadá 1250, Lima', '01-4101013'),
+('SUC014', 'Av. República de Panamá 3300, Lima', '01-4101014'),
+('SUC015', 'Av. Tomás Marsano 1800, Lima', '01-4101015'),
+('SUC016', 'Av. Caminos del Inca 650, Lima', '01-4101016'),
+('SUC017', 'Av. Petit Thouars 1450, Lima', '01-4101017'),
+('SUC018', 'Av. Prolongación Iquitos 900, Lima', '01-4101018'),
+('SUC019', 'Av. Nicolás de Piérola 1100, Lima', '01-4101019'),
+('SUC020', 'Av. Elmer Faucett 1200, Callao', '01-4101020');
+GO
+
+-- Empleado
+INSERT INTO Empleado (Nombre, Apellidos, NIF, Telefono, CodigoSucursal)
+VALUES
+('Carlos', 'Ramirez Torres', 'NIF100001', '999100001', 'SUC001'),
+('Ana', 'Flores Mendoza', 'NIF100002', '999100002', 'SUC001'),
+('Luis', 'Gonzales Perez', 'NIF100003', '999100003', 'SUC002'),
+('Maria', 'Quispe Rojas', 'NIF100004', '999100004', 'SUC002'),
+('Jorge', 'Castillo Vargas', 'NIF100005', '999100005', 'SUC003'),
+('Lucia', 'Fernandez Diaz', 'NIF100006', '999100006', 'SUC003'),
+('Pedro', 'Sanchez Leon', 'NIF100007', '999100007', 'SUC004'),
+('Rosa', 'Torres Silva', 'NIF100008', '999100008', 'SUC004'),
+('Miguel', 'Herrera Campos', 'NIF100009', '999100009', 'SUC005'),
+('Carmen', 'Vega Salazar', 'NIF100010', '999100010', 'SUC005'),
+('Jose', 'Mendoza Ruiz', 'NIF100011', '999100011', 'SUC006'),
+('Elena', 'Paredes Soto', 'NIF100012', '999100012', 'SUC007'),
+('Daniel', 'Morales Castro', 'NIF100013', '999100013', 'SUC008'),
+('Patricia', 'Navarro Cruz', 'NIF100014', '999100014', 'SUC009'),
+('Fernando', 'Vargas Medina', 'NIF100015', '999100015', 'SUC010'),
+('Silvia', 'Ramos Ortiz', 'NIF100016', '999100016', 'SUC011'),
+('Ricardo', 'Salinas Peña', 'NIF100017', '999100017', 'SUC012'),
+('Claudia', 'Molina Reyes', 'NIF100018', '999100018', 'SUC013'),
+('Andres', 'Campos Herrera', 'NIF100019', '999100019', 'SUC014'),
+('Gabriela', 'Ruiz Delgado', 'NIF100020', '999100020', 'SUC015');
+GO
+
+-- Revista
+INSERT INTO Revista (Titulo, NumeroRegistro, Periodicidad, Tipo)
+VALUES
+('Tecnologia Hoy', 'REG001', 'Mensual', 'Tecnologia'),
+('Mundo Digital', 'REG002', 'Mensual', 'Tecnologia'),
+('Ciencia Actual', 'REG003', 'Mensual', 'Ciencia'),
+('Economia Global', 'REG004', 'Semanal', 'Economia'),
+('Salud y Vida', 'REG005', 'Mensual', 'Salud'),
+('Cultura Peruana', 'REG006', 'Mensual', 'Cultura'),
+('Actualidad Nacional', 'REG007', 'Semanal', 'Actualidad'),
+('Negocios 360', 'REG008', 'Quincenal', 'Negocios'),
+('Innovacion Tech', 'REG009', 'Mensual', 'Tecnologia'),
+('Educacion Hoy', 'REG010', 'Mensual', 'Educacion'),
+('Viajes y Turismo', 'REG011', 'Mensual', 'Turismo'),
+('Deportes Total', 'REG012', 'Semanal', 'Deportes'),
+('Historia Viva', 'REG013', 'Mensual', 'Historia'),
+('Arte y Diseño', 'REG014', 'Mensual', 'Arte'),
+('Finanzas Personales', 'REG015', 'Quincenal', 'Finanzas'),
+('Cocina Peruana', 'REG016', 'Mensual', 'Gastronomia'),
+('Mundo Empresarial', 'REG017', 'Semanal', 'Empresarial'),
+('Ciencia y Futuro', 'REG018', 'Mensual', 'Ciencia'),
+('Sociedad Hoy', 'REG019', 'Quincenal', 'Sociedad'),
+('Programacion Web', 'REG020', 'Mensual', 'Tecnologia');
+GO
+
+-- Sucursal_Revista
+INSERT INTO Sucursal_Revista (CodigoSucursal, NumeroRegistro)
+VALUES
+('SUC001', 'REG001'),
+('SUC001', 'REG002'),
+('SUC002', 'REG003'),
+('SUC002', 'REG004'),
+('SUC003', 'REG005'),
+('SUC003', 'REG006'),
+('SUC004', 'REG007'),
+('SUC004', 'REG008'),
+('SUC005', 'REG009'),
+('SUC005', 'REG010'),
+('SUC006', 'REG011'),
+('SUC007', 'REG012'),
+('SUC008', 'REG013'),
+('SUC009', 'REG014'),
+('SUC010', 'REG015'),
+('SUC011', 'REG016'),
+('SUC012', 'REG017'),
+('SUC013', 'REG018'),
+('SUC014', 'REG019'),
+('SUC015', 'REG020');
+GO
+
+-- Periodista
+INSERT INTO Periodista (Nombre, Apellidos, NIF, Telefono, Especialidad)
+VALUES
+('Alberto', 'Navarro Ruiz', 'NIF200001', '998200001', 'Tecnologia'),
+('Beatriz', 'Castro Leon', 'NIF200002', '998200002', 'Economia'),
+('Carlos', 'Mendoza Silva', 'NIF200003', '998200003', 'Politica'),
+('Diana', 'Flores Torres', 'NIF200004', '998200004', 'Ciencia'),
+('Eduardo', 'Ramirez Soto', 'NIF200005', '998200005', 'Deportes'),
+('Fabiola', 'Quispe Ramos', 'NIF200006', '998200006', 'Cultura'),
+('Gustavo', 'Herrera Diaz', 'NIF200007', '998200007', 'Salud'),
+('Helena', 'Vargas Cruz', 'NIF200008', '998200008', 'Educacion'),
+('Ivan', 'Morales Perez', 'NIF200009', '998200009', 'Tecnologia'),
+('Julia', 'Salazar Medina', 'NIF200010', '998200010', 'Turismo'),
+('Kevin', 'Paredes Leon', 'NIF200011', '998200011', 'Negocios'),
+('Laura', 'Sanchez Castro', 'NIF200012', '998200012', 'Arte'),
+('Manuel', 'Torres Vargas', 'NIF200013', '998200013', 'Historia'),
+('Natalia', 'Rojas Mendoza', 'NIF200014', '998200014', 'Gastronomia'),
+('Oscar', 'Vega Campos', 'NIF200015', '998200015', 'Finanzas'),
+('Paola', 'Molina Reyes', 'NIF200016', '998200016', 'Sociedad'),
+('Rafael', 'Ortega Ruiz', 'NIF200017', '998200017', 'Tecnologia'),
+('Sandra', 'Delgado Silva', 'NIF200018', '998200018', 'Ciencia'),
+('Tomas', 'Medina Flores', 'NIF200019', '998200019', 'Deportes'),
+('Veronica', 'Cruz Navarro', 'NIF200020', '998200020', 'Educacion');
+GO
+
+-- Articulo
+INSERT INTO Articulo (Titulo, FechaPublicacion, NIF_Periodista, NumeroRegistro)
+VALUES
+('El futuro de la inteligencia artificial', '2026-01-10', 'NIF200001', 'REG001'),
+('Transformacion digital empresarial', '2026-01-15', 'NIF200002', 'REG004'),
+('Nuevos avances cientificos', '2026-02-05', 'NIF200004', 'REG003'),
+('Tecnologia y sociedad moderna', '2026-02-12', 'NIF200009', 'REG002'),
+('Innovacion en las empresas', '2026-02-20', 'NIF200011', 'REG008'),
+('El desarrollo de la ciencia peruana', '2026-03-01', 'NIF200018', 'REG018'),
+('Educacion digital en el siglo XXI', '2026-03-08', 'NIF200008', 'REG010'),
+('Turismo sostenible en el Peru', '2026-03-15', 'NIF200010', 'REG011'),
+('Nuevas tendencias deportivas', '2026-03-20', 'NIF200005', 'REG012'),
+('La cultura peruana contemporanea', '2026-03-25', 'NIF200006', 'REG006'),
+('Historia de Lima moderna', '2026-04-01', 'NIF200013', 'REG013'),
+('Diseño y creatividad digital', '2026-04-05', 'NIF200012', 'REG014'),
+('Consejos para mejorar las finanzas', '2026-04-10', 'NIF200015', 'REG015'),
+('Gastronomia peruana internacional', '2026-04-15', 'NIF200014', 'REG016'),
+('Retos de la sociedad actual', '2026-04-20', 'NIF200016', 'REG019'),
+('Programacion web moderna', '2026-05-01', 'NIF200017', 'REG020'),
+('Salud y tecnologia', '2026-05-10', 'NIF200007', 'REG005'),
+('Actualidad nacional', '2026-05-15', 'NIF200003', 'REG007'),
+('Nuevos modelos de negocios', '2026-05-20', 'NIF200002', 'REG017'),
+('Tecnologias emergentes', '2026-05-25', 'NIF200020', 'REG009');
+GO
+
+-- Periodista_Revista (se llena a partir de los artículos)
+INSERT INTO Periodista_Revista (NIF_Periodista, NumeroRegistro)
+SELECT DISTINCT NIF_Periodista, NumeroRegistro
+FROM Articulo;
+GO
+
+-- ==============================================================================
+-- 5. CONSULTAS DE VERIFICACIÓN
+-- ==============================================================================
+
+-- Conteo de registros por tabla (esperado: 20 en todas)
+SELECT 'Sucursal' AS Tabla, COUNT(*) AS Total FROM Sucursal
+UNION ALL SELECT 'Empleado', COUNT(*) FROM Empleado
+UNION ALL SELECT 'Revista', COUNT(*) FROM Revista
+UNION ALL SELECT 'Sucursal_Revista', COUNT(*) FROM Sucursal_Revista
+UNION ALL SELECT 'Periodista', COUNT(*) FROM Periodista
+UNION ALL SELECT 'Articulo', COUNT(*) FROM Articulo
+UNION ALL SELECT 'Periodista_Revista', COUNT(*) FROM Periodista_Revista;
+
+-- Revistas publicadas por cada sucursal
+SELECT s.CodigoSucursal, s.Domicilio, r.Titulo
+FROM Sucursal s
+JOIN Sucursal_Revista sr ON s.CodigoSucursal = sr.CodigoSucursal
+JOIN Revista r           ON r.NumeroRegistro = sr.NumeroRegistro
+ORDER BY s.CodigoSucursal;
+
+-- Artículos con su periodista y su revista
+SELECT a.Titulo AS Articulo, a.FechaPublicacion,
+       p.Nombre + ' ' + p.Apellidos AS Periodista,
+       r.Titulo AS Revista
+FROM Articulo a
+JOIN Periodista p ON p.NIF = a.NIF_Periodista
+JOIN Revista r    ON r.NumeroRegistro = a.NumeroRegistro
+ORDER BY a.FechaPublicacion;
+GO
