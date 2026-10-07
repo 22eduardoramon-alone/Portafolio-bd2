@@ -1,0 +1,407 @@
+-- ============================================================
+-- ACTIVIDAD 01: GRADOS Y TITULOS
+-- MOTOR: MICROSOFT SQL SERVER
+-- Script corregido, reutilizable y con 30 registros por tabla
+-- ============================================================
+
+-- 1. CREAR LA BASE DE DATOS SI NO EXISTE
+IF DB_ID('GradosyTitulos') IS NULL
+BEGIN
+    CREATE DATABASE GradosyTitulos;
+END;
+GO
+
+USE GradosyTitulos;
+GO
+
+-- ============================================================
+-- 2. CREAR LOS ESQUEMAS SI NO EXISTEN
+-- ============================================================
+
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'Catalogo')
+    EXEC('CREATE SCHEMA Catalogo');
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'Academico')
+    EXEC('CREATE SCHEMA Academico');
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'Tramite')
+    EXEC('CREATE SCHEMA Tramite');
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'Evaluacion')
+    EXEC('CREATE SCHEMA Evaluacion');
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'Documento')
+    EXEC('CREATE SCHEMA Documento');
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.schemas WHERE name = 'Seguridad')
+    EXEC('CREATE SCHEMA Seguridad');
+GO
+
+-- ============================================================
+-- 3. CREAR LAS TABLAS SI NO EXISTEN
+-- ============================================================
+
+IF OBJECT_ID('Academico.Facultad', 'U') IS NULL
+BEGIN
+    CREATE TABLE Academico.Facultad (
+        IdFacultad TINYINT IDENTITY(1,1) NOT NULL,
+        NombreFacultad VARCHAR(100) NOT NULL,
+        NombreDecano VARCHAR(150) NULL,
+        Activo BIT NOT NULL
+            CONSTRAINT DF_Facultad_Activo DEFAULT 1,
+
+        CONSTRAINT PK_Facultad
+            PRIMARY KEY (IdFacultad),
+
+        CONSTRAINT UQ_Facultad_Nombre
+            UNIQUE (NombreFacultad)
+    );
+END;
+GO
+
+IF OBJECT_ID('Academico.ProgramaEstudios', 'U') IS NULL
+BEGIN
+    CREATE TABLE Academico.ProgramaEstudios (
+        IdPrograma SMALLINT IDENTITY(1,1) NOT NULL,
+        IdFacultad TINYINT NOT NULL,
+        NombrePrograma VARCHAR(150) NOT NULL,
+        NumSemestres TINYINT NOT NULL,
+        Modalidad VARCHAR(15) NOT NULL,
+        Activo BIT NOT NULL
+            CONSTRAINT DF_Programa_Activo DEFAULT 1,
+
+        CONSTRAINT PK_ProgramaEstudios
+            PRIMARY KEY (IdPrograma),
+
+        CONSTRAINT FK_Programa_Facultad
+            FOREIGN KEY (IdFacultad)
+            REFERENCES Academico.Facultad(IdFacultad),
+
+        CONSTRAINT CHK_Programa_Semestres
+            CHECK (NumSemestres IN (10, 12, 14)),
+
+        CONSTRAINT CHK_Programa_Modalidad
+            CHECK (Modalidad IN ('PRESENCIAL', 'SEMIPRESENCIAL')),
+
+        CONSTRAINT UQ_Programa_Nombre_Modalidad
+            UNIQUE (NombrePrograma, Modalidad)
+    );
+END;
+GO
+
+IF OBJECT_ID('Seguridad.Rol', 'U') IS NULL
+BEGIN
+    CREATE TABLE Seguridad.Rol (
+        IdRol SMALLINT IDENTITY(1,1) NOT NULL,
+        NombreRol VARCHAR(50) NOT NULL,
+        Descripcion VARCHAR(250) NULL,
+        EsSistema BIT NOT NULL
+            CONSTRAINT DF_Rol_EsSistema DEFAULT 0,
+        Activo BIT NOT NULL
+            CONSTRAINT DF_Rol_Activo DEFAULT 1,
+        FechaCreacion DATETIME2 NOT NULL
+            CONSTRAINT DF_Rol_Fecha DEFAULT SYSDATETIME(),
+
+        CONSTRAINT PK_Rol PRIMARY KEY (IdRol),
+        CONSTRAINT UQ_Rol_Nombre UNIQUE (NombreRol)
+    );
+END;
+GO
+
+IF OBJECT_ID('Seguridad.Permiso', 'U') IS NULL
+BEGIN
+    CREATE TABLE Seguridad.Permiso (
+        IdPermiso INT IDENTITY(1,1) NOT NULL,
+        NombrePermiso VARCHAR(100) NOT NULL,
+
+        CONSTRAINT PK_Permiso PRIMARY KEY (IdPermiso),
+        CONSTRAINT UQ_Permiso_Nombre UNIQUE (NombrePermiso)
+    );
+END;
+GO
+
+IF OBJECT_ID('Seguridad.RolPermiso', 'U') IS NULL
+BEGIN
+    CREATE TABLE Seguridad.RolPermiso (
+        IdRol SMALLINT NOT NULL,
+        IdPermiso INT NOT NULL,
+        FechaAsignacion DATETIME2 NOT NULL
+            CONSTRAINT DF_RolPermiso_Fecha DEFAULT SYSDATETIME(),
+
+        CONSTRAINT PK_RolPermiso
+            PRIMARY KEY (IdRol, IdPermiso),
+
+        CONSTRAINT FK_RolPermiso_Rol
+            FOREIGN KEY (IdRol)
+            REFERENCES Seguridad.Rol(IdRol),
+
+        CONSTRAINT FK_RolPermiso_Permiso
+            FOREIGN KEY (IdPermiso)
+            REFERENCES Seguridad.Permiso(IdPermiso)
+    );
+END;
+GO
+
+-- ============================================================
+-- 4. INSERTAR 30 FACULTADES
+-- Conserva las facultades existentes y completa hasta 30.
+-- ============================================================
+
+INSERT INTO Academico.Facultad
+    (NombreFacultad, NombreDecano)
+SELECT V.NombreFacultad, V.NombreDecano
+FROM (VALUES
+    ('Ingeniería', 'Dr. Juan Pérez'),
+    ('Ciencias de la Salud', 'Dra. María Rodríguez'),
+    ('Ciencias Empresariales', 'Mg. Carlos Gómez'),
+    ('Educación', 'Dra. Ana Torres'),
+    ('Derecho', 'Dr. Luis Fernández'),
+    ('Arquitectura', 'Mg. Patricia Salazar')
+) AS V(NombreFacultad, NombreDecano)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Academico.Facultad F
+    WHERE F.NombreFacultad = V.NombreFacultad
+);
+GO
+
+;WITH Numeros AS (
+    SELECT TOP (24)
+        ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS N
+    FROM sys.all_objects A
+    CROSS JOIN sys.all_objects B
+)
+INSERT INTO Academico.Facultad (NombreFacultad, NombreDecano)
+SELECT
+    CONCAT('Facultad de Prueba ', RIGHT('00' + CAST(N AS VARCHAR(2)), 2)),
+    CONCAT('Decano de Prueba ', N)
+FROM Numeros
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Academico.Facultad F
+    WHERE F.NombreFacultad =
+        CONCAT('Facultad de Prueba ', RIGHT('00' + CAST(N AS VARCHAR(2)), 2))
+)
+AND (SELECT COUNT(*) FROM Academico.Facultad) < 30;
+GO
+
+-- ============================================================
+-- 5. INSERTAR 30 PROGRAMAS DE ESTUDIOS
+-- ============================================================
+
+INSERT INTO Academico.ProgramaEstudios
+    (IdFacultad, NombrePrograma, NumSemestres, Modalidad)
+SELECT F.IdFacultad, V.NombrePrograma,
+       V.NumSemestres, V.Modalidad
+FROM (VALUES
+    ('Ingeniería', 'Ingeniería de Sistemas', 10, 'PRESENCIAL'),
+    ('Ingeniería', 'Ingeniería Civil', 10, 'PRESENCIAL'),
+    ('Ciencias de la Salud', 'Enfermería', 10, 'PRESENCIAL'),
+    ('Ciencias de la Salud', 'Medicina Humana', 14, 'PRESENCIAL'),
+    ('Ciencias Empresariales', 'Administración', 10, 'PRESENCIAL'),
+    ('Ciencias Empresariales', 'Contabilidad', 10, 'SEMIPRESENCIAL'),
+    ('Educación', 'Educación Primaria', 10, 'PRESENCIAL'),
+    ('Educación', 'Educación Secundaria', 10, 'SEMIPRESENCIAL'),
+    ('Derecho', 'Derecho', 12, 'PRESENCIAL'),
+    ('Derecho', 'Ciencias Políticas', 10, 'PRESENCIAL'),
+    ('Arquitectura', 'Arquitectura', 12, 'PRESENCIAL'),
+    ('Arquitectura', 'Diseño de Interiores', 10, 'SEMIPRESENCIAL')
+) AS V(Facultad, NombrePrograma, NumSemestres, Modalidad)
+INNER JOIN Academico.Facultad F
+    ON F.NombreFacultad = V.Facultad
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Academico.ProgramaEstudios P
+    WHERE P.NombrePrograma = V.NombrePrograma
+      AND P.Modalidad = V.Modalidad
+);
+GO
+
+-- Completar los programas hasta alcanzar 30.
+;WITH Numeros AS (
+    SELECT TOP (30)
+        ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS N
+    FROM sys.all_objects A
+    CROSS JOIN sys.all_objects B
+)
+INSERT INTO Academico.ProgramaEstudios
+    (IdFacultad, NombrePrograma, NumSemestres, Modalidad)
+SELECT
+    F.IdFacultad,
+    CONCAT('Programa de Prueba ', RIGHT('00' + CAST(N AS VARCHAR(2)), 2)),
+    CASE N % 3 WHEN 0 THEN 14 WHEN 1 THEN 10 ELSE 12 END,
+    CASE WHEN N % 2 = 0
+         THEN 'PRESENCIAL'
+         ELSE 'SEMIPRESENCIAL'
+    END
+FROM Numeros N
+CROSS JOIN (
+    SELECT TOP (1) IdFacultad
+    FROM Academico.Facultad
+    ORDER BY IdFacultad
+) F
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Academico.ProgramaEstudios P
+    WHERE P.NombrePrograma =
+        CONCAT('Programa de Prueba ', RIGHT('00' + CAST(N.N AS VARCHAR(2)), 2))
+)
+AND (SELECT COUNT(*) FROM Academico.ProgramaEstudios) < 30;
+GO
+
+-- ============================================================
+-- 6. INSERTAR 30 ROLES
+-- ============================================================
+
+INSERT INTO Seguridad.Rol (NombreRol, Descripcion, EsSistema)
+SELECT V.NombreRol, V.Descripcion, V.EsSistema
+FROM (VALUES
+    ('ADMINISTRADOR', 'Control total del sistema', 1),
+    ('SECRETARIA', 'Gestión administrativa', 0),
+    ('DECANO', 'Autoridad académica', 0),
+    ('ESTUDIANTE', 'Acceso a trámites y evaluaciones', 0)
+) AS V(NombreRol, Descripcion, EsSistema)
+WHERE NOT EXISTS (
+    SELECT 1 FROM Seguridad.Rol R
+    WHERE R.NombreRol = V.NombreRol
+);
+GO
+
+;WITH Numeros AS (
+    SELECT TOP (26)
+        ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS N
+    FROM sys.all_objects A
+    CROSS JOIN sys.all_objects B
+)
+INSERT INTO Seguridad.Rol (NombreRol, Descripcion)
+SELECT
+    CONCAT('ROL_PRUEBA_', RIGHT('00' + CAST(N AS VARCHAR(2)), 2)),
+    CONCAT('Rol de prueba número ', N)
+FROM Numeros
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Seguridad.Rol R
+    WHERE R.NombreRol =
+        CONCAT('ROL_PRUEBA_', RIGHT('00' + CAST(N AS VARCHAR(2)), 2))
+)
+AND (SELECT COUNT(*) FROM Seguridad.Rol) < 30;
+GO
+
+-- ============================================================
+-- 7. INSERTAR 30 PERMISOS
+-- ============================================================
+
+INSERT INTO Seguridad.Permiso (NombrePermiso)
+SELECT V.NombrePermiso
+FROM (VALUES
+    ('CREAR_USUARIO'),
+    ('GESTIONAR_TRAMITE'),
+    ('APROBAR_TRAMITE'),
+    ('VER_EVALUACION'),
+    ('SUBIR_DOCUMENTO'),
+    ('REPORTES')
+) AS V(NombrePermiso)
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Seguridad.Permiso P
+    WHERE P.NombrePermiso = V.NombrePermiso
+);
+GO
+
+;WITH Numeros AS (
+    SELECT TOP (24)
+        ROW_NUMBER() OVER (ORDER BY (SELECT NULL)) AS N
+    FROM sys.all_objects A
+    CROSS JOIN sys.all_objects B
+)
+INSERT INTO Seguridad.Permiso (NombrePermiso)
+SELECT CONCAT('PERMISO_PRUEBA_', RIGHT('00' + CAST(N AS VARCHAR(2)), 2))
+FROM Numeros
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM Seguridad.Permiso P
+    WHERE P.NombrePermiso =
+        CONCAT('PERMISO_PRUEBA_', RIGHT('00' + CAST(N AS VARCHAR(2)), 2))
+)
+AND (SELECT COUNT(*) FROM Seguridad.Permiso) < 30;
+GO
+
+-- ============================================================
+-- 8. INSERTAR 30 RELACIONES ROL-PERMISO
+-- Se asigna un permiso diferente a cada rol cuando es posible.
+-- ============================================================
+
+;WITH RolesNumerados AS (
+    SELECT
+        IdRol,
+        ROW_NUMBER() OVER (ORDER BY IdRol) AS N
+    FROM Seguridad.Rol
+),
+PermisosNumerados AS (
+    SELECT
+        IdPermiso,
+        ROW_NUMBER() OVER (ORDER BY IdPermiso) AS N
+    FROM Seguridad.Permiso
+)
+INSERT INTO Seguridad.RolPermiso (IdRol, IdPermiso)
+SELECT R.IdRol, P.IdPermiso
+FROM RolesNumerados R
+INNER JOIN PermisosNumerados P
+    ON P.N = R.N
+WHERE R.N <= 30
+AND NOT EXISTS (
+    SELECT 1
+    FROM Seguridad.RolPermiso RP
+    WHERE RP.IdRol = R.IdRol
+      AND RP.IdPermiso = P.IdPermiso
+);
+GO
+
+-- ============================================================
+-- 9. VERIFICAR LA CANTIDAD DE REGISTROS
+-- ============================================================
+
+SELECT 'Academico.Facultad' AS Tabla,
+       COUNT(*) AS TotalRegistros
+FROM Academico.Facultad
+
+UNION ALL
+
+SELECT 'Academico.ProgramaEstudios',
+       COUNT(*)
+FROM Academico.ProgramaEstudios
+
+UNION ALL
+
+SELECT 'Seguridad.Rol',
+       COUNT(*)
+FROM Seguridad.Rol
+
+UNION ALL
+
+SELECT 'Seguridad.Permiso',
+       COUNT(*)
+FROM Seguridad.Permiso
+
+UNION ALL
+
+SELECT 'Seguridad.RolPermiso',
+       COUNT(*)
+FROM Seguridad.RolPermiso;
+GO
+
+-- ============================================================
+-- 10. CONSULTAR LOS DATOS INSERTADOS
+-- ============================================================
+
+SELECT * FROM Academico.Facultad;
+SELECT * FROM Academico.ProgramaEstudios;
+SELECT * FROM Seguridad.Rol;
+SELECT * FROM Seguridad.Permiso;
+SELECT * FROM Seguridad.RolPermiso;
+GO
