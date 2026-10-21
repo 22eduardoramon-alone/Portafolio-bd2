@@ -8,25 +8,23 @@
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
       --azul-oscuro: #0a0e1a;
       --azul-navy: #0d1b2e;
       --azul-medio: #112240;
       --cian: #00e5ff;
+      --cian-profundo: #0077ff;
       --blanco: #ffffff;
       --gris: #a0b4c8;
+      --verde-online: #00ff88;
     }
-
     html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Lato', sans-serif;
       background-color: var(--azul-oscuro);
       color: var(--blanco);
       overflow-x: hidden;
     }
-
     /* ===================== HEADER ===================== */
     header {
       display: flex;
@@ -41,20 +39,17 @@
       gap: 15px;
       flex-wrap: wrap;
     }
-
     .logo-area {
       display: flex;
       align-items: center;
       gap: 15px;
     }
-
     header img.logo {
       width: 110px;
       height: 55px;
       object-fit: cover;
       border-radius: 8px;
     }
-
     header h1 {
       font-family: 'Cinzel', serif;
       font-size: clamp(0.9em, 2.5vw, 1.5em);
@@ -63,7 +58,6 @@
       text-transform: uppercase;
       text-shadow: 0 0 18px rgba(0,229,255,0.6);
     }
-
     /* Hamburger */
     .hamburger {
       display: none;
@@ -85,7 +79,6 @@
     .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
     .hamburger.open span:nth-child(2) { opacity: 0; }
     .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
-
     .nav-menu {
       display: flex;
       gap: 8px;
@@ -112,7 +105,6 @@
       border-color: var(--cian);
       box-shadow: 0 0 12px rgba(0,229,255,0.5);
     }
-
     /* ===================== HERO ===================== */
     .hero {
       position: relative;
@@ -186,7 +178,6 @@
       justify-content: center;
       flex-wrap: wrap;
     }
-
     /* ===================== BOTONES ===================== */
     .btn {
       padding: 12px 28px;
@@ -220,7 +211,6 @@
       background: rgba(0,229,255,0.1);
       transform: translateY(-3px);
     }
-
     /* ===================== SECCIÓN DESTACADOS ===================== */
     .seccion-destacados {
       padding: clamp(40px, 8vw, 80px) clamp(15px, 5vw, 50px);
@@ -245,7 +235,6 @@
       color: var(--gris);
       font-size: clamp(0.9em, 2vw, 1.1em);
     }
-
     /* Stats Grid */
     .stats-grid {
       display: grid;
@@ -281,7 +270,6 @@
       letter-spacing: 2px;
       font-size: clamp(0.65em, 1.5vw, 0.8em);
     }
-
     /* Sobre mí preview */
     .sobre-mi-preview {
       display: flex;
@@ -336,7 +324,6 @@
       border: 4px solid var(--cian);
       box-shadow: 0 0 40px rgba(0,229,255,0.3);
     }
-
     /* Unidades preview */
     .unidades-preview {
       display: grid;
@@ -374,7 +361,6 @@
       font-size: clamp(0.75em, 1.5vw, 0.85em);
       color: var(--gris);
     }
-
     /* ===================== FOOTER ===================== */
     footer {
       background-color: var(--azul-navy);
@@ -384,12 +370,10 @@
       font-size: clamp(0.8em, 1.5vw, 1em);
       border-top: 1px solid rgba(0,229,255,0.15);
     }
-
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(30px); }
       to { opacity: 1; transform: translateY(0); }
     }
-
     /* ===================== RESPONSIVE ===================== */
     @media (max-width: 900px) {
       .hamburger { display: flex; }
@@ -417,14 +401,12 @@
       .stats-grid { grid-template-columns: repeat(3, 1fr); }
       .unidades-preview { grid-template-columns: repeat(2, 1fr); }
     }
-
     @media (max-width: 650px) {
       .stats-grid { grid-template-columns: repeat(2, 1fr); }
       .sobre-mi-preview { flex-direction: column-reverse; align-items: center; text-align: center; }
       .habilidades { justify-content: center; }
       .perfil-info .cargo { text-align: center; }
     }
-
     @media (max-width: 480px) {
       .stats-grid { grid-template-columns: 1fr 1fr; }
       .stat-card:last-child { grid-column: span 2; }
@@ -432,20 +414,432 @@
       header { padding: 10px 15px; }
       header img.logo { width: 80px; height: 40px; }
     }
+    /* =====================================================
+       ============  CHATBOT MODERNO  ======================
+       ===================================================== */
+    .chat-widget {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      z-index: 999;
+      font-family: 'Lato', sans-serif;
+    }
+    /* ---- Botón flotante ---- */
+    .chat-toggle {
+      position: relative;
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #00e5ff 0%, #0091ea 55%, #0077ff 100%);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow:
+        0 8px 30px rgba(0,229,255,0.55),
+        0 0 0 0 rgba(0,229,255,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+      transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s;
+      z-index: 2;
+    }
+    .chat-toggle:hover {
+      transform: scale(1.1) rotate(5deg);
+      box-shadow:
+        0 12px 40px rgba(0,229,255,0.75),
+        0 0 0 0 rgba(0,229,255,0.5),
+        inset 0 1px 0 rgba(255,255,255,0.4);
+    }
+    /* Anillo pulsante */
+    .chat-toggle::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff, #0077ff);
+      opacity: 0.45;
+      z-index: -1;
+      animation: ringPulse 2.4s ease-out infinite;
+    }
+    /* Segundo anillo (más lento) */
+    .chat-toggle::after {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 2px solid rgba(0,229,255,0.4);
+      z-index: -1;
+      animation: ringPulse 2.4s ease-out 1.2s infinite;
+    }
+    @keyframes ringPulse {
+      0% { transform: scale(1); opacity: 0.5; }
+      100% { transform: scale(1.7); opacity: 0; }
+    }
+    .chat-toggle .icon-open {
+      width: 34px;
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .chat-toggle .icon-close {
+      display: none;
+      font-size: 1.5em;
+      font-weight: 700;
+      color: var(--azul-navy);
+      line-height: 1;
+    }
+    .chat-toggle.active .icon-open { display: none; }
+    .chat-toggle.active .icon-close { display: flex; }
+    /* Icono SVG de burbuja de chat */
+    .chat-icon-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
+      animation: bubbleFloat 3s ease-in-out infinite;
+    }
+    @keyframes bubbleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-2.5px); }
+    }
+    /* Puntos de la burbuja con onda */
+    .chat-icon-svg .dot {
+      animation: dotPulse 1.6s ease-in-out infinite;
+      transform-box: fill-box;
+      transform-origin: center;
+    }
+    .chat-icon-svg .dot:nth-child(1) { animation-delay: 0s; }
+    .chat-icon-svg .dot:nth-child(2) { animation-delay: 0.2s; }
+    .chat-icon-svg .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dotPulse {
+      0%, 100% { opacity: 0.5; transform: scale(0.85); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+    /* Badge notificación */
+    .chat-badge {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 22px;
+      height: 22px;
+      background: linear-gradient(135deg, #ff3b5c, #ff6b8a);
+      color: #fff;
+      font-size: 0.62em;
+      font-weight: 700;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid var(--azul-oscuro);
+      box-shadow: 0 2px 8px rgba(255,59,92,0.6);
+      animation: pulseBadge 1.8s infinite;
+      z-index: 3;
+    }
+    @keyframes pulseBadge {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    /* ---- Ventana del chat ---- */
+    .chat-window {
+      position: absolute;
+      bottom: 82px;
+      right: 0;
+      width: 380px;
+      max-width: calc(100vw - 30px);
+      height: 560px;
+      max-height: calc(100vh - 120px);
+      background: linear-gradient(165deg, rgba(13,27,46,0.97) 0%, rgba(10,14,26,0.99) 100%);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(0,229,255,0.35);
+      border-radius: 22px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow:
+        0 25px 70px rgba(0,0,0,0.85),
+        0 0 45px rgba(0,229,255,0.18),
+        inset 0 1px 0 rgba(255,255,255,0.06);
+      transform: translateY(30px) scale(0.92);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.35s ease;
+    }
+    .chat-window.open {
+      transform: translateY(0) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    /* ---- Cabecera ---- */
+    .chat-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: linear-gradient(135deg, rgba(0,229,255,0.13) 0%, rgba(17,34,64,0.9) 60%, rgba(13,27,46,0.95) 100%);
+      border-bottom: 1px solid rgba(0,229,255,0.22);
+      flex-shrink: 0;
+    }
+    /* Línea superior brillante */
+    .chat-header::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00e5ff, #0077ff, #00e5ff, transparent);
+      background-size: 200% 100%;
+      animation: headerShimmer 4s linear infinite;
+    }
+    @keyframes headerShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .chat-header-info { display: flex; align-items: center; gap: 12px; }
+    .chat-avatar {
+      position: relative;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #00e5ff 0%, #0091ea 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 18px rgba(0,229,255,0.45), inset 0 1px 0 rgba(255,255,255,0.3);
+      flex-shrink: 0;
+    }
+    /* Indicador online */
+    .chat-avatar::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 12px;
+      height: 12px;
+      background: var(--verde-online);
+      border-radius: 50%;
+      border: 2.5px solid var(--azul-navy);
+      box-shadow: 0 0 8px var(--verde-online);
+      animation: onlinePulse 2s infinite;
+    }
+    @keyframes onlinePulse {
+      0%, 100% { box-shadow: 0 0 6px var(--verde-online); }
+      50% { box-shadow: 0 0 14px var(--verde-online); }
+    }
+    .chat-avatar .chat-icon-svg { width: 26px; height: 26px; animation: none; }
+    .chat-header-info strong {
+      display: block;
+      font-size: 0.92em;
+      color: var(--blanco);
+      letter-spacing: 0.4px;
+    }
+    .chat-header-info small {
+      display: block;
+      font-size: 0.7em;
+      color: var(--verde-online);
+      margin-top: 1px;
+    }
+    .chat-clear {
+      background: rgba(0,229,255,0.06);
+      border: 1px solid rgba(0,229,255,0.15);
+      color: var(--gris);
+      font-size: 0.95em;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.25s;
+    }
+    .chat-clear:hover {
+      color: var(--cian);
+      background: rgba(0,229,255,0.15);
+      border-color: rgba(0,229,255,0.4);
+      transform: rotate(-8deg);
+    }
+    /* ---- Mensajes ---- */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 18px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      scroll-behavior: smooth;
+      background-image:
+        radial-gradient(circle at 15% 10%, rgba(0,229,255,0.04) 0%, transparent 45%),
+        radial-gradient(circle at 85% 90%, rgba(0,119,255,0.04) 0%, transparent 45%);
+    }
+    .chat-messages::-webkit-scrollbar { width: 6px; }
+    .chat-messages::-webkit-scrollbar-track { background: transparent; }
+    .chat-messages::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, rgba(0,229,255,0.5), rgba(0,119,255,0.3));
+      border-radius: 10px;
+    }
+    .msg {
+      max-width: 88%;
+      padding: 11px 15px;
+      border-radius: 16px;
+      font-size: 0.88em;
+      line-height: 1.55;
+      white-space: pre-line;
+      word-wrap: break-word;
+      animation: msgIn 0.3s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    @keyframes msgIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .msg.bot {
+      align-self: flex-start;
+      background: linear-gradient(135deg, rgba(23,42,69,0.95), rgba(15,28,48,0.95));
+      border: 1px solid rgba(0,229,255,0.14);
+      border-left: 3px solid var(--cian);
+      color: #e0e8ff;
+      border-bottom-left-radius: 5px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+    }
+    .msg.bot strong { color: var(--cian); font-weight: 700; }
+    .msg.bot a {
+      color: var(--cian);
+      text-decoration: underline;
+      font-weight: 600;
+    }
+    .msg.bot a:hover { color: #40f0ff; }
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #00e5ff 0%, #0091ea 100%);
+      color: #06121f;
+      font-weight: 600;
+      border-bottom-right-radius: 5px;
+      box-shadow: 0 5px 16px rgba(0,229,255,0.3);
+    }
+    /* ---- Indicador "escribiendo..." ---- */
+    .typing { display: flex; gap: 5px; padding: 5px 2px; }
+    .typing span {
+      width: 8px;
+      height: 8px;
+      background: var(--cian);
+      border-radius: 50%;
+      animation: typingBlink 1.2s infinite ease-in-out;
+    }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typingBlink {
+      0%, 80%, 100% { opacity: 0.25; transform: scale(0.75); }
+      40% { opacity: 1; transform: scale(1.1); }
+    }
+    /* ---- Sugerencias ---- */
+    .chat-suggestions {
+      display: flex;
+      gap: 7px;
+      padding: 10px 14px;
+      overflow-x: auto;
+      border-top: 1px solid rgba(0,229,255,0.1);
+      flex-shrink: 0;
+      scrollbar-width: none;
+      background: rgba(10,14,26,0.4);
+    }
+    .chat-suggestions::-webkit-scrollbar { display: none; }
+    .chip {
+      background: linear-gradient(135deg, rgba(0,229,255,0.1), rgba(0,119,255,0.1));
+      border: 1px solid rgba(0,229,255,0.4);
+      color: var(--cian);
+      padding: 7px 14px;
+      border-radius: 20px;
+      font-size: 0.73em;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.25s;
+      font-family: inherit;
+      letter-spacing: 0.2px;
+    }
+    .chip:hover {
+      background: linear-gradient(135deg, rgba(0,229,255,0.28), rgba(0,119,255,0.22));
+      border-color: var(--cian);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 14px rgba(0,229,255,0.3);
+    }
+    .chip:active { transform: translateY(0) scale(0.97); }
+    /* ---- Área de entrada ---- */
+    .chat-input-area {
+      display: flex;
+      gap: 9px;
+      padding: 12px 14px;
+      background: rgba(6,10,20,0.85);
+      border-top: 1px solid rgba(0,229,255,0.14);
+      flex-shrink: 0;
+    }
+    .chat-input-area input {
+      flex: 1;
+      min-width: 0;
+      background: rgba(17,34,64,0.7);
+      border: 1px solid rgba(0,229,255,0.22);
+      color: var(--blanco);
+      padding: 12px 18px;
+      border-radius: 26px;
+      outline: none;
+      font-size: 0.86em;
+      font-family: inherit;
+      transition: all 0.3s;
+    }
+    .chat-input-area input::placeholder { color: #6b7f96; }
+    .chat-input-area input:focus {
+      background: rgba(17,34,64,0.95);
+      border-color: var(--cian);
+      box-shadow: 0 0 0 3px rgba(0,229,255,0.14), 0 0 20px rgba(0,229,255,0.18);
+    }
+    .chat-send {
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border-radius: 50%;
+      border: none;
+      background: linear-gradient(135deg, #00e5ff 0%, #0091ea 100%);
+      color: #06121f;
+      font-size: 1.05em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+      box-shadow: 0 4px 14px rgba(0,229,255,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .chat-send:hover {
+      transform: scale(1.1) rotate(-15deg);
+      box-shadow: 0 7px 22px rgba(0,229,255,0.65);
+    }
+    .chat-send:active { transform: scale(0.95); }
+    /* ---- Responsive chat ---- */
+    @media (max-width: 480px) {
+      .chat-widget { bottom: 18px; right: 18px; }
+      .chat-toggle { width: 58px; height: 58px; }
+      .chat-toggle .icon-open { width: 30px; height: 30px; }
+      .chat-window {
+        height: 500px;
+        bottom: 74px;
+        width: calc(100vw - 36px);
+      }
+      .msg { font-size: 0.85em; }
+      .chat-header-info strong { font-size: 0.86em; }
+    }
   </style>
 </head>
 <body>
-
 <header>
   <div class="logo-area">
     <img src="lgUpla.png" alt="Logo UPLA" class="logo">
     <h1>Mi Portafolio Académico</h1>
   </div>
-
   <button class="hamburger" id="hamburger" aria-label="Menú">
     <span></span><span></span><span></span>
   </button>
-
   <nav class="nav-menu" id="navMenu">
     <a href="index.html" class="active">Inicio</a>
     <a href="sobreMi.html">Sobre mí</a>
@@ -453,7 +847,6 @@
     <a href="login.html">Iniciar Sesión</a>
   </nav>
 </header>
-
 <section class="hero">
   <img src="imagen1.jpg" class="hero-fondo" alt="Fondo tecnología">
   <div class="hero-overlay"></div>
@@ -468,14 +861,12 @@
     </div>
   </div>
 </section>
-
 <section class="seccion-destacados">
   <div class="contenedor">
     <div class="seccion-titulo">
       <h3>⚡ Mi Portafolio Académico</h3>
       <p>Estadísticas y avances del ciclo</p>
     </div>
-
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icono">📚</div>
@@ -493,7 +884,6 @@
         <div class="stat-etiqueta">Año realizado</div>
       </div>
     </div>
-
     <div class="sobre-mi-preview">
       <div class="perfil-info">
         <h4>Eduardo Fredy Ramón Puente</h4>
@@ -510,7 +900,6 @@
         <img src="https://ui-avatars.com/api/?name=Eduardo+Ramon&size=200&background=0D1B2E&color=00e5ff&bold=true" alt="Avatar" class="avatar">
       </div>
     </div>
-
     <div class="seccion-titulo" style="margin-top: 40px;">
       <h3>📌 Unidades del Curso</h3>
       <p>Explora el contenido de cada unidad</p>
@@ -539,11 +928,61 @@
     </div>
   </div>
 </section>
-
 <footer>
   © 2026 Universidad Peruana Los Andes · Base de Datos II
 </footer>
-
+<!-- =====================================================
+     ============  WIDGET DEL CHATBOT  ===================
+     ===================================================== -->
+<div class="chat-widget" id="chatWidget">
+  <!-- Botón flotante con burbuja de chat -->
+  <button class="chat-toggle" id="chatToggle" aria-label="Abrir asistente virtual">
+    <span class="icon-open">
+      <svg class="chat-icon-svg" viewBox="0 0 100 100" aria-hidden="true">
+        <rect x="18" y="20" width="64" height="46" rx="14" fill="#0d1b2e"/>
+        <path d="M32 66 L32 82 L50 66 Z" fill="#0d1b2e"/>
+        <circle class="dot" cx="37" cy="43" r="4.5" fill="#00e5ff"/>
+        <circle class="dot" cx="50" cy="43" r="4.5" fill="#00e5ff"/>
+        <circle class="dot" cx="63" cy="43" r="4.5" fill="#00e5ff"/>
+      </svg>
+    </span>
+    <span class="icon-close">✕</span>
+    <span class="chat-badge" id="chatBadge">1</span>
+  </button>
+  <!-- Ventana del chat -->
+  <div class="chat-window" id="chatWindow">
+    <div class="chat-header">
+      <div class="chat-header-info">
+        <div class="chat-avatar">
+          <svg class="chat-icon-svg" viewBox="0 0 100 100" aria-hidden="true">
+            <rect x="18" y="20" width="64" height="46" rx="14" fill="#0d1b2e"/>
+            <path d="M32 66 L32 82 L50 66 Z" fill="#0d1b2e"/>
+            <circle cx="37" cy="43" r="4.5" fill="#00e5ff"/>
+            <circle cx="50" cy="43" r="4.5" fill="#00e5ff"/>
+            <circle cx="63" cy="43" r="4.5" fill="#00e5ff"/>
+          </svg>
+        </div>
+        <div>
+          <strong>Asistente BD II</strong>
+          <small>● En línea · Respuestas al instante</small>
+        </div>
+      </div>
+      <button class="chat-clear" id="chatClear" title="Limpiar conversación">🗑️</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-suggestions" id="chatSuggestions">
+      <button class="chip" type="button">Unidades</button>
+      <button class="chip" type="button">Semanas</button>
+      <button class="chip" type="button">Archivos Unidad 1</button>
+      <button class="chip" type="button">¿Qué es un JOIN?</button>
+      <button class="chip" type="button">Examen</button>
+    </div>
+    <form class="chat-input-area" id="chatForm">
+      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." autocomplete="off" aria-label="Mensaje">
+      <button type="submit" class="chat-send" aria-label="Enviar">➤</button>
+    </form>
+  </div>
+</div>
 <script>
   // Menú hamburguesa
   const hamburger = document.getElementById('hamburger');
@@ -552,14 +991,12 @@
     hamburger.classList.toggle('open');
     navMenu.classList.toggle('open');
   });
-  // Cerrar al hacer clic en un enlace
   navMenu.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', () => {
       hamburger.classList.remove('open');
       navMenu.classList.remove('open');
     });
   });
-
   // Contadores animados
   function iniciarContadores() {
     document.querySelectorAll('.contador').forEach(contador => {
@@ -585,12 +1022,360 @@
       observer.observe(contador);
     });
   }
-
   function cambiarUnidad(num) {
     localStorage.setItem('unidadActiva', num);
   }
-
   window.addEventListener('load', iniciarContadores);
+</script>
+<script>
+(function () {
+  'use strict';
+  const chatToggle      = document.getElementById('chatToggle');
+  const chatWindow      = document.getElementById('chatWindow');
+  const chatMessages    = document.getElementById('chatMessages');
+  const chatForm        = document.getElementById('chatForm');
+  const chatInput       = document.getElementById('chatInput');
+  const chatClear       = document.getElementById('chatClear');
+  const chatSuggestions = document.getElementById('chatSuggestions');
+  const chatBadge       = document.getElementById('chatBadge');
+
+  // ============ DATOS DE UNIDADES + ARCHIVOS ============
+  const UNIDADES = {
+    1: {
+      nombre: 'Fundamentos de Bases de Datos',
+      semanas: '1 a 4',
+      temas: 'Modelo Entidad-Relación, Normalización (1FN, 2FN, 3FN), Diseño de Base de Datos',
+      archivos: [
+        { nombre: 'Modelo ER - Diapositivas.pdf', url: 'archivos/unidad1/modelo_er.pdf' },
+        { nombre: 'Ejercicios de Normalización.pdf', url: 'archivos/unidad1/normalizacion.pdf' },
+        { nombre: 'Práctica 1 - Diseño ER.sql', url: 'archivos/unidad1/practica1_er.sql' },
+        { nombre: 'Caso de Estudio - Biblioteca.docx', url: 'archivos/unidad1/caso_biblioteca.docx' }
+      ]
+    },
+    2: {
+      nombre: 'SQL Avanzado',
+      semanas: '5 a 8',
+      temas: 'JOINs, Subconsultas, Funciones de agregación, Vistas',
+      archivos: [
+        { nombre: 'JOINs - Teoría y Ejemplos.pdf', url: 'archivos/unidad2/joins.pdf' },
+        { nombre: 'Subconsultas y Vistas.pdf', url: 'archivos/unidad2/subconsultas.pdf' },
+        { nombre: 'Práctica 2 - Consultas Avanzadas.sql', url: 'archivos/unidad2/practica2_sql.sql' },
+        { nombre: 'Script Base de Datos Tienda.sql', url: 'archivos/unidad2/script_tienda.sql' }
+      ]
+    },
+    3: {
+      nombre: 'PL/SQL',
+      semanas: '9 a 12',
+      temas: 'Procedimientos, Funciones, Triggers, Cursores',
+      archivos: [
+        { nombre: 'PL-SQL Fundamentos.pdf', url: 'archivos/unidad3/plsql_fundamentos.pdf' },
+        { nombre: 'Procedimientos y Funciones.pdf', url: 'archivos/unidad3/procedimientos.pdf' },
+        { nombre: 'Triggers y Cursores.pdf', url: 'archivos/unidad3/triggers.pdf' },
+        { nombre: 'Práctica 3 - PL-SQL.sql', url: 'archivos/unidad3/practica3_plsql.sql' }
+      ]
+    },
+    4: {
+      nombre: 'Administración de Base de Datos',
+      semanas: '13 a 16',
+      temas: 'Seguridad, Usuarios y permisos, Respaldos, Proyecto Final',
+      archivos: [
+        { nombre: 'Seguridad y Permisos.pdf', url: 'archivos/unidad4/seguridad.pdf' },
+        { nombre: 'Respaldos y Recuperación.pdf', url: 'archivos/unidad4/respaldos.pdf' },
+        { nombre: 'Guía Proyecto Final.pdf', url: 'archivos/unidad4/guia_proyecto.pdf' },
+        { nombre: 'Plantilla Proyecto.docx', url: 'archivos/unidad4/plantilla_proyecto.docx' }
+      ]
+    }
+  };
+
+  // Función auxiliar para formatear lista de archivos
+  function listarArchivos(unidadNum) {
+    const u = UNIDADES[unidadNum];
+    if (!u || !u.archivos) return '';
+    let html = '\n\n📁 <strong>Archivos disponibles:</strong>\n';
+    u.archivos.forEach((a, i) => {
+      html += (i + 1) + '. <a href="' + a.url + '" target="_blank" download>' + a.nombre + '</a>\n';
+    });
+    html += '\n<em>(Coloca los archivos reales en la carpeta "archivos/unidadX/")</em>';
+    return html;
+  }
+
+  const REGLAS = [
+    {
+      claves: ['hola', 'buenas', 'hey', 'saludos', 'buenos dias', 'buenas tardes', 'buenas noches', 'que tal'],
+      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos** de cada unidad\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n\n¿Sobre qué te gustaría saber?'
+    },
+    {
+      claves: ['cuantas unidades', 'que unidades', 'cuales son las unidades', 'lista de unidades', 'unidades del curso', 'temario', 'contenido del curso', 'unidad', 'unidades'],
+      respuesta: 'El curso tiene **4 unidades**:\n\n📘 **Unidad I** — Fundamentos (Semanas 1-4)\n📗 **Unidad II** — SQL Avanzado (Semanas 5-8)\n📙 **Unidad III** — PL/SQL (Semanas 9-12)\n📕 **Unidad IV** — Administración (Semanas 13-16)\n\n¿Quieres detalles o **archivos** de alguna? Escribe por ejemplo:\n• "unidad 2"\n• "archivos unidad 1"\n• "semana 10"'
+    },
+    {
+      claves: ['cuantas semanas', 'total de semanas', 'duracion', 'cronograma', 'semanas del curso', 'semana', 'semanas'],
+      respuesta: 'El curso dura **16 semanas** 📅 distribuidas así:\n\n• Unidad I → Semanas **1 a 4**\n• Unidad II → Semanas **5 a 8**\n• Unidad III → Semanas **9 a 12**\n• Unidad IV → Semanas **13 a 16**\n\nPregúntame por una semana específica: "¿qué se ve en la semana 10?" o "archivos de la semana 5"'
+    },
+    {
+      claves: ['profesor', 'docente', 'quien dicta', 'quien enseña', 'ramon', 'eduardo', 'quien es el profe', 'estudiante', 'quien eres', 'quien creo'],
+      respuesta: '👨‍🎓 **Eduardo Fredy Ramón Puente** es un **estudiante** de Ingeniería de Sistemas (V Ciclo) de la Universidad Peruana Los Andes. Este portafolio es parte de su curso de Base de Datos II.'
+    },
+    {
+      claves: ['universidad', 'upla', 'donde estudias', 'carrera', 'que carrera'],
+      respuesta: '🏫 **Universidad Peruana Los Andes (UPLA)**\n🎓 Carrera: Ingeniería de Sistemas\n📚 Curso: Base de Datos II\n📆 Año: 2026'
+    },
+    {
+      claves: ['que es una base de datos', 'definicion de base de datos', 'que es base de datos'],
+      respuesta: 'Una **base de datos** es un conjunto organizado de datos estructurados que permite almacenar, consultar y actualizar información de forma eficiente.\n\nEn el curso aprenderás a **diseñarlas** (Modelo ER), **consultarlas** (SQL) y **administrarlas** (PL/SQL y seguridad).'
+    },
+    {
+      claves: ['que es sql', 'sql basico', 'lenguaje sql', 'para que sirve sql'],
+      respuesta: '💻 **SQL** (Structured Query Language) es el lenguaje estándar para gestionar bases de datos relacionales. Permite:\n\n• CREATE, ALTER, DROP → definir estructuras\n• INSERT, UPDATE, DELETE → manipular datos\n• SELECT → consultar información\n\nSe estudia en la **Unidad II** (Semanas 5-8).'
+    },
+    {
+      claves: ['join', 'inner join', 'left join', 'right join', 'combinar tablas'],
+      respuesta: '🔗 Los **JOIN** combinan filas de dos o más tablas:\n\n• INNER JOIN → solo coincidencias\n• LEFT JOIN → todo de la izquierda + coincidencias\n• RIGHT JOIN → todo de la derecha + coincidencias\n• FULL JOIN → todo de ambas tablas\n\nTema de la **Unidad II** (Semanas 5-8).'
+    },
+    {
+      claves: ['subconsulta', 'subquery', 'consulta anidada'],
+      respuesta: '🧩 Una **subconsulta** es una consulta dentro de otra consulta. Se usa en WHERE, FROM o SELECT.\n\nEjemplo:\nSELECT nombre FROM alumnos\nWHERE id IN (SELECT id_alumno FROM matricula);\n\nTema de la **Unidad II** (Semanas 5-8).'
+    },
+    {
+      claves: ['normalizacion', 'normalizar', '1fn', '2fn', '3fn', 'forma normal'],
+      respuesta: '📐 La **normalización** organiza los datos para evitar redundancia y anomalías:\n\n• **1FN** → valores atómicos\n• **2FN** → sin dependencias parciales\n• **3FN** → sin dependencias transitivas\n\nTema de la **Unidad I** (Semanas 1-4).'
+    },
+    {
+      claves: ['modelo er', 'entidad relacion', 'diagrama er', 'entidad-relacion'],
+      respuesta: '🗺️ El **Modelo Entidad-Relación (ER)** representa la estructura de una base de datos mediante:\n\n• Entidades (tablas)\n• Atributos (columnas)\n• Relaciones (vínculos)\n• Cardinalidad (1:1, 1:N, M:N)\n\nTema de la **Unidad I** (Semanas 1-4).'
+    },
+    {
+      claves: ['pl/sql', 'plsql', 'procedimiento', 'funcion almacenada', 'trigger', 'disparador', 'cursor'],
+      respuesta: '⚙️ **PL/SQL** es el lenguaje procedural de Oracle. Incluye:\n\n• Procedimientos y funciones\n• Triggers (disparadores)\n• Cursores\n• Bloques anónimos\n\nTema de la **Unidad III** (Semanas 9-12).'
+    },
+    {
+      claves: ['seguridad', 'permisos', 'usuarios', 'respaldo', 'backup', 'administracion', 'recuperacion'],
+      respuesta: '🔐 La **Unidad IV** (Semanas 13-16) cubre:\n\n• Gestión de usuarios y permisos\n• Roles y privilegios\n• Respaldos y recuperación\n• Proyecto final del curso'
+    },
+    {
+      claves: ['examen', 'evaluacion', 'nota', 'parcial', 'final', 'practica calificada'],
+      respuesta: '📝 Las evaluaciones del curso suelen ser:\n\n• Prácticas calificadas por unidad\n• Examen parcial (aprox. Semana 8)\n• Examen final (aprox. Semana 16)\n• Proyecto integrador\n\nConsulta el sílabo para las fechas exactas.'
+    },
+    {
+      claves: ['horario', 'a que hora', 'cuando es clases', 'dias de clase'],
+      respuesta: '⏰ El horario lo define el docente al inicio del ciclo. Revisa el aula virtual o consulta directamente con el profesor.'
+    },
+    {
+      claves: ['proyecto', 'trabajo final', 'proyecto final'],
+      respuesta: '📦 El **Proyecto Final** se desarrolla en la **Unidad IV** (Semanas 13-16). Consiste en diseñar e implementar una base de datos completa aplicando todo lo aprendido en el curso.'
+    },
+    {
+      claves: ['gracias', 'thanks', 'te agradezco', 'muy amable'],
+      respuesta: '¡De nada! 😊 Si tienes otra pregunta, aquí estoy. ¡Muchos éxitos en Base de Datos II!'
+    },
+    {
+      claves: ['adios', 'chao', 'bye', 'hasta luego', 'nos vemos'],
+      respuesta: '¡Hasta luego! 👋 Que tengas un buen día de estudio.'
+    },
+    {
+      claves: ['ayuda', 'opciones', 'menu', 'que puedes hacer', 'que sabes', 'como funciona'],
+      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos de cada unidad\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n\nPrueba con: "unidad 3", "archivos unidad 2", "semana 5" o "¿qué es un JOIN?"'
+    }
+  ];
+
+  const MENSAJE_INICIAL =
+    '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\n' +
+    'Puedo indicarte las **unidades**, las **semanas**, los **archivos** de cada unidad, temas de **SQL / PL/SQL** y más.\n\n' +
+    '¿Sobre qué quieres saber? 👇';
+
+  const MENSAJE_FALLBACK =
+    'No estoy seguro de esa pregunta 😅. Puedo ayudarte con:\n\n' +
+    '• "¿Cuáles son las unidades?"\n' +
+    '• "¿Qué se ve en la semana 5?"\n' +
+    '• "Archivos de la unidad 2"\n' +
+    '• "¿Qué es un JOIN?"\n' +
+    '• "¿Quién es el estudiante?"\n' +
+    '• "¿Cuándo es el examen?"';
+
+  function normalizar(texto) {
+    return texto
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function formatearNegritas(texto) {
+    // Primero las negritas, luego los enlaces ya vienen en HTML
+    return texto.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  function obtenerRespuesta(entrada) {
+    const t = normalizar(entrada);
+    if (!t) return 'Escribe una pregunta para poder ayudarte 😊';
+
+    // ---- Detectar "archivos de la unidad X" o "materiales unidad X" ----
+    const mArchivosUnidad = t.match(/(?:archivos?|materiales?|documentos?|pdfs?|descargas?)\s*(?:de\s+)?(?:la\s+)?unidad\s*(iv|iii|ii|i|uno|dos|tres|cuatro|[1-4])\b/);
+    if (mArchivosUnidad) {
+      const mapaNum = {
+        'i': '1', 'ii': '2', 'iii': '3', 'iv': '4',
+        'uno': '1', 'dos': '2', 'tres': '3', 'cuatro': '4',
+        '1': '1', '2': '2', '3': '3', '4': '4'
+      };
+      const n = mapaNum[mArchivosUnidad[1]];
+      if (n) {
+        const u = UNIDADES[n];
+        return '📁 **Archivos de la Unidad ' + n + ': ' + u.nombre + '**\n\n' +
+               '📅 Semanas: ' + u.semanas + '\n' +
+               '📝 Temas: ' + u.temas +
+               listarArchivos(n);
+      }
+    }
+
+    // ---- Detectar "archivos de la semana X" ----
+    const mArchivosSemana = t.match(/(?:archivos?|materiales?|documentos?)\s*(?:de\s+)?(?:la\s+)?semana\s*(?:n[°º]?\s*)?(\d{1,2})/);
+    if (mArchivosSemana) {
+      const s = parseInt(mArchivosSemana[1], 10);
+      if (s >= 1 && s <= 16) {
+        const n = Math.ceil(s / 4);
+        const u = UNIDADES[n];
+        return '📁 **Archivos de la Semana ' + s + '** (Unidad ' + n + ')\n\n' +
+               '📚 Unidad: ' + u.nombre + '\n' +
+               '📝 Temas: ' + u.temas +
+               listarArchivos(n);
+      }
+      return 'El curso solo tiene semanas de la **1 a la 16**. Intenta con otro número 😉';
+    }
+
+    // ---- Semana específica ----
+    const mSemana = t.match(/semana\s*(?:n[°º]?\s*)?(\d{1,2})/);
+    if (mSemana) {
+      const s = parseInt(mSemana[1], 10);
+      if (s >= 1 && s <= 16) {
+        const n = Math.ceil(s / 4);
+        const u = UNIDADES[n];
+        return '📅 La **semana ' + s + '** pertenece a la **Unidad ' + n + ': ' + u.nombre + '**.\n\n' +
+               '📝 Temas: ' + u.temas +
+               listarArchivos(n);
+      }
+      return 'El curso solo tiene semanas de la **1 a la 16**. Intenta con otro número 😉';
+    }
+
+    // ---- Unidad específica ----
+    const mapaNum = {
+      'i': '1', 'ii': '2', 'iii': '3', 'iv': '4',
+      'uno': '1', 'dos': '2', 'tres': '3', 'cuatro': '4',
+      '1': '1', '2': '2', '3': '3', '4': '4'
+    };
+    const mUnidad = t.match(/unidad\s*(iv|iii|ii|i|uno|dos|tres|cuatro|[1-4])\b/);
+    if (mUnidad) {
+      const n = mapaNum[mUnidad[1]];
+      if (n) {
+        const u = UNIDADES[n];
+        return '📚 **Unidad ' + n + ': ' + u.nombre + '**\n\n' +
+               '📅 Semanas: ' + u.semanas + '\n' +
+               '📝 Temas: ' + u.temas +
+               listarArchivos(n);
+      }
+    }
+
+    // ---- Ordinales ----
+    const mOrdinal = t.match(/(primer|segund|tercer|cuart)[ao]?\s+unidad/);
+    if (mOrdinal) {
+      const mapaOrd = { 'primer': '1', 'segund': '2', 'tercer': '3', 'cuart': '4' };
+      const n = mapaOrd[mOrdinal[1]];
+      const u = UNIDADES[n];
+      return '📚 **Unidad ' + n + ': ' + u.nombre + '**\n\n' +
+             '📅 Semanas: ' + u.semanas + '\n' +
+             '📝 Temas: ' + u.temas +
+             listarArchivos(n);
+    }
+
+    // ---- Reglas generales ----
+    for (let i = 0; i < REGLAS.length; i++) {
+      const regla = REGLAS[i];
+      for (let j = 0; j < regla.claves.length; j++) {
+        if (t.indexOf(regla.claves[j]) !== -1) {
+          return regla.respuesta;
+        }
+      }
+    }
+    return MENSAJE_FALLBACK;
+  }
+
+  function agregarMensaje(texto, autor) {
+    const div = document.createElement('div');
+    div.className = 'msg ' + autor;
+    if (autor === 'bot') {
+      div.innerHTML = formatearNegritas(texto);
+    } else {
+      div.textContent = texto;
+    }
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function mostrarEscribiendo() {
+    const div = document.createElement('div');
+    div.className = 'msg bot';
+    div.id = 'typingMsg';
+    div.innerHTML = '<div class="typing"><span></span><span></span><span></span></div>';
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
+
+  function quitarEscribiendo() {
+    const el = document.getElementById('typingMsg');
+    if (el) el.remove();
+  }
+
+  function enviarMensaje(texto) {
+    const limpio = (texto || '').trim();
+    if (!limpio) return;
+    agregarMensaje(limpio, 'user');
+    chatInput.value = '';
+    mostrarEscribiendo();
+    const respuesta = obtenerRespuesta(limpio);
+    const retardo = 600 + Math.min(respuesta.length * 4, 700);
+    setTimeout(function () {
+      quitarEscribiendo();
+      agregarMensaje(respuesta, 'bot');
+    }, retardo);
+  }
+
+  chatToggle.addEventListener('click', function () {
+    const abierto = chatWindow.classList.toggle('open');
+    chatToggle.classList.toggle('active', abierto);
+    if (abierto) {
+      if (chatBadge) chatBadge.style.display = 'none';
+      if (chatMessages.children.length === 0) {
+        setTimeout(function () {
+          agregarMensaje(MENSAJE_INICIAL, 'bot');
+        }, 250);
+      }
+      setTimeout(function () { chatInput.focus(); }, 350);
+    }
+  });
+
+  chatForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    enviarMensaje(chatInput.value);
+  });
+
+  chatSuggestions.addEventListener('click', function (e) {
+    const chip = e.target.closest('.chip');
+    if (chip) enviarMensaje(chip.textContent);
+  });
+
+  chatClear.addEventListener('click', function () {
+    chatMessages.innerHTML = '';
+    agregarMensaje(MENSAJE_INICIAL, 'bot');
+    chatInput.focus();
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && chatWindow.classList.contains('open')) {
+      chatWindow.classList.remove('open');
+      chatToggle.classList.remove('active');
+    }
+  });
+})();
 </script>
 </body>
 </html>
