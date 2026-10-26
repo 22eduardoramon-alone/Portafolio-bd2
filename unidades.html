@@ -105,6 +105,21 @@
       color: var(--gris); max-width: 600px; margin: 0 auto;
       line-height: 1.8; font-size: 0.95em;
     }
+    .btn-actualizar {
+      margin-top: 18px;
+      background: rgba(0,229,255,0.08);
+      border: 1px solid rgba(0,229,255,0.4);
+      color: var(--cian);
+      padding: 8px 22px;
+      border-radius: 30px;
+      font-family: 'Lato', sans-serif;
+      font-size: 0.82em; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+      position: relative;
+    }
+    .btn-actualizar:hover { background: rgba(0,229,255,0.2); box-shadow: 0 0 12px rgba(0,229,255,0.35); }
+    .btn-actualizar:disabled { opacity: 0.5; cursor: wait; }
 
     .tabs-wrapper {
       background: var(--azul-navy);
@@ -197,11 +212,16 @@
       background: var(--cian); color: var(--azul-navy); font-weight: bold;
     }
     .semana-titulo { flex: 1; font-size: 0.92em; font-weight: 700; color: var(--blanco); letter-spacing: 0.5px; }
+    .semana-count {
+      font-size: 0.75em; color: var(--cian);
+      background: rgba(0,229,255,0.1); border: 1px solid rgba(0,229,255,0.25);
+      border-radius: 20px; padding: 2px 10px; white-space: nowrap;
+    }
     .semana-arrow { color: var(--cian); font-size: 0.8em; transition: transform 0.3s; }
     .semana-card.abierta .semana-arrow { transform: rotate(180deg); }
 
     .semana-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-    .semana-card.abierta .semana-body { max-height: 5000px; }
+    .semana-card.abierta .semana-body { max-height: 8000px; }
     .semana-body-inner { padding: 20px 22px; }
 
     /* ── ARCHIVOS GITHUB ── */
@@ -402,7 +422,8 @@
 <section class="hero-unidades">
   <p class="subtitulo">✦ Base de Datos II</p>
   <h2>Unidades del Curso</h2>
-  <p>Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
+  <p id="hero-texto">Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.</p>
+  <button class="btn-actualizar" id="btn-actualizar" onclick="actualizarArchivos()">↻ Actualizar archivos</button>
 </section>
 
 <div class="divisor"></div>
@@ -488,7 +509,9 @@
   /* ============================================================
      CONFIGURACIÓN PÚBLICA (sin token, igual para todas las cuentas)
      El repositorio debe ser PÚBLICO.
-     Estructura esperada: unidad1/semana1, unidad1/semana2, ... unidad4/semana4
+     El panel admin sube a:  [carpeta raíz opcional]/unidadN/semanaM/archivo
+     Aquí se detecta automáticamente en cualquier carpeta raíz
+     (por ejemplo "archivos/unidad1/semana1/..." o "unidad1/semana1/...").
      ============================================================ */
   const GH = {
     owner:  '22eduardoramon-alone',
@@ -496,8 +519,11 @@
     branch: 'main'
   };
 
-  const CACHE_KEY = 'gh_tree_cache_v2';
-  const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+  // Carpetas raíz posibles donde el admin puede haber subido los archivos
+  const ROOTS_POSIBLES = ['', 'archivos/'];
+
+  const CACHE_KEY = 'gh_tree_cache_v3';
+  const CACHE_TTL = 60 * 1000; // 1 minuto
 
   const API_HEADERS = { 'Accept': 'application/vnd.github+json' };
 
@@ -639,6 +665,7 @@
         <div class="semana-header" onclick="toggleSemana('u${u}s${s}')">
           <div class="semana-numero">S${globalWeek}</div>
           <div class="semana-titulo">Semana ${globalWeek} — ${titulosPorSemanaGlobal[globalWeek]}</div>
+          <div class="semana-count" id="count-u${u}s${s}" style="display:none"></div>
           <div class="semana-arrow">▼</div>
         </div>
         <div class="semana-body">
@@ -714,9 +741,10 @@
   }
 
   // Método 1: una sola petición con el árbol completo del repositorio
+  // (encuentra los archivos sin importar la carpeta raíz usada por el admin)
   async function listarPorArbol() {
     const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/git/trees/${GH.branch}?recursive=1`;
-    const r = await fetch(url, { headers: API_HEADERS });
+    const r = await fetch(url, { headers: API_HEADERS, cache: 'no-store' });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const data = await r.json();
     if (data.truncated) throw new Error('Árbol truncado');
@@ -725,22 +753,24 @@
       .map(t => ({ path: t.path, size: t.size || 0 }));
   }
 
-  // Método 2 (respaldo): una petición por carpeta
+  // Método 2 (respaldo): una petición por carpeta, probando cada raíz posible
   async function listarPorCarpetas() {
     const tareas = [];
     for (let u = 1; u <= 4; u++) {
       for (let s = 1; s <= 4; s++) {
-        const carpeta = `unidad${u}/semana${s}`;
-        tareas.push((async () => {
-          const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${carpeta}?ref=${GH.branch}`;
-          const r = await fetch(url, { headers: API_HEADERS });
-          if (r.status === 404) return [];
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          const items = await r.json();
-          return items
-            .filter(i => i.type === 'file')
-            .map(i => ({ path: i.path, size: i.size || 0 }));
-        })());
+        for (const root of ROOTS_POSIBLES) {
+          const carpeta = `${root}unidad${u}/semana${s}`;
+          tareas.push((async () => {
+            const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${carpeta}?ref=${GH.branch}`;
+            const r = await fetch(url, { headers: API_HEADERS, cache: 'no-store' });
+            if (r.status === 404) return [];
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            const items = await r.json();
+            return items
+              .filter(i => i.type === 'file')
+              .map(i => ({ path: i.path, size: i.size || 0 }));
+          })());
+        }
       }
     }
     const res = await Promise.all(tareas);
@@ -770,33 +800,47 @@
   }
 
   /* ---------- Render de archivos por semana ---------- */
+  // Detecta "unidadN/semanaM/archivo" en cualquier parte de la ruta
+  // (con o sin carpeta raíz como "archivos/")
+  const RE_RUTA = /(?:^|\/)unidad(\d+)\/semana(\d+)\/(.+)$/i;
+
   function archivosDeSemana(todos, unidad, semana) {
-    const prefijo = `unidad${unidad}/semana${semana}/`.toLowerCase();
-    return todos
-      .filter(f => f.path.toLowerCase().startsWith(prefijo))
-      .map(f => ({
-        path: f.path,
-        size: f.size,
-        nombre: f.path.slice(prefijo.length)
-      }))
-      .filter(f => f.nombre && !f.nombre.endsWith('.gitkeep'))
-      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { numeric: true }));
+    const vistos = new Set();
+    const lista = [];
+    for (const f of todos) {
+      const m = f.path.match(RE_RUTA);
+      if (!m) continue;
+      if (parseInt(m[1], 10) !== unidad || parseInt(m[2], 10) !== semana) continue;
+      const nombre = m[3];
+      if (!nombre || nombre.endsWith('.gitkeep')) continue;
+      const clave = f.path.toLowerCase();
+      if (vistos.has(clave)) continue;
+      vistos.add(clave);
+      lista.push({ path: f.path, size: f.size, nombre });
+    }
+    return lista.sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { numeric: true }));
   }
 
   function renderSemana(unidad, semana, todos) {
     const container = document.getElementById(`gh-u${unidad}s${semana}`);
     if (!container) return;
 
+    const countEl = document.getElementById(`count-u${unidad}s${semana}`);
     const files = archivosDeSemana(todos, unidad, semana);
     container.className = '';
     container.innerHTML = '';
 
     if (!files.length) {
       container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
+      if (countEl) countEl.style.display = 'none';
       marcarSemanaCompletada(unidad, semana, false);
       return;
     }
 
+    if (countEl) {
+      countEl.textContent = files.length + (files.length === 1 ? ' archivo' : ' archivos');
+      countEl.style.display = '';
+    }
     marcarSemanaCompletada(unidad, semana, true);
 
     const ul = document.createElement('ul');
@@ -906,6 +950,14 @@
     }
   }
 
+  async function actualizarArchivos() {
+    const btn = document.getElementById('btn-actualizar');
+    if (btn) { btn.disabled = true; btn.textContent = 'Actualizando...'; }
+    await cargarEstadoInicial(true);
+    if (btn) { btn.disabled = false; btn.textContent = '↻ Actualizar archivos'; }
+  }
+  window.actualizarArchivos = actualizarArchivos;
+
   /* ---------- Interacción ---------- */
   window.toggleSemana = function (id) {
     const card = document.getElementById(id);
@@ -920,7 +972,7 @@
   };
 
   window.addEventListener('load', async () => {
-    const heroP = document.querySelector('.hero-unidades p:last-child');
+    const heroP = document.getElementById('hero-texto');
     const textoOriginal = 'Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
     if (heroP) heroP.textContent = '✅ Semanas 1 a 16 disponibles. Cargando progreso...';
 
