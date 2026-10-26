@@ -177,9 +177,6 @@
     }
     .semana-card.completada { border-color: rgba(0,229,255,0.35); }
     .semana-card.completada .semana-header { background: linear-gradient(90deg, rgba(0,229,255,0.13), transparent); }
-    .semana-card.pendiente .semana-numero { border-color: #4a6a8a; color: #4a6a8a; }
-    .semana-card.pendiente .semana-header { opacity: 0.85; }
-    .semana-card.pendiente .semana-titulo { color: #7a9bc0; }
 
     .semana-header {
       display: flex; align-items: center; gap: 15px;
@@ -204,33 +201,8 @@
     .semana-card.abierta .semana-arrow { transform: rotate(180deg); }
 
     .semana-body { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-    .semana-card.abierta .semana-body { max-height: 2000px; }
+    .semana-card.abierta .semana-body { max-height: 5000px; }
     .semana-body-inner { padding: 20px 22px; }
-
-    .proximamente-msg {
-      display: flex; flex-direction: column; align-items: center; gap: 12px;
-      padding: 25px 15px; color: #7a9bc0; text-align: center;
-      background: rgba(0,0,0,0.2); border-radius: 12px; font-size: 0.9em;
-    }
-    .proximamente-msg span:first-child { font-size: 2.3em; }
-
-    .actividad-lista { list-style: none; }
-    .actividad-lista li {
-      display: flex; align-items: flex-start; gap: 12px;
-      padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05);
-      color: var(--gris); font-size: 0.9em; line-height: 1.6;
-    }
-    .actividad-lista li:last-child { border-bottom: none; }
-    .act-icono { font-size: 1.1em; flex-shrink: 0; margin-top: 1px; }
-    .act-texto strong { display: block; color: var(--blanco); font-size: 0.92em; margin-bottom: 3px; }
-    .badge {
-      display: inline-block; padding: 3px 10px; border-radius: 20px;
-      font-size: 0.72em; letter-spacing: 1px; text-transform: uppercase; margin-top: 6px;
-    }
-    .badge-teoria     { background: rgba(0,229,255,0.1);  color: var(--cian);  border: 1px solid rgba(0,229,255,0.3); }
-    .badge-practica   { background: rgba(0,255,150,0.08); color: #00ff96;      border: 1px solid rgba(0,255,150,0.25); }
-    .badge-tarea      { background: rgba(255,200,0,0.08); color: #ffd000;      border: 1px solid rgba(255,200,0,0.25); }
-    .badge-evaluacion { background: rgba(255,80,80,0.08); color: #ff6b6b;      border: 1px solid rgba(255,80,80,0.25); }
 
     /* ── ARCHIVOS GITHUB ── */
     .gh-archivos-section {
@@ -254,7 +226,6 @@
     }
     .gh-archivo-item:hover { border-color: rgba(0,229,255,0.35); }
 
-    /* Fila principal del archivo */
     .gh-archivo-fila {
       display: flex; align-items: center; gap: 8px;
       padding: 9px 12px;
@@ -263,13 +234,13 @@
     .gh-archivo-nombre { flex: 1; color: #c8ddf0; word-break: break-all; font-size: 0.83em; }
     .gh-archivo-size   { color: #4a6a8a; font-size: 0.8em; white-space: nowrap; }
 
-    /* Botones de acción */
     .gh-acciones { display: flex; gap: 5px; flex-shrink: 0; }
     .gh-btn {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 4px 9px;
       border-radius: 20px;
       font-size: 0.75em; font-weight: 700;
+      font-family: 'Lato', sans-serif;
       text-decoration: none; cursor: pointer;
       transition: all 0.2s; border: 1px solid; white-space: nowrap;
     }
@@ -287,7 +258,6 @@
     }
     .gh-btn-dl:hover { background: rgba(0,255,150,0.15); border-color: #00ff96; }
 
-    /* Zona de previsualización */
     .gh-preview {
       display: none;
       border-top: 1px solid rgba(0,229,255,0.12);
@@ -296,21 +266,16 @@
     }
     .gh-preview.visible { display: block; }
 
-    /* Imagen */
     .gh-preview img {
       max-width: 100%; max-height: 480px;
       border-radius: 8px; display: block; margin: 0 auto;
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
-
-    /* PDF / iframe */
     .gh-preview iframe {
       width: 100%; height: 520px; border: none;
       border-radius: 8px; display: block;
       background: #fff;
     }
-
-    /* Texto / código */
     .gh-preview pre {
       background: #06101e;
       border: 1px solid rgba(0,229,255,0.12);
@@ -320,15 +285,11 @@
       white-space: pre-wrap; word-break: break-all;
       max-height: 400px; overflow-y: auto;
     }
-
-    /* Mensaje sin preview */
     .gh-preview-no {
       text-align: center; padding: 22px 10px;
       color: #4a6a8a; font-size: 0.83em;
     }
     .gh-preview-no span { font-size: 2em; display: block; margin-bottom: 8px; }
-
-    /* Loading preview */
     .gh-preview-loading {
       display: flex; align-items: center; justify-content: center;
       gap: 10px; padding: 20px; color: #3a7090; font-size: 0.83em;
@@ -336,6 +297,13 @@
 
     .gh-sin-archivos { color: #3a5a7a; font-size: 0.8em; font-style: italic; padding: 4px 2px; }
     .gh-loading { color: #3a6080; font-size: 0.8em; display: flex; align-items: center; gap: 7px; }
+    .gh-error { color: #ff6b6b; font-size: 0.8em; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .gh-reintentar {
+      background: rgba(255,107,107,0.1); border: 1px solid rgba(255,107,107,0.4);
+      color: #ff6b6b; border-radius: 20px; padding: 3px 12px;
+      font-size: 0.95em; cursor: pointer; font-family: 'Lato', sans-serif;
+    }
+    .gh-reintentar:hover { background: rgba(255,107,107,0.25); }
     .gh-mini-spin {
       width: 12px; height: 12px;
       border: 1.5px solid rgba(0,229,255,0.25);
@@ -412,6 +380,7 @@
       .tab-btn { font-size: 0.75em; padding: 15px 8px; }
       .unidad-contenido { padding: 40px 20px; }
       .gh-preview iframe { height: 380px; }
+      .gh-archivo-fila { flex-wrap: wrap; }
     }
   </style>
 </head>
@@ -516,21 +485,26 @@
 <footer>© 2026 Universidad Peruana Los Andes</footer>
 
 <script>
-  const GH_PUBLIC = {
+  /* ============================================================
+     CONFIGURACIÓN PÚBLICA (sin token, igual para todas las cuentas)
+     El repositorio debe ser PÚBLICO.
+     Estructura esperada: unidad1/semana1, unidad1/semana2, ... unidad4/semana4
+     ============================================================ */
+  const GH = {
     owner:  '22eduardoramon-alone',
     repo:   'Portafolio-bd2',
-    branch: 'main',
-    root:   '',
-    token:  ''
+    branch: 'main'
   };
 
-  let GH = null;
-  try { const raw = localStorage.getItem('gh_cfg'); if (raw) GH = JSON.parse(raw); } catch(e) {}
-  if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
+  const CACHE_KEY = 'gh_tree_cache_v2';
+  const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
 
-  function ghPath(rel) {
-    const root = GH && GH.root ? GH.root.replace(/\/$/, '') : '';
-    return root ? root + '/' + rel : rel;
+  const API_HEADERS = { 'Accept': 'application/vnd.github+json' };
+
+  /* ---------- Utilidades ---------- */
+  function rawUrl(path) {
+    const enc = path.split('/').map(encodeURIComponent).join('/');
+    return `https://raw.githubusercontent.com/${GH.owner}/${GH.repo}/${GH.branch}/${enc}`;
   }
 
   function fileEmoji(name) {
@@ -561,11 +535,11 @@
     return 'ninguno';
   }
 
+  /* ---------- Previsualización ---------- */
   async function togglePreview(btnEl, previewEl, downloadUrl, fileName) {
     const tipo = tipoPreview(fileName);
-    const yaAbierto = previewEl.classList.contains('visible');
 
-    if (yaAbierto) {
+    if (previewEl.classList.contains('visible')) {
       previewEl.classList.remove('visible');
       btnEl.classList.remove('activo');
       btnEl.textContent = '👁 Ver';
@@ -582,13 +556,31 @@
     previewEl.innerHTML = '<div class="gh-preview-loading"><span class="gh-mini-spin"></span> Cargando previsualización...</div>';
 
     if (tipo === 'imagen') {
-      previewEl.innerHTML = `<img src="${downloadUrl}" alt="${fileName}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'gh-preview-no\\'><span>⚠️</span>No se pudo cargar la imagen.</div>'">`;
+      const img = document.createElement('img');
+      img.src = downloadUrl;
+      img.alt = fileName;
+      img.loading = 'lazy';
+      img.onerror = () => {
+        previewEl.innerHTML = '<div class="gh-preview-no"><span>⚠️</span>No se pudo cargar la imagen.</div>';
+      };
+      img.onload = () => {
+        previewEl.innerHTML = '';
+        previewEl.appendChild(img);
+      };
     } else if (tipo === 'pdf') {
       const visorUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(downloadUrl)}&embedded=true`;
-      previewEl.innerHTML = `<iframe src="${visorUrl}" title="${fileName}"></iframe>`;
+      previewEl.innerHTML = '';
+      const ifr = document.createElement('iframe');
+      ifr.src = visorUrl;
+      ifr.title = fileName;
+      previewEl.appendChild(ifr);
     } else if (tipo === 'office') {
       const visorUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(downloadUrl)}`;
-      previewEl.innerHTML = `<iframe src="${visorUrl}" title="${fileName}"></iframe>`;
+      previewEl.innerHTML = '';
+      const ifr = document.createElement('iframe');
+      ifr.src = visorUrl;
+      ifr.title = fileName;
+      previewEl.appendChild(ifr);
     } else if (tipo === 'texto') {
       try {
         const r = await fetch(downloadUrl);
@@ -598,69 +590,55 @@
         pre.textContent = texto.length > 8000 ? texto.slice(0, 8000) + '\n\n… (archivo truncado para previsualización)' : texto;
         previewEl.innerHTML = '';
         previewEl.appendChild(pre);
-      } catch(e) {
-        previewEl.innerHTML = `<div class="gh-preview-no"><span>⚠️</span>No se pudo cargar el texto: ${e.message}</div>`;
+      } catch (e) {
+        previewEl.innerHTML = '';
+        const div = document.createElement('div');
+        div.className = 'gh-preview-no';
+        div.innerHTML = '<span>⚠️</span>';
+        div.appendChild(document.createTextNode('No se pudo cargar el texto: ' + e.message));
+        previewEl.appendChild(div);
       }
     } else {
-      previewEl.innerHTML = `<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong>Descargar</strong> para abrirlo.</div>`;
+      previewEl.innerHTML = '<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong>Descargar</strong> para abrirlo.</div>';
     }
   }
 
+  /* ---------- Títulos de semanas ---------- */
+  const titulosPorSemanaGlobal = {
+    1:  "Formulación del Proyecto y Selección de la Arquitectura",
+    2:  "Despliegue y Configuración de Monitores de Datos (DBMS)",
+    3:  "Modelamiento Físico y Mecanismos de Integración",
+    4:  "Sustentación y Validación de la Infraestructura de Datos",
+    5:  "Configuración de la Instancia y Gestión de Memoria del Servidor",
+    6:  "Arquitectura Física de Almacenamiento y Distribución de Archivos",
+    7:  "Organización de Esquemas Lógicos y Estrategias de Indexación",
+    8:  "Sustentación y Pruebas de Carga de la Infraestructura de Almacenamiento",
+    9:  "Configuración de Conectividad de Red y SEGURIDAD DEL Entorno",
+    10: "Gestión de Privilegios, Roles y Auditoría de Datos",
+    11: "Estrategias de Backups Avanzados y Automatización (Jobs)",
+    12: "Recuperación ante Fallos y Planes de Contingencia",
+    13: "Auditoria, Monitoreo de Eventos y Diagnóstico de Alertas",
+    14: "Afinamiento y Optimización del Desempeño de Consultas (Tuning)",
+    15: "Implementación de Tecnologías de Recuperación Flashback",
+    16: "Sustentación Final e Integración del Proyecto de la Asignatura"
+  };
+
   const semanasCompletadas = { 1:{}, 2:{}, 3:{}, 4:{} };
 
-  const titulosPorSemanaGlobal = {};
-  for (let i = 1; i <= 16; i++) {
-    if      (i === 1) titulosPorSemanaGlobal[i] = "Introducción a la Arquitectura de BD";
-    else if (i === 2) titulosPorSemanaGlobal[i] = "Gestor de BD";
-    else if (i === 3) titulosPorSemanaGlobal[i] = "Diseño de Arquitectura de BD";
-    else if (i === 4) titulosPorSemanaGlobal[i] = "Tipo de Arquitectura de BD";
-    else if (i === 5) titulosPorSemanaGlobal[i] = "Introducción a SQL Server";
-    else if (i === 6) titulosPorSemanaGlobal[i] = "Base de Datos de Microsoft SQL Server 2022";
-    else if (i === 7) titulosPorSemanaGlobal[i] = "Operaciones de Mantenimiento de Datos";
-    else if (i === 8) titulosPorSemanaGlobal[i] = "Introducción a las Consultas";
-    else if (i === 9) titulosPorSemanaGlobal[i] = "Introducción a PL/SQL";
-    else if (i === 10) titulosPorSemanaGlobal[i] = "Estructuras de Control en PL/SQL";
-    else if (i === 11) titulosPorSemanaGlobal[i] = "Cursores y Manejo de Excepciones";
-    else if (i === 12) titulosPorSemanaGlobal[i] = "Procedimientos y Funciones";
-    else if (i === 13) titulosPorSemanaGlobal[i] = "Administración de Bases de Datos";
-    else if (i === 14) titulosPorSemanaGlobal[i] = "Seguridad y Gestión de Usuarios";
-    else if (i === 15) titulosPorSemanaGlobal[i] = "Transacciones y Bloqueos";
-    else if (i === 16) titulosPorSemanaGlobal[i] = "Proyecto Final";
-    if      (i === 1) titulosPorSemanaGlobal[i] = "Formulación del Proyecto y Selección de la Arquitectura";
-    else if (i === 2) titulosPorSemanaGlobal[i] = "Despliegue y Configuración de Monitores de Datos (DBMS)";
-    else if (i === 3) titulosPorSemanaGlobal[i] = "Modelamiento Físico y Mecanismos de Integración";
-    else if (i === 4) titulosPorSemanaGlobal[i] = "Sustentación y Validación de la Infraestructura de Datos";
-    else if (i === 5) titulosPorSemanaGlobal[i] = "Configuración de la Instancia y Gestión de Memoria del Servidor";
-    else if (i === 6) titulosPorSemanaGlobal[i] = "Arquitectura Física de Almacenamiento y Distribución de Archivos";
-    else if (i === 7) titulosPorSemanaGlobal[i] = "Organización de Esquemas Lógicos y Estrategias de Indezación";
-    else if (i === 8) titulosPorSemanaGlobal[i] = "Sustentación y Pruebas de Carga de la Infraestructura de Almacenamiento";
-    else if (i === 9) titulosPorSemanaGlobal[i] = "Configuración de Conectividad de Red y SEGURIDAD DEL Entorno";
-    else if (i === 10) titulosPorSemanaGlobal[i] = "Gestión de Privilegios, Roles y Auditoría de Datos";
-    else if (i === 11) titulosPorSemanaGlobal[i] = "Estrategias de Backups Avanzados y Automatización (Jobs)";
-    else if (i === 12) titulosPorSemanaGlobal[i] = "Recuperación ante Fallos y Planes de Contingencia";
-    else if (i === 13) titulosPorSemanaGlobal[i] = "Auditoria, Monitoreo de Eventos y Diagnóstico de Alertas";
-    else if (i === 14) titulosPorSemanaGlobal[i] = "Afinamiento y Optimización del Desempeño de Consultas (Tuning)";
-    else if (i === 15) titulosPorSemanaGlobal[i] = "Implementación de Tecnologías de Recuperación Flachback";
-    else if (i === 16) titulosPorSemanaGlobal[i] = "Sustentación Final e Integración del Proyecto de la Asignatura";
-  }
-
-  // Construir tarjetas - Eliminada la sección "Material y recursos"
+  /* ---------- Construir tarjetas ---------- */
   for (let u = 1; u <= 4; u++) {
     const grid = document.getElementById(`semanas-grid-${u}`);
     if (!grid) continue;
     grid.innerHTML = '';
     for (let s = 1; s <= 4; s++) {
       const globalWeek = (u - 1) * 4 + s;
-      const tituloSemana = titulosPorSemanaGlobal[globalWeek];
-
       const card = document.createElement('div');
       card.className = 'semana-card';
       card.id = `u${u}s${s}`;
-
       card.innerHTML = `
         <div class="semana-header" onclick="toggleSemana('u${u}s${s}')">
           <div class="semana-numero">S${globalWeek}</div>
-          <div class="semana-titulo">Semana ${globalWeek} — ${tituloSemana}</div>
+          <div class="semana-titulo">Semana ${globalWeek} — ${titulosPorSemanaGlobal[globalWeek]}</div>
           <div class="semana-arrow">▼</div>
         </div>
         <div class="semana-body">
@@ -678,18 +656,19 @@
     }
   }
 
+  /* ---------- Progreso ---------- */
   function marcarSemanaCompletada(unidad, semana, completada) {
     const globalWeek = (unidad - 1) * 4 + semana;
     const card = document.getElementById(`u${unidad}s${semana}`);
     if (!card) return;
     semanasCompletadas[unidad][semana] = completada;
     const numeroDiv = card.querySelector('.semana-numero');
-    if (completada) { 
-      card.classList.add('completada'); 
-      numeroDiv.textContent = '✓'; 
-    } else { 
-      card.classList.remove('completada'); 
-      numeroDiv.textContent = `S${globalWeek}`; 
+    if (completada) {
+      card.classList.add('completada');
+      numeroDiv.textContent = '✓';
+    } else {
+      card.classList.remove('completada');
+      numeroDiv.textContent = `S${globalWeek}`;
     }
     actualizarProgresoUnidad(unidad);
   }
@@ -718,105 +697,222 @@
     if (completadoDiv) completadoDiv.classList.toggle('visible', completadas === 4);
   }
 
-  async function cargarArchivosGH(unidad, semana, forceReload = false) {
-    const globalWeek = (unidad - 1) * 4 + semana;
-    const slotId = `gh-u${unidad}s${semana}`;
-    const container = document.getElementById(slotId);
+  /* ---------- Obtención de archivos desde GitHub (sin token) ---------- */
+  function leerCache(ignorarTTL) {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (!raw) return null;
+      const c = JSON.parse(raw);
+      if (!c || !Array.isArray(c.files)) return null;
+      if (!ignorarTTL && Date.now() - c.time > CACHE_TTL) return null;
+      return c.files;
+    } catch (e) { return null; }
+  }
+
+  function guardarCache(files) {
+    try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), files })); } catch (e) {}
+  }
+
+  // Método 1: una sola petición con el árbol completo del repositorio
+  async function listarPorArbol() {
+    const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/git/trees/${GH.branch}?recursive=1`;
+    const r = await fetch(url, { headers: API_HEADERS });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    if (data.truncated) throw new Error('Árbol truncado');
+    return data.tree
+      .filter(t => t.type === 'blob')
+      .map(t => ({ path: t.path, size: t.size || 0 }));
+  }
+
+  // Método 2 (respaldo): una petición por carpeta
+  async function listarPorCarpetas() {
+    const tareas = [];
+    for (let u = 1; u <= 4; u++) {
+      for (let s = 1; s <= 4; s++) {
+        const carpeta = `unidad${u}/semana${s}`;
+        tareas.push((async () => {
+          const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${carpeta}?ref=${GH.branch}`;
+          const r = await fetch(url, { headers: API_HEADERS });
+          if (r.status === 404) return [];
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          const items = await r.json();
+          return items
+            .filter(i => i.type === 'file')
+            .map(i => ({ path: i.path, size: i.size || 0 }));
+        })());
+      }
+    }
+    const res = await Promise.all(tareas);
+    return res.flat();
+  }
+
+  async function obtenerTodosLosArchivos(forzar) {
+    if (!forzar) {
+      const c = leerCache(false);
+      if (c) return c;
+    }
+    let files;
+    try {
+      files = await listarPorArbol();
+    } catch (e1) {
+      try {
+        files = await listarPorCarpetas();
+      } catch (e2) {
+        // Último recurso: copia en caché aunque esté vencida
+        const vieja = leerCache(true);
+        if (vieja) return vieja;
+        throw e2;
+      }
+    }
+    guardarCache(files);
+    return files;
+  }
+
+  /* ---------- Render de archivos por semana ---------- */
+  function archivosDeSemana(todos, unidad, semana) {
+    const prefijo = `unidad${unidad}/semana${semana}/`.toLowerCase();
+    return todos
+      .filter(f => f.path.toLowerCase().startsWith(prefijo))
+      .map(f => ({
+        path: f.path,
+        size: f.size,
+        nombre: f.path.slice(prefijo.length)
+      }))
+      .filter(f => f.nombre && !f.nombre.endsWith('.gitkeep'))
+      .sort((a, b) => a.nombre.localeCompare(b.nombre, 'es', { numeric: true }));
+  }
+
+  function renderSemana(unidad, semana, todos) {
+    const container = document.getElementById(`gh-u${unidad}s${semana}`);
     if (!container) return;
 
-    if (!GH || !GH.owner || !GH.repo) {
-      container.className = '';
-      container.innerHTML = '<span class="gh-sin-archivos">Sin conexión a GitHub configurada</span>';
+    const files = archivosDeSemana(todos, unidad, semana);
+    container.className = '';
+    container.innerHTML = '';
+
+    if (!files.length) {
+      container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
+      marcarSemanaCompletada(unidad, semana, false);
       return;
     }
-    if (container.getAttribute('data-loading') === 'true' && !forceReload) return;
-    container.setAttribute('data-loading', 'true');
-    container.className = 'gh-loading';
-    container.innerHTML = '<span class="gh-mini-spin"></span>Cargando...';
 
-    const fullPath = ghPath(`unidad${unidad}/semana${semana}`);
-    const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/${fullPath}?ref=${GH.branch || 'main'}`;
+    marcarSemanaCompletada(unidad, semana, true);
 
-    try {
-      const headers = { 'Accept': 'application/vnd.github+json' };
-      if (GH.token) headers['Authorization'] = 'Bearer ' + GH.token;
-      const r = await fetch(url, { headers });
+    const ul = document.createElement('ul');
+    ul.className = 'gh-archivos-lista';
 
-      if (r.status === 404) {
-        container.className = '';
-        container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
-        marcarSemanaCompletada(unidad, semana, false);
-        container.removeAttribute('data-loading');
-        return;
+    files.forEach((f, idx) => {
+      const url = rawUrl(f.path);
+      const previewId = `prev-${unidad}-${semana}-${idx}`;
+
+      const li = document.createElement('li');
+      li.className = 'gh-archivo-item';
+
+      const fila = document.createElement('div');
+      fila.className = 'gh-archivo-fila';
+
+      const emoji = document.createElement('span');
+      emoji.style.cssText = 'font-size:1.15em;flex-shrink:0';
+      emoji.textContent = fileEmoji(f.nombre);
+
+      const nombre = document.createElement('span');
+      nombre.className = 'gh-archivo-nombre';
+      nombre.textContent = f.nombre;
+
+      const size = document.createElement('span');
+      size.className = 'gh-archivo-size';
+      size.textContent = fmtSize(f.size);
+
+      const acciones = document.createElement('div');
+      acciones.className = 'gh-acciones';
+
+      const preview = document.createElement('div');
+      preview.className = 'gh-preview';
+      preview.id = previewId;
+
+      const btnVer = document.createElement('button');
+      btnVer.className = 'gh-btn gh-btn-ver';
+      btnVer.textContent = '👁 Ver';
+      btnVer.addEventListener('click', () => togglePreview(btnVer, preview, url, f.nombre));
+
+      const btnDl = document.createElement('a');
+      btnDl.className = 'gh-btn gh-btn-dl';
+      btnDl.href = url;
+      btnDl.target = '_blank';
+      btnDl.rel = 'noopener';
+      btnDl.setAttribute('download', f.nombre.split('/').pop());
+      btnDl.textContent = '↓ Descargar';
+
+      acciones.appendChild(btnVer);
+      acciones.appendChild(btnDl);
+      fila.appendChild(emoji);
+      fila.appendChild(nombre);
+      fila.appendChild(size);
+      fila.appendChild(acciones);
+      li.appendChild(fila);
+      li.appendChild(preview);
+      ul.appendChild(li);
+    });
+
+    container.appendChild(ul);
+  }
+
+  function renderError(mensaje) {
+    for (let u = 1; u <= 4; u++) {
+      for (let s = 1; s <= 4; s++) {
+        const container = document.getElementById(`gh-u${u}s${s}`);
+        if (!container) continue;
+        container.className = 'gh-error';
+        container.innerHTML = '';
+        const span = document.createElement('span');
+        span.textContent = 'No se pudieron cargar los archivos (' + mensaje + ').';
+        const btn = document.createElement('button');
+        btn.className = 'gh-reintentar';
+        btn.textContent = '↻ Reintentar';
+        btn.addEventListener('click', () => cargarEstadoInicial(true));
+        container.appendChild(span);
+        container.appendChild(btn);
       }
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-
-      const items = await r.json();
-      const files = items.filter(i => i.type === 'file');
-
-      if (!files.length) {
-        container.className = '';
-        container.innerHTML = '<span class="gh-sin-archivos">Sin archivos subidos aún</span>';
-        marcarSemanaCompletada(unidad, semana, false);
-        container.removeAttribute('data-loading');
-        return;
-      }
-
-      marcarSemanaCompletada(unidad, semana, true);
-
-      container.className = '';
-      const ul = document.createElement('ul');
-      ul.className = 'gh-archivos-lista';
-
-      files.forEach((f, idx) => {
-        const previewId = `prev-${unidad}-${semana}-${idx}`;
-        const li = document.createElement('li');
-        li.className = 'gh-archivo-item';
-        li.innerHTML = `
-          <div class="gh-archivo-fila">
-            <span style="font-size:1.15em;flex-shrink:0">${fileEmoji(f.name)}</span>
-            <span class="gh-archivo-nombre">${f.name}</span>
-            <span class="gh-archivo-size">${fmtSize(f.size)}</span>
-            <div class="gh-acciones">
-              <button class="gh-btn gh-btn-ver" id="btn-${previewId}" onclick="togglePreview(this, document.getElementById('${previewId}'), '${f.download_url}', '${f.name}')">👁 Ver</button>
-              <a href="${f.download_url}" target="_blank" download class="gh-btn gh-btn-dl">↓ Descargar</a>
-            </div>
-          </div>
-          <div class="gh-preview" id="${previewId}"></div>
-        `;
-        ul.appendChild(li);
-      });
-
-      container.parentNode.replaceChild(ul, container);
-
-    } catch(e) {
-      container.className = '';
-      container.innerHTML = `<span style="color:#ff6b6b;font-size:.78em">Error al cargar: ${e.message}</span>`;
-      container.removeAttribute('data-loading');
     }
   }
 
-  window.toggleSemana = function(id) {
-    const card = document.getElementById(id);
-    if (!card) return;
-    card.classList.toggle('abierta');
-    const match = id.match(/^u(\d)s(\d)$/);
-    if (match && card.classList.contains('abierta')) {
-      cargarArchivosGH(parseInt(match[1]), parseInt(match[2]));
+  function renderCargando() {
+    for (let u = 1; u <= 4; u++) {
+      for (let s = 1; s <= 4; s++) {
+        const container = document.getElementById(`gh-u${u}s${s}`);
+        if (!container) continue;
+        container.className = 'gh-loading';
+        container.innerHTML = '<span class="gh-mini-spin"></span>Cargando...';
+      }
     }
+  }
+
+  let cargaEnCurso = false;
+
+  async function cargarEstadoInicial(forzar) {
+    if (cargaEnCurso) return;
+    cargaEnCurso = true;
+    renderCargando();
+    try {
+      const todos = await obtenerTodosLosArchivos(!!forzar);
+      for (let u = 1; u <= 4; u++) {
+        for (let s = 1; s <= 4; s++) renderSemana(u, s, todos);
+      }
+    } catch (e) {
+      renderError(e.message);
+    } finally {
+      cargaEnCurso = false;
+    }
+  }
+
+  /* ---------- Interacción ---------- */
+  window.toggleSemana = function (id) {
+    const card = document.getElementById(id);
+    if (card) card.classList.toggle('abierta');
   };
 
-  async function cargarEstadoInicial() {
-    if (!GH || !GH.owner || !GH.repo) return;
-    const promesas = [];
-    for (let u = 1; u <= 4; u++)
-      for (let s = 1; s <= 4; s++)
-        promesas.push(cargarArchivosGH(u, s, true));
-    await Promise.all(promesas);
-    for (let u = 1; u <= 4; u++) actualizarProgresoUnidad(u);
-  }
-
-  window.mostrarUnidad = function(num, btn) {
+  window.mostrarUnidad = function (num, btn) {
     document.querySelectorAll('.unidad-contenido').forEach(u => u.classList.remove('activo'));
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
     document.getElementById('unidad-' + num).classList.add('activo');
@@ -824,13 +920,13 @@
   };
 
   window.addEventListener('load', async () => {
-    try { const raw = localStorage.getItem('gh_cfg'); if (raw) GH = JSON.parse(raw); } catch(e) {}
-    if (!GH || !GH.owner || !GH.repo) GH = GH_PUBLIC;
+    const heroP = document.querySelector('.hero-unidades p:last-child');
+    const textoOriginal = 'Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
+    if (heroP) heroP.textContent = '✅ Semanas 1 a 16 disponibles. Cargando progreso...';
 
-    const heroP = document.querySelector('.hero-unidades p');
-    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 16 disponibles. Cargando progreso...';
-    await cargarEstadoInicial();
-    if (heroP) heroP.innerHTML = '✅ Semanas 1 a 16 disponibles · El progreso se actualiza automáticamente con los archivos subidos en GitHub.';
+    await cargarEstadoInicial(false);
+
+    if (heroP) heroP.textContent = '✅ ' + textoOriginal;
 
     const ua = localStorage.getItem('unidadActiva');
     if (ua && ua >= 1 && ua <= 4) {
