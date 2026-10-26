@@ -437,6 +437,13 @@
       font-weight: 600;
     }
     .msg.bot a:hover { color: #40f0ff; }
+    .msg.user {
+      align-self: flex-end;
+      background: linear-gradient(135deg, #00e5ff 0%, #0091ea 100%);
+      color: #06121f; font-weight: 600;
+      border-bottom-right-radius: 5px;
+      box-shadow: 0 5px 16px rgba(0,229,255,0.3);
+    }
 
     /* ---- Archivos dentro del chat ---- */
     .grupo-archivos { display: block; margin-top: 10px; }
@@ -452,12 +459,13 @@
     .archivo-nombre { display: block; color: #fff; word-break: break-word; }
     .archivo-acciones { display: block; margin-top: 3px; font-size: 0.92em; }
 
-    /* ---- BOTÓN "IR A UNIDADES" (NUEVO) ---- */
+    /* ---- BOTÓN "IR A UNIDADES" ---- */
     .msg.bot .btn-ir-unidades {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       margin-top: 12px;
+      margin-right: 6px;
       padding: 9px 18px;
       background: linear-gradient(135deg, #00e5ff 0%, #0091ea 100%);
       color: #06121f !important;
@@ -480,7 +488,6 @@
       50% { box-shadow: 0 4px 14px rgba(0,229,255,0.55), 0 0 0 6px rgba(0,229,255,0); }
     }
 
-    /* ---- Indicador "escribiendo..." ---- */
     .typing { display: flex; gap: 5px; padding: 5px 2px; }
     .typing span {
       width: 8px; height: 8px; background: var(--cian);
@@ -696,6 +703,7 @@
     <div class="chat-messages" id="chatMessages"></div>
 
     <div class="chat-suggestions" id="chatSuggestions">
+      <button class="chip" type="button">Ir a Unidades</button>
       <button class="chip" type="button">Unidades</button>
       <button class="chip" type="button">Semanas</button>
       <button class="chip" type="button">Archivos Unidad 1</button>
@@ -881,23 +889,28 @@
   }
 
   /* ============================================================
-     BOTÓN "IR A LA PÁGINA DE UNIDADES"
+     BOTONES PARA IR A LA PÁGINA unidades.html
      ------------------------------------------------------------
-     Guarda la unidad en localStorage (que unidades.html lee al
-     cargar) y navega a la página de Unidades.
+     - Abren unidades.html en la UNIDAD (y SEMANA) indicada.
+     - Guardan la unidad/semana en localStorage y también las
+       envían en la URL (?unidad=2&semana=6) para que
+       unidades.html abra la pestaña y la tarjeta correctas.
      ============================================================ */
-  function botonIrUnidades(n, etiqueta) {
-    const texto = etiqueta || ('📂 Abrir Unidad ' + n + ' en la página de Unidades');
-    return '<a class="btn-ir-unidades" href="unidades.html" ' +
-             'onclick="try{localStorage.setItem(\'unidadActiva\',' + n + ');}catch(e){}">' +
+  function botonIrUnidades(n, semana, etiqueta) {
+    const sem = semana || 0;
+    const texto = etiqueta || (sem
+      ? '📂 Abrir Semana ' + sem + ' en Unidades'
+      : '📂 Abrir Unidad ' + n + ' en Unidades');
+    const href = 'unidades.html?unidad=' + n + (sem ? '&semana=' + sem : '');
+    return '<a class="btn-ir-unidades" href="' + href + '" ' +
+             'onclick="try{localStorage.setItem(\'unidadActiva\',' + n + ');' +
+             'localStorage.setItem(\'semanaActiva\',' + sem + ');}catch(e){}">' +
              texto +
            '</a>';
   }
 
   function botonIrUnidadesGeneral() {
-    return '<a class="btn-ir-unidades" href="unidades.html">' +
-             '📂 Ir a la página de Unidades' +
-           '</a>';
+    return '<a class="btn-ir-unidades" href="unidades.html">📂 Ir a la página de Unidades</a>';
   }
 
   function mensajeError(e) {
@@ -907,15 +920,15 @@
     return '⚠️ No pude conectar con GitHub para leer los archivos. Revisa tu conexión e inténtalo otra vez.';
   }
 
-  /* ---- Archivos de una unidad (con botón a Unidades) ---- */
+  /* ---- Archivos de una unidad ---- */
   async function respuestaArchivosUnidad(n) {
     const u = UNIDADES[n];
     const cab = '📁 <strong>Archivos · Unidad ' + n + ': ' + u.nombre + '</strong>\n📅 Semanas: ' + u.semanas;
-    const btn = botonIrUnidades(n);
+    const btn = '\n' + botonIrUnidades(n);
     try {
       const grupos = await obtenerArchivosUnidad(n);
       if (!grupos.length) {
-        return cab + '\n\n📭 Aún no hay archivos subidos en esta unidad.\n' + btn;
+        return cab + '\n\n📭 Aún no hay archivos subidos en esta unidad.' + btn;
       }
       return cab + '\n✅ ' + contarArchivos(grupos) + ' archivo(s) disponible(s)' +
              gruposHTML(grupos) + btn;
@@ -924,13 +937,13 @@
     }
   }
 
-  /* ---- Archivos de una semana (con botón a Unidades) ---- */
+  /* ---- Archivos de una semana ---- */
   async function respuestaArchivosSemana(s) {
     const n = Math.ceil(s / 4);
     const local = ((s - 1) % 4) + 1;
     const u = UNIDADES[n];
     const cab = '📁 <strong>Archivos · Semana ' + s + ' (Unidad ' + n + ')</strong>\n📚 ' + u.nombre;
-    const btn = botonIrUnidades(n);
+    const btn = '\n' + botonIrUnidades(n, s) + botonIrUnidades(n, 0, '📚 Ver toda la Unidad ' + n);
     try {
       const grupos = await obtenerArchivosUnidad(n);
       const delaSemana = grupos.filter(function (g) {
@@ -959,12 +972,13 @@
         html += '\n\n📘 <strong>Unidad ' + n + ': ' + UNIDADES[n].nombre + '</strong>';
         if (!grupos.length) html += '\n📭 Sin archivos aún.';
         else { total += contarArchivos(grupos); html += gruposHTML(grupos); }
+        html += '\n' + botonIrUnidades(n);
       });
       if (!total) {
-        return '📁 <strong>Todos los archivos del curso</strong>\n\n📭 Aún no hay archivos subidos.' + botonIrUnidadesGeneral();
+        return '📁 <strong>Todos los archivos del curso</strong>\n\n📭 Aún no hay archivos subidos.\n' + botonIrUnidadesGeneral();
       }
-      return html + botonIrUnidadesGeneral();
-    } catch (e) { return mensajeError(e); }
+      return html + '\n\n' + botonIrUnidadesGeneral();
+    } catch (e) { return mensajeError(e) + '\n' + botonIrUnidadesGeneral(); }
   }
 
   /* ============ DATOS DE UNIDADES ============ */
@@ -981,9 +995,9 @@
 
   const REGLAS = [
     { claves: ['hola','buenas','hey','saludos','buenos dias','buenas tardes','buenas noches','que tal'],
-      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos subidos** en cada unidad (👁 Ver / ↓ Descargar / 📂 ir a Unidades)\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n\n¿Sobre qué te gustaría saber?' },
+      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos subidos** en cada unidad (👁 Ver / ↓ Descargar / 📂 ir a Unidades)\n• 🚀 Llevarte a la página de **Unidades** ("ir a unidades")\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n\n¿Sobre qué te gustaría saber?' },
     { claves: ['cuantas unidades','que unidades','cuales son las unidades','lista de unidades','unidades del curso','temario','contenido del curso','unidad','unidades'],
-      respuesta: 'El curso tiene **4 unidades**:\n\n📘 **Unidad I** — Fundamentos (Semanas 1-4)\n📗 **Unidad II** — SQL Avanzado (Semanas 5-8)\n📙 **Unidad III** — PL/SQL (Semanas 9-12)\n📕 **Unidad IV** — Administración (Semanas 13-16)\n\n¿Quieres detalles o **archivos** de alguna? Escribe por ejemplo:\n• "unidad 2"\n• "archivos unidad 1"\n• "todos los archivos"\n• "semana 10"' },
+      respuesta: 'El curso tiene **4 unidades**:\n\n📘 **Unidad I** — Fundamentos (Semanas 1-4)\n📗 **Unidad II** — SQL Avanzado (Semanas 5-8)\n📙 **Unidad III** — PL/SQL (Semanas 9-12)\n📕 **Unidad IV** — Administración (Semanas 13-16)\n\n¿Quieres detalles o **archivos** de alguna? Escribe por ejemplo:\n• "unidad 2"\n• "archivos unidad 1"\n• "todos los archivos"\n• "semana 10"\n• "ir a unidad 3"\n' },
     { claves: ['cuantas semanas','total de semanas','duracion','cronograma','semanas del curso','semana','semanas'],
       respuesta: 'El curso dura **16 semanas** 📅 distribuidas así:\n\n• Unidad I → Semanas **1 a 4**\n• Unidad II → Semanas **5 a 8**\n• Unidad III → Semanas **9 a 12**\n• Unidad IV → Semanas **13 a 16**\n\nPregúntame por una semana específica: "¿qué se ve en la semana 10?" o "archivos de la semana 5"' },
     { claves: ['profesor','docente','quien dicta','quien enseña','ramon','eduardo','quien es el profe','estudiante','quien eres','quien creo'],
@@ -1017,16 +1031,18 @@
     { claves: ['adios','chao','bye','hasta luego','nos vemos'],
       respuesta: '¡Hasta luego! 👋 Que tengas un buen día de estudio.' },
     { claves: ['ayuda','opciones','menu','que puedes hacer','que sabes','como funciona'],
-      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos subidos (👁 Ver / ↓ Descargar / 📂 Ir a Unidades)\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n\nPrueba con: "unidad 3", "archivos unidad 2", "todos los archivos", "semana 5" o "¿qué es un JOIN?"' }
+      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos subidos (👁 Ver / ↓ Descargar / 📂 Ir a Unidades)\n• 🚀 Llevarte a la página de Unidades ("ir a unidades", "ir a unidad 2")\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n\nPrueba con: "unidad 3", "archivos unidad 2", "todos los archivos", "semana 5" o "¿qué es un JOIN?"' }
   ];
 
   const MENSAJE_INICIAL =
     '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\n' +
-    'Puedo indicarte las **unidades**, las **semanas**, los **archivos subidos** en cada unidad (con opciones 👁 Ver · ↓ Descargar · 📂 Ir a Unidades), temas de **SQL / PL/SQL** y más.\n\n' +
+    'Puedo indicarte las **unidades**, las **semanas**, los **archivos subidos** (👁 Ver · ↓ Descargar) y llevarte a la página de **Unidades** con un solo clic 📂.\n\n' +
+    'Prueba con "ir a unidades" o "archivos unidad 1".\n\n' +
     '¿Sobre qué quieres saber? 👇';
 
   const MENSAJE_FALLBACK =
     'No estoy seguro de esa pregunta 😅. Puedo ayudarte con:\n\n' +
+    '• "Ir a unidades"\n' +
     '• "¿Cuáles son las unidades?"\n' +
     '• "¿Qué se ve en la semana 5?"\n' +
     '• "Archivos de la unidad 2"\n' +
@@ -1080,6 +1096,18 @@
       return await respuestaTodosArchivos();
     }
 
+    // ---- "ir a unidades" / "ir a la unidad 2" / "abrir unidades" ----
+    if (/\b(ir|ve|vamos|llevame|lleva|abrir|abre|abreme|entrar|entra|pagina|enlace|link|redirig\w*)\b/.test(t) && /unidad/.test(t)) {
+      const mIr = t.match(/unidad\s*(iv|iii|ii|i|uno|dos|tres|cuatro|[1-4])\b/);
+      if (mIr && mapaNum[mIr[1]]) {
+        const n = mapaNum[mIr[1]];
+        return '🚀 ¡Claro! Te llevo a la **Unidad ' + n + ': ' + UNIDADES[n].nombre + '** en la página de Unidades, donde podrás ver todas sus semanas y archivos.\n' +
+               botonIrUnidades(n);
+      }
+      return '🚀 ¡Claro! Te llevo a la página de **Unidades**, donde podrás ver todas las semanas y sus archivos.\n' +
+             botonIrUnidadesGeneral();
+    }
+
     // ---- Semana específica ----
     const mSemana = t.match(/semana\s*(?:n[°º]?\s*)?(\d{1,2})/);
     if (mSemana) {
@@ -1124,6 +1152,10 @@
       const regla = REGLAS[i];
       for (let j = 0; j < regla.claves.length; j++) {
         if (t.indexOf(regla.claves[j]) !== -1) {
+          // La regla de "unidades" ofrece además el botón directo
+          if (regla.claves.indexOf('unidades') !== -1) {
+            return regla.respuesta + botonIrUnidadesGeneral();
+          }
           return regla.respuesta;
         }
       }
