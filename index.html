@@ -445,6 +445,23 @@
       box-shadow: 0 5px 16px rgba(0,229,255,0.3);
     }
 
+    /* ---- Código dentro de las respuestas de la IA ---- */
+    .msg.bot pre {
+      display: block; margin: 8px 0; padding: 10px 12px;
+      background: rgba(0,0,0,0.45); border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 10px; overflow-x: auto;
+      white-space: pre; font-size: 0.92em; line-height: 1.5;
+    }
+    .msg.bot code {
+      font-family: 'Consolas', 'Courier New', monospace;
+      color: #7df3ff;
+    }
+    .msg.bot :not(pre) > code {
+      background: rgba(0,229,255,0.1); padding: 1px 6px; border-radius: 6px;
+    }
+    .msg.bot pre::-webkit-scrollbar { height: 6px; }
+    .msg.bot pre::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.4); border-radius: 10px; }
+
     /* ---- Archivos dentro del chat ---- */
     .grupo-archivos { display: block; margin-top: 10px; }
     .grupo-titulo { display: block; color: var(--cian); font-weight: 700; margin-bottom: 4px; }
@@ -551,6 +568,7 @@
       box-shadow: 0 7px 22px rgba(0,229,255,0.65);
     }
     .chat-send:active { transform: scale(0.95); }
+    .chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     @media (max-width: 480px) {
       .chat-widget { bottom: 18px; right: 18px; }
       .chat-toggle { width: 58px; height: 58px; }
@@ -694,7 +712,7 @@
         </div>
         <div>
           <strong>Asistente BD II</strong>
-          <small>● En línea · Respuestas al instante</small>
+          <small>● En línea · Con inteligencia artificial</small>
         </div>
       </div>
       <button class="chat-clear" id="chatClear" title="Limpiar conversación">🗑️</button>
@@ -708,13 +726,14 @@
       <button class="chip" type="button">Semanas</button>
       <button class="chip" type="button">Archivos Unidad 1</button>
       <button class="chip" type="button">Todos los archivos</button>
+      <button class="chip" type="button">¿Qué es una clave primaria?</button>
       <button class="chip" type="button">¿Qué es un JOIN?</button>
       <button class="chip" type="button">Examen</button>
     </div>
 
     <form class="chat-input-area" id="chatForm">
-      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." autocomplete="off" aria-label="Mensaje">
-      <button type="submit" class="chat-send" aria-label="Enviar">➤</button>
+      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." autocomplete="off" maxlength="500" aria-label="Mensaje">
+      <button type="submit" class="chat-send" id="chatSend" aria-label="Enviar">➤</button>
     </form>
   </div>
 </div>
@@ -771,9 +790,25 @@
   const chatMessages    = document.getElementById('chatMessages');
   const chatForm        = document.getElementById('chatForm');
   const chatInput       = document.getElementById('chatInput');
+  const chatSend        = document.getElementById('chatSend');
   const chatClear       = document.getElementById('chatClear');
   const chatSuggestions = document.getElementById('chatSuggestions');
   const chatBadge       = document.getElementById('chatBadge');
+
+  /* ============================================================
+     CONFIGURACIÓN DE LA IA (ChatGPT / OpenAI)
+     ------------------------------------------------------------
+     IMPORTANTE: aquí NO va tu clave de OpenAI. La clave vive en
+     tu servidor intermedio (Cloudflare Worker, archivo worker.js).
+     Solo pega aquí la URL de tu Worker.
+     ============================================================ */
+  const IA_CONFIG = {
+    activada: true,
+    endpoint: 'https://chatbot-bd2.22eduardoramon.workers.dev',
+    maxHistorial: 8,      // cuántos mensajes anteriores recuerda la IA
+    esperaMs: 1500,       // tiempo mínimo entre preguntas a la IA
+    timeoutMs: 30000      // tiempo máximo de espera de la respuesta
+  };
 
   /* ============================================================
      CONFIGURACIÓN GITHUB  (los archivos viven en tu repositorio)
@@ -995,7 +1030,7 @@
 
   const REGLAS = [
     { claves: ['hola','buenas','hey','saludos','buenos dias','buenas tardes','buenas noches','que tal'],
-      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos subidos** en cada unidad (👁 Ver / ↓ Descargar / 📂 ir a Unidades)\n• 🚀 Llevarte a la página de **Unidades** ("ir a unidades")\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n\n¿Sobre qué te gustaría saber?' },
+      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos subidos** en cada unidad (👁 Ver / ↓ Descargar / 📂 ir a Unidades)\n• 🚀 Llevarte a la página de **Unidades** ("ir a unidades")\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n• 🤖 **Cualquier otra pregunta** (respondo con inteligencia artificial)\n\n¿Sobre qué te gustaría saber?' },
     { claves: ['cuantas unidades','que unidades','cuales son las unidades','lista de unidades','unidades del curso','temario','contenido del curso','unidad','unidades'],
       respuesta: 'El curso tiene **4 unidades**:\n\n📘 **Unidad I** — Fundamentos (Semanas 1-4)\n📗 **Unidad II** — SQL Avanzado (Semanas 5-8)\n📙 **Unidad III** — PL/SQL (Semanas 9-12)\n📕 **Unidad IV** — Administración (Semanas 13-16)\n\n¿Quieres detalles o **archivos** de alguna? Escribe por ejemplo:\n• "unidad 2"\n• "archivos unidad 1"\n• "todos los archivos"\n• "semana 10"\n• "ir a unidad 3"\n' },
     { claves: ['cuantas semanas','total de semanas','duracion','cronograma','semanas del curso','semana','semanas'],
@@ -1031,13 +1066,14 @@
     { claves: ['adios','chao','bye','hasta luego','nos vemos'],
       respuesta: '¡Hasta luego! 👋 Que tengas un buen día de estudio.' },
     { claves: ['ayuda','opciones','menu','que puedes hacer','que sabes','como funciona'],
-      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos subidos (👁 Ver / ↓ Descargar / 📂 Ir a Unidades)\n• 🚀 Llevarte a la página de Unidades ("ir a unidades", "ir a unidad 2")\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n\nPrueba con: "unidad 3", "archivos unidad 2", "todos los archivos", "semana 5" o "¿qué es un JOIN?"' }
+      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos subidos (👁 Ver / ↓ Descargar / 📂 Ir a Unidades)\n• 🚀 Llevarte a la página de Unidades ("ir a unidades", "ir a unidad 2")\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n• 🤖 Cualquier otra pregunta, con inteligencia artificial\n\nPrueba con: "unidad 3", "archivos unidad 2", "todos los archivos", "semana 5" o "¿qué es una clave foránea?"' }
   ];
 
   const MENSAJE_INICIAL =
     '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\n' +
     'Puedo indicarte las **unidades**, las **semanas**, los **archivos subidos** (👁 Ver · ↓ Descargar) y llevarte a la página de **Unidades** con un solo clic 📂.\n\n' +
-    'Prueba con "ir a unidades" o "archivos unidad 1".\n\n' +
+    'Además, uso **inteligencia artificial** 🤖 para responder cualquier otra pregunta que tengas.\n\n' +
+    'Prueba con "ir a unidades", "archivos unidad 1" o "explícame qué es una clave primaria".\n\n' +
     '¿Sobre qué quieres saber? 👇';
 
   const MENSAJE_FALLBACK =
@@ -1061,6 +1097,78 @@
 
   function formatearNegritas(texto) {
     return texto.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
+  /* ============================================================
+     INTELIGENCIA ARTIFICIAL (ChatGPT a través de tu Worker)
+     ============================================================ */
+  const historialIA = [];
+  let ultimaConsultaIA = 0;
+
+  function iaConfigurada() {
+    return IA_CONFIG.activada &&
+           IA_CONFIG.endpoint &&
+           IA_CONFIG.endpoint.indexOf('TU-WORKER') === -1;
+  }
+
+  // Convierte el texto de la IA en HTML seguro (escapa todo y luego aplica código)
+  function formatearIA(texto) {
+    let s = escapeHtml(texto);
+    s = s.replace(/```[a-zA-Z0-9_+-]*\n?([\s\S]*?)```/g, function (m, codigo) {
+      return '<pre><code>' + codigo.replace(/^\n+|\n+$/g, '') + '</code></pre>';
+    });
+    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+    return s;
+  }
+
+  async function preguntarIA(pregunta) {
+    if (!iaConfigurada()) {
+      return MENSAJE_FALLBACK +
+             '\n\nℹ️ La inteligencia artificial todavía no está configurada en este portafolio.';
+    }
+
+    const ahora = Date.now();
+    if (ahora - ultimaConsultaIA < IA_CONFIG.esperaMs) {
+      return 'Dame un segundo antes de la siguiente pregunta 🙂';
+    }
+    ultimaConsultaIA = ahora;
+
+    const mensajes = historialIA
+      .concat([{ role: 'user', content: pregunta }])
+      .slice(-IA_CONFIG.maxHistorial);
+
+    const controlador = new AbortController();
+    const temporizador = setTimeout(function () { controlador.abort(); }, IA_CONFIG.timeoutMs);
+
+    try {
+      const r = await fetch(IA_CONFIG.endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mensajes: mensajes }),
+        signal: controlador.signal
+      });
+      const data = await r.json().catch(function () { return {}; });
+      if (!r.ok || !data.respuesta) throw new Error(data.error || ('HTTP ' + r.status));
+
+      historialIA.push({ role: 'user', content: pregunta });
+      historialIA.push({ role: 'assistant', content: data.respuesta });
+      while (historialIA.length > IA_CONFIG.maxHistorial) historialIA.shift();
+
+      return formatearIA(data.respuesta);
+    } catch (e) {
+      if (e && e.name === 'AbortError') {
+        return '⏱️ La IA tardó demasiado en responder. Inténtalo de nuevo.';
+      }
+      return '⚠️ No pude conectar con la inteligencia artificial en este momento. Inténtalo más tarde.';
+    } finally {
+      clearTimeout(temporizador);
+    }
+  }
+
+  // Busca una palabra/frase completa (evita que "final" coincida con "finalmente", etc.)
+  function contiene(t, clave) {
+    const c = normalizar(clave).replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
+    return new RegExp('(^|[^a-z0-9])' + c + 's?([^a-z0-9]|$)').test(t);
   }
 
   const mapaNum = {
@@ -1147,20 +1255,27 @@
              await respuestaArchivosUnidad(n);
     }
 
-    // ---- Reglas generales ----
-    for (let i = 0; i < REGLAS.length; i++) {
-      const regla = REGLAS[i];
-      for (let j = 0; j < regla.claves.length; j++) {
-        if (t.indexOf(regla.claves[j]) !== -1) {
-          // La regla de "unidades" ofrece además el botón directo
-          if (regla.claves.indexOf('unidades') !== -1) {
-            return regla.respuesta + botonIrUnidadesGeneral();
+    // ---- Reglas generales (solo para preguntas cortas si la IA está activa) ----
+    const cantidadPalabras = t.split(' ').length;
+    const usarReglas = !iaConfigurada() || cantidadPalabras <= 6;
+
+    if (usarReglas) {
+      for (let i = 0; i < REGLAS.length; i++) {
+        const regla = REGLAS[i];
+        for (let j = 0; j < regla.claves.length; j++) {
+          if (contiene(t, regla.claves[j])) {
+            // La regla de "unidades" ofrece además el botón directo
+            if (regla.claves.indexOf('unidades') !== -1) {
+              return regla.respuesta + botonIrUnidadesGeneral();
+            }
+            return regla.respuesta;
           }
-          return regla.respuesta;
         }
       }
     }
-    return MENSAJE_FALLBACK;
+
+    // ---- Si nada coincide: responde la inteligencia artificial ----
+    return await preguntarIA(entrada.trim());
   }
 
   function agregarMensaje(texto, autor) {
@@ -1189,9 +1304,17 @@
     if (el) el.remove();
   }
 
+  let ocupado = false;
+
+  function bloquearEntrada(valor) {
+    ocupado = valor;
+    chatSend.disabled = valor;
+  }
+
   async function enviarMensaje(texto) {
     const limpio = (texto || '').trim();
-    if (!limpio) return;
+    if (!limpio || ocupado) return;
+    bloquearEntrada(true);
     agregarMensaje(limpio, 'user');
     chatInput.value = '';
     mostrarEscribiendo();
@@ -1202,10 +1325,13 @@
       setTimeout(function () {
         quitarEscribiendo();
         agregarMensaje(respuesta, 'bot');
+        bloquearEntrada(false);
+        chatInput.focus();
       }, espera);
     } catch (e) {
       quitarEscribiendo();
       agregarMensaje('⚠️ Ocurrió un error al procesar tu pregunta: ' + e.message, 'bot');
+      bloquearEntrada(false);
     }
   }
 
@@ -1233,6 +1359,7 @@
 
   chatClear.addEventListener('click', function () {
     chatMessages.innerHTML = '';
+    historialIA.length = 0;
     agregarMensaje(MENSAJE_INICIAL, 'bot');
     chatInput.focus();
   });
