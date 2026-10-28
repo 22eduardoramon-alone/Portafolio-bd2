@@ -1159,7 +1159,8 @@
       if (e && e.name === 'AbortError') {
         return '⏱️ La IA tardó demasiado en responder. Inténtalo de nuevo.';
       }
-      return '⚠️ No pude conectar con la inteligencia artificial en este momento. Inténtalo más tarde.';
+      return '⚠️ No pude conectar con la inteligencia artificial en este momento. Inténtalo más tarde.' +
+             '\n\n🔧 Detalle técnico: ' + escapeHtml((e && e.message) ? e.message : String(e));
     } finally {
       clearTimeout(temporizador);
     }
