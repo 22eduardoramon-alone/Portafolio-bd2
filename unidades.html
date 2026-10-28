@@ -264,6 +264,7 @@
       text-decoration: none; cursor: pointer;
       transition: all 0.2s; border: 1px solid; white-space: nowrap;
     }
+    .gh-btn:disabled { opacity: 0.6; cursor: wait; }
     .gh-btn-ver {
       background: rgba(0,229,255,0.06);
       border-color: rgba(0,229,255,0.25);
@@ -292,7 +293,7 @@
       box-shadow: 0 4px 20px rgba(0,0,0,0.5);
     }
     .gh-preview iframe {
-      width: 100%; height: 520px; border: none;
+      width: 100%; height: 560px; border: none;
       border-radius: 8px; display: block;
       background: #fff;
     }
@@ -561,10 +562,43 @@
     return 'ninguno';
   }
 
-  /* ---------- Previsualización ---------- */
-  async function togglePreview(btnEl, previewEl, downloadUrl, fileName) {
+  // Tipo MIME correcto según la extensión (GitHub raw devuelve text/plain)
+  const MIME = {
+    pdf:'application/pdf',
+    png:'image/png', jpg:'image/jpeg', jpeg:'image/jpeg', gif:'image/gif',
+    svg:'image/svg+xml', webp:'image/webp',
+    mp4:'video/mp4', mp3:'audio/mpeg', zip:'application/zip',
+    doc:'application/msword',
+    docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls:'application/vnd.ms-excel',
+    xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ppt:'application/vnd.ms-powerpoint',
+    pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+  };
+
+  function mimeDe(name) {
+    const ext = (name.split('.').pop() || '').toLowerCase();
+    return MIME[ext] || 'application/octet-stream';
+  }
+
+  // Cache de archivos descargados (para no pedirlos dos veces)
+  const blobCache = new Map();
+
+  async function obtenerBlob(url, nombre) {
+    if (blobCache.has(url)) return blobCache.get(url);
+    const r = await fetch(url);
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const buf = await r.arrayBuffer();
+    const blob = new Blob([buf], { type: mimeDe(nombre) });
+    blobCache.set(url, blob);
+    return blob;
+  }
+
+  /* ---------- BOTÓN VER: solo visualiza, no descarga ---------- */
+  async function togglePreview(btnEl, previewEl, fileUrl, fileName) {
     const tipo = tipoPreview(fileName);
 
+    // Cerrar
     if (previewEl.classList.contains('visible')) {
       previewEl.classList.remove('visible');
       btnEl.classList.remove('activo');
@@ -572,61 +606,92 @@
       return;
     }
 
+    // Abrir
     previewEl.classList.add('visible');
     btnEl.classList.add('activo');
     btnEl.textContent = '✕ Cerrar';
 
     if (previewEl.dataset.loaded === 'true') return;
-    previewEl.dataset.loaded = 'true';
 
     previewEl.innerHTML = '<div class="gh-preview-loading"><span class="gh-mini-spin"></span> Cargando previsualización...</div>';
 
-    if (tipo === 'imagen') {
-      const img = document.createElement('img');
-      img.src = downloadUrl;
-      img.alt = fileName;
-      img.loading = 'lazy';
-      img.onerror = () => {
-        previewEl.innerHTML = '<div class="gh-preview-no"><span>⚠️</span>No se pudo cargar la imagen.</div>';
-      };
-      img.onload = () => {
+    try {
+      if (tipo === 'imagen') {
+        const blob = await obtenerBlob(fileUrl, fileName);
+        const img = document.createElement('img');
+        img.src = URL.createObjectURL(blob);
+        img.alt = fileName;
         previewEl.innerHTML = '';
         previewEl.appendChild(img);
-      };
-    } else if (tipo === 'pdf') {
-      const visorUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(downloadUrl)}&embedded=true`;
-      previewEl.innerHTML = '';
-      const ifr = document.createElement('iframe');
-      ifr.src = visorUrl;
-      ifr.title = fileName;
-      previewEl.appendChild(ifr);
-    } else if (tipo === 'office') {
-      const visorUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(downloadUrl)}`;
-      previewEl.innerHTML = '';
-      const ifr = document.createElement('iframe');
-      ifr.src = visorUrl;
-      ifr.title = fileName;
-      previewEl.appendChild(ifr);
-    } else if (tipo === 'texto') {
-      try {
-        const r = await fetch(downloadUrl);
+
+      } else if (tipo === 'pdf') {
+        const blob = await obtenerBlob(fileUrl, fileName);
+        const blobUrl = URL.createObjectURL(blob);
+        const ifr = document.createElement('iframe');
+        // toolbar=0 oculta la barra del visor (sin botón de descarga/imprimir)
+        ifr.src = blobUrl + '#toolbar=0&navpanes=0';
+        ifr.title = fileName;
+        previewEl.innerHTML = '';
+        previewEl.appendChild(ifr);
+
+      } else if (tipo === 'office') {
+        // Word / Excel / PowerPoint: visor en línea de Microsoft (solo lectura)
+        const visorUrl = 'https://view.officeapps.live.com/op/embed.aspx?src=' + encodeURIComponent(fileUrl);
+        const ifr = document.createElement('iframe');
+        ifr.src = visorUrl;
+        ifr.title = fileName;
+        previewEl.innerHTML = '';
+        previewEl.appendChild(ifr);
+
+      } else if (tipo === 'texto') {
+        const r = await fetch(fileUrl);
         if (!r.ok) throw new Error('HTTP ' + r.status);
         const texto = await r.text();
         const pre = document.createElement('pre');
         pre.textContent = texto.length > 8000 ? texto.slice(0, 8000) + '\n\n… (archivo truncado para previsualización)' : texto;
         previewEl.innerHTML = '';
         previewEl.appendChild(pre);
-      } catch (e) {
-        previewEl.innerHTML = '';
-        const div = document.createElement('div');
-        div.className = 'gh-preview-no';
-        div.innerHTML = '<span>⚠️</span>';
-        div.appendChild(document.createTextNode('No se pudo cargar el texto: ' + e.message));
-        previewEl.appendChild(div);
+
+      } else {
+        previewEl.innerHTML = '<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong>Descargar</strong> para abrirlo.</div>';
       }
-    } else {
-      previewEl.innerHTML = '<div class="gh-preview-no"><span>📦</span>Este tipo de archivo no tiene previsualización disponible.<br>Usa el botón <strong>Descargar</strong> para abrirlo.</div>';
+      previewEl.dataset.loaded = 'true';
+
+    } catch (e) {
+      previewEl.innerHTML = '';
+      const div = document.createElement('div');
+      div.className = 'gh-preview-no';
+      div.innerHTML = '<span>⚠️</span>';
+      div.appendChild(document.createTextNode('No se pudo cargar el documento: ' + e.message));
+      previewEl.appendChild(div);
     }
+  }
+
+  /* ---------- BOTÓN DESCARGAR: descarga el archivo ---------- */
+  async function descargarArchivo(btnEl, fileUrl, fileName) {
+    const textoOriginal = btnEl.textContent;
+    btnEl.disabled = true;
+    btnEl.textContent = '⏳ Descargando...';
+    try {
+      const blob = await obtenerBlob(fileUrl, fileName);
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = fileName.split('/').pop();
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(blobUrl), 10000);
+      btnEl.textContent = '✓ Listo';
+    } catch (e) {
+      // Respaldo: abrir el archivo en otra pestaña
+      window.open(fileUrl, '_blank', 'noopener');
+      btnEl.textContent = textoOriginal;
+    }
+    setTimeout(() => {
+      btnEl.textContent = textoOriginal;
+      btnEl.disabled = false;
+    }, 1500);
   }
 
   /* ---------- Títulos de semanas ---------- */
@@ -741,7 +806,6 @@
   }
 
   // Método 1: una sola petición con el árbol completo del repositorio
-  // (encuentra los archivos sin importar la carpeta raíz usada por el admin)
   async function listarPorArbol() {
     const url = `https://api.github.com/repos/${GH.owner}/${GH.repo}/git/trees/${GH.branch}?recursive=1`;
     const r = await fetch(url, { headers: API_HEADERS, cache: 'no-store' });
@@ -789,7 +853,6 @@
       try {
         files = await listarPorCarpetas();
       } catch (e2) {
-        // Último recurso: copia en caché aunque esté vencida
         const vieja = leerCache(true);
         if (vieja) return vieja;
         throw e2;
@@ -800,8 +863,6 @@
   }
 
   /* ---------- Render de archivos por semana ---------- */
-  // Detecta "unidadN/semanaM/archivo" en cualquier parte de la ruta
-  // (con o sin carpeta raíz como "archivos/")
   const RE_RUTA = /(?:^|\/)unidad(\d+)\/semana(\d+)\/(.+)$/i;
 
   function archivosDeSemana(todos, unidad, semana) {
@@ -875,18 +936,19 @@
       preview.className = 'gh-preview';
       preview.id = previewId;
 
+      // Botón VER (solo visualizar)
       const btnVer = document.createElement('button');
+      btnVer.type = 'button';
       btnVer.className = 'gh-btn gh-btn-ver';
       btnVer.textContent = '👁 Ver';
       btnVer.addEventListener('click', () => togglePreview(btnVer, preview, url, f.nombre));
 
-      const btnDl = document.createElement('a');
+      // Botón DESCARGAR (solo descargar)
+      const btnDl = document.createElement('button');
+      btnDl.type = 'button';
       btnDl.className = 'gh-btn gh-btn-dl';
-      btnDl.href = url;
-      btnDl.target = '_blank';
-      btnDl.rel = 'noopener';
-      btnDl.setAttribute('download', f.nombre.split('/').pop());
       btnDl.textContent = '↓ Descargar';
+      btnDl.addEventListener('click', () => descargarArchivo(btnDl, url, f.nombre));
 
       acciones.appendChild(btnVer);
       acciones.appendChild(btnDl);
@@ -953,6 +1015,7 @@
   async function actualizarArchivos() {
     const btn = document.getElementById('btn-actualizar');
     if (btn) { btn.disabled = true; btn.textContent = 'Actualizando...'; }
+    blobCache.clear();
     await cargarEstadoInicial(true);
     if (btn) { btn.disabled = false; btn.textContent = '↻ Actualizar archivos'; }
   }
