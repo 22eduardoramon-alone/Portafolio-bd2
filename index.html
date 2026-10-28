@@ -445,23 +445,6 @@
       box-shadow: 0 5px 16px rgba(0,229,255,0.3);
     }
 
-    /* ---- Código dentro de las respuestas de la IA ---- */
-    .msg.bot pre {
-      display: block; margin: 8px 0; padding: 10px 12px;
-      background: rgba(0,0,0,0.45); border: 1px solid rgba(0,229,255,0.2);
-      border-radius: 10px; overflow-x: auto;
-      white-space: pre; font-size: 0.92em; line-height: 1.5;
-    }
-    .msg.bot code {
-      font-family: 'Consolas', 'Courier New', monospace;
-      color: #7df3ff;
-    }
-    .msg.bot :not(pre) > code {
-      background: rgba(0,229,255,0.1); padding: 1px 6px; border-radius: 6px;
-    }
-    .msg.bot pre::-webkit-scrollbar { height: 6px; }
-    .msg.bot pre::-webkit-scrollbar-thumb { background: rgba(0,229,255,0.4); border-radius: 10px; }
-
     /* ---- Archivos dentro del chat ---- */
     .grupo-archivos { display: block; margin-top: 10px; }
     .grupo-titulo { display: block; color: var(--cian); font-weight: 700; margin-bottom: 4px; }
@@ -568,7 +551,6 @@
       box-shadow: 0 7px 22px rgba(0,229,255,0.65);
     }
     .chat-send:active { transform: scale(0.95); }
-    .chat-send:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     @media (max-width: 480px) {
       .chat-widget { bottom: 18px; right: 18px; }
       .chat-toggle { width: 58px; height: 58px; }
@@ -712,7 +694,7 @@
         </div>
         <div>
           <strong>Asistente BD II</strong>
-          <small>● En línea · Con inteligencia artificial</small>
+          <small>● En línea · Respuestas al instante</small>
         </div>
       </div>
       <button class="chat-clear" id="chatClear" title="Limpiar conversación">🗑️</button>
@@ -726,14 +708,15 @@
       <button class="chip" type="button">Semanas</button>
       <button class="chip" type="button">Archivos Unidad 1</button>
       <button class="chip" type="button">Todos los archivos</button>
-      <button class="chip" type="button">¿Qué es una clave primaria?</button>
       <button class="chip" type="button">¿Qué es un JOIN?</button>
+      <button class="chip" type="button">Lenguajes SQL Server</button>
+      <button class="chip" type="button">¿Qué es T-SQL?</button>
       <button class="chip" type="button">Examen</button>
     </div>
 
     <form class="chat-input-area" id="chatForm">
-      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." autocomplete="off" maxlength="500" aria-label="Mensaje">
-      <button type="submit" class="chat-send" id="chatSend" aria-label="Enviar">➤</button>
+      <input type="text" id="chatInput" placeholder="Escribe tu pregunta..." autocomplete="off" aria-label="Mensaje">
+      <button type="submit" class="chat-send" aria-label="Enviar">➤</button>
     </form>
   </div>
 </div>
@@ -790,25 +773,9 @@
   const chatMessages    = document.getElementById('chatMessages');
   const chatForm        = document.getElementById('chatForm');
   const chatInput       = document.getElementById('chatInput');
-  const chatSend        = document.getElementById('chatSend');
   const chatClear       = document.getElementById('chatClear');
   const chatSuggestions = document.getElementById('chatSuggestions');
   const chatBadge       = document.getElementById('chatBadge');
-
-  /* ============================================================
-     CONFIGURACIÓN DE LA IA (ChatGPT / OpenAI)
-     ------------------------------------------------------------
-     IMPORTANTE: aquí NO va tu clave de OpenAI. La clave vive en
-     tu servidor intermedio (Cloudflare Worker, archivo worker.js).
-     Solo pega aquí la URL de tu Worker.
-     ============================================================ */
-  const IA_CONFIG = {
-    activada: true,
-    endpoint: 'https://chatbot-bd2.22eduardoramon.workers.dev',
-    maxHistorial: 8,      // cuántos mensajes anteriores recuerda la IA
-    esperaMs: 1500,       // tiempo mínimo entre preguntas a la IA
-    timeoutMs: 30000      // tiempo máximo de espera de la respuesta
-  };
 
   /* ============================================================
      CONFIGURACIÓN GITHUB  (los archivos viven en tu repositorio)
@@ -1030,7 +997,7 @@
 
   const REGLAS = [
     { claves: ['hola','buenas','hey','saludos','buenos dias','buenas tardes','buenas noches','que tal'],
-      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos subidos** en cada unidad (👁 Ver / ↓ Descargar / 📂 ir a Unidades)\n• 🚀 Llevarte a la página de **Unidades** ("ir a unidades")\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n• 🤖 **Cualquier otra pregunta** (respondo con inteligencia artificial)\n\n¿Sobre qué te gustaría saber?' },
+      respuesta: '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\nPuedo ayudarte con:\n\n• 📚 Las **unidades** del curso\n• 📅 Las **semanas** y sus temas\n• 📁 Los **archivos subidos** en cada unidad (👁 Ver / ↓ Descargar / 📂 ir a Unidades)\n• 🚀 Llevarte a la página de **Unidades** ("ir a unidades")\n• 💻 Conceptos: SQL, JOINs, Normalización, PL/SQL\n• 👨‍🎓 Información del **estudiante**\n• 📝 **Evaluaciones** y proyecto\n\n¿Sobre qué te gustaría saber?' },
     { claves: ['cuantas unidades','que unidades','cuales son las unidades','lista de unidades','unidades del curso','temario','contenido del curso','unidad','unidades'],
       respuesta: 'El curso tiene **4 unidades**:\n\n📘 **Unidad I** — Fundamentos (Semanas 1-4)\n📗 **Unidad II** — SQL Avanzado (Semanas 5-8)\n📙 **Unidad III** — PL/SQL (Semanas 9-12)\n📕 **Unidad IV** — Administración (Semanas 13-16)\n\n¿Quieres detalles o **archivos** de alguna? Escribe por ejemplo:\n• "unidad 2"\n• "archivos unidad 1"\n• "todos los archivos"\n• "semana 10"\n• "ir a unidad 3"\n' },
     { claves: ['cuantas semanas','total de semanas','duracion','cronograma','semanas del curso','semana','semanas'],
@@ -1042,7 +1009,7 @@
     { claves: ['que es una base de datos','definicion de base de datos','que es base de datos'],
       respuesta: 'Una **base de datos** es un conjunto organizado de datos estructurados que permite almacenar, consultar y actualizar información de forma eficiente.\n\nEn el curso aprenderás a **diseñarlas** (Modelo ER), **consultarlas** (SQL) y **administrarlas** (PL/SQL y seguridad).' },
     { claves: ['que es sql','sql basico','lenguaje sql','para que sirve sql'],
-      respuesta: '💻 **SQL** (Structured Query Language) es el lenguaje estándar para gestionar bases de datos relacionales. Permite:\n\n• CREATE, ALTER, DROP → definir estructuras\n• INSERT, UPDATE, DELETE → manipular datos\n• SELECT → consultar información\n\nSe estudia en la **Unidad II** (Semanas 5-8).' },
+      respuesta: '💻 **SQL** (Structured Query Language) es el lenguaje estándar para gestionar bases de datos relacionales. Permite:\n\n• CREATE, ALTER, DROP → definir estructuras\n• INSERT, UPDATE, DELETE → manipular datos\n• SELECT → consultar información\n\n📌 En **Microsoft SQL Server**, la extensión de SQL se llama **Transact-SQL (T-SQL)**. Se estudia en la **Unidad II** (Semanas 5-8).' },
     { claves: ['join','inner join','left join','right join','combinar tablas'],
       respuesta: '🔗 Los **JOIN** combinan filas de dos o más tablas:\n\n• INNER JOIN → solo coincidencias\n• LEFT JOIN → todo de la izquierda + coincidencias\n• RIGHT JOIN → todo de la derecha + coincidencias\n• FULL JOIN → todo de ambas tablas\n\nTema de la **Unidad II** (Semanas 5-8).' },
     { claves: ['subconsulta','subquery','consulta anidada'],
@@ -1066,14 +1033,13 @@
     { claves: ['adios','chao','bye','hasta luego','nos vemos'],
       respuesta: '¡Hasta luego! 👋 Que tengas un buen día de estudio.' },
     { claves: ['ayuda','opciones','menu','que puedes hacer','que sabes','como funciona'],
-      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos subidos (👁 Ver / ↓ Descargar / 📂 Ir a Unidades)\n• 🚀 Llevarte a la página de Unidades ("ir a unidades", "ir a unidad 2")\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n• 🤖 Cualquier otra pregunta, con inteligencia artificial\n\nPrueba con: "unidad 3", "archivos unidad 2", "todos los archivos", "semana 5" o "¿qué es una clave foránea?"' }
+      respuesta: '🤖 Puedo responder sobre:\n\n• 📚 Unidades (I, II, III, IV)\n• 📅 Semanas (1 a 16)\n• 📁 Archivos subidos (👁 Ver / ↓ Descargar / 📂 Ir a Unidades)\n• 🚀 Llevarte a la página de Unidades ("ir a unidades", "ir a unidad 2")\n• 💻 Temas: SQL, JOINs, Normalización, PL/SQL, Modelo ER\n• 👨‍🎓 Estudiante y universidad\n• 📝 Evaluaciones y proyecto\n\nPrueba con: "unidad 3", "archivos unidad 2", "todos los archivos", "semana 5" o "¿qué es un JOIN?"' }
   ];
 
   const MENSAJE_INICIAL =
     '¡Hola! 👋 Soy el **asistente virtual** de Base de Datos II.\n\n' +
     'Puedo indicarte las **unidades**, las **semanas**, los **archivos subidos** (👁 Ver · ↓ Descargar) y llevarte a la página de **Unidades** con un solo clic 📂.\n\n' +
-    'Además, uso **inteligencia artificial** 🤖 para responder cualquier otra pregunta que tengas.\n\n' +
-    'Prueba con "ir a unidades", "archivos unidad 1" o "explícame qué es una clave primaria".\n\n' +
+    'Prueba con "ir a unidades", "archivos unidad 1" o "¿Qué lenguaje utiliza SQL Server?".\n\n' +
     '¿Sobre qué quieres saber? 👇';
 
   const MENSAJE_FALLBACK =
@@ -1084,6 +1050,8 @@
     '• "Archivos de la unidad 2"\n' +
     '• "Todos los archivos"\n' +
     '• "¿Qué es un JOIN?"\n' +
+    '• "¿Qué lenguajes utiliza SQL Server?"\n' +
+    '• "¿Qué es T-SQL?"\n' +
     '• "¿Quién es el estudiante?"\n' +
     '• "¿Cuándo es el examen?"';
 
@@ -1097,79 +1065,6 @@
 
   function formatearNegritas(texto) {
     return texto.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  }
-
-  /* ============================================================
-     INTELIGENCIA ARTIFICIAL (ChatGPT a través de tu Worker)
-     ============================================================ */
-  const historialIA = [];
-  let ultimaConsultaIA = 0;
-
-  function iaConfigurada() {
-    return IA_CONFIG.activada &&
-           IA_CONFIG.endpoint &&
-           IA_CONFIG.endpoint.indexOf('TU-WORKER') === -1;
-  }
-
-  // Convierte el texto de la IA en HTML seguro (escapa todo y luego aplica código)
-  function formatearIA(texto) {
-    let s = escapeHtml(texto);
-    s = s.replace(/```[a-zA-Z0-9_+-]*\n?([\s\S]*?)```/g, function (m, codigo) {
-      return '<pre><code>' + codigo.replace(/^\n+|\n+$/g, '') + '</code></pre>';
-    });
-    s = s.replace(/`([^`\n]+)`/g, '<code>$1</code>');
-    return s;
-  }
-
-  async function preguntarIA(pregunta) {
-    if (!iaConfigurada()) {
-      return MENSAJE_FALLBACK +
-             '\n\nℹ️ La inteligencia artificial todavía no está configurada en este portafolio.';
-    }
-
-    const ahora = Date.now();
-    if (ahora - ultimaConsultaIA < IA_CONFIG.esperaMs) {
-      return 'Dame un segundo antes de la siguiente pregunta 🙂';
-    }
-    ultimaConsultaIA = ahora;
-
-    const mensajes = historialIA
-      .concat([{ role: 'user', content: pregunta }])
-      .slice(-IA_CONFIG.maxHistorial);
-
-    const controlador = new AbortController();
-    const temporizador = setTimeout(function () { controlador.abort(); }, IA_CONFIG.timeoutMs);
-
-    try {
-      const r = await fetch(IA_CONFIG.endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ mensajes: mensajes }),
-        signal: controlador.signal
-      });
-      const data = await r.json().catch(function () { return {}; });
-      if (!r.ok || !data.respuesta) throw new Error(data.error || ('HTTP ' + r.status));
-
-      historialIA.push({ role: 'user', content: pregunta });
-      historialIA.push({ role: 'assistant', content: data.respuesta });
-      while (historialIA.length > IA_CONFIG.maxHistorial) historialIA.shift();
-
-      return formatearIA(data.respuesta);
-    } catch (e) {
-      if (e && e.name === 'AbortError') {
-        return '⏱️ La IA tardó demasiado en responder. Inténtalo de nuevo.';
-      }
-      return '⚠️ No pude conectar con la inteligencia artificial en este momento. Inténtalo más tarde.' +
-             '\n\n🔧 Detalle técnico: ' + escapeHtml((e && e.message) ? e.message : String(e));
-    } finally {
-      clearTimeout(temporizador);
-    }
-  }
-
-  // Busca una palabra/frase completa (evita que "final" coincida con "finalmente", etc.)
-  function contiene(t, clave) {
-    const c = normalizar(clave).replace(/[.*+?^${}()|[\]\\\/]/g, '\\$&');
-    return new RegExp('(^|[^a-z0-9])' + c + 's?([^a-z0-9]|$)').test(t);
   }
 
   const mapaNum = {
@@ -1256,27 +1151,83 @@
              await respuestaArchivosUnidad(n);
     }
 
-    // ---- Reglas generales (solo para preguntas cortas si la IA está activa) ----
-    const cantidadPalabras = t.split(' ').length;
-    const usarReglas = !iaConfigurada() || cantidadPalabras <= 6;
+    // ---- Lenguajes y comandos de Microsoft SQL Server ----
+    // Esta sección va antes de las reglas generales para que una consulta
+    // sobre SQL Server no termine en la respuesta genérica sobre SQL o PL/SQL.
+    const mencionaSQLServer = /\b(?:microsoft\s+)?sql[\s-]+server\b/.test(t);
+    const mencionaTSql = /\b(?:t[\s-]?sql|transact[\s-]?sql)\b/.test(t);
+    const mencionaPLSql = /\bpl\s*\/\s*sql\b/.test(t);
+    const mencionaCategoriasSQL = /\b(ddl|dml|dql|dcl|tcl)\b/.test(t) ||
+      /(tipos de comandos|tipos de lenguaje|categorias de sql|clasificacion de sql)/.test(t);
+    const preguntaPorLenguaje = /\b(lenguaje|lenguajes|programacion|programar|comandos|instrucciones|t[\s-]?sql|tsql|transact[\s-]?sql|pl\s*\/\s*sql|ddl|dml|dql|dcl|tcl)\b/.test(t);
 
-    if (usarReglas) {
-      for (let i = 0; i < REGLAS.length; i++) {
-        const regla = REGLAS[i];
-        for (let j = 0; j < regla.claves.length; j++) {
-          if (contiene(t, regla.claves[j])) {
-            // La regla de "unidades" ofrece además el botón directo
-            if (regla.claves.indexOf('unidades') !== -1) {
-              return regla.respuesta + botonIrUnidadesGeneral();
-            }
-            return regla.respuesta;
+    if ((mencionaSQLServer && preguntaPorLenguaje) || mencionaTSql ||
+        (mencionaSQLServer && mencionaPLSql)) {
+      if (mencionaPLSql && mencionaSQLServer) {
+        return '🧠 **SQL Server utiliza principalmente Transact-SQL (T-SQL), no PL/SQL.**\n\n' +
+          '**T-SQL** es la extensión de SQL propia de Microsoft SQL Server. **PL/SQL** es el lenguaje procedural de Oracle Database. Ambos permiten programar lógica de base de datos, pero pertenecen a sistemas distintos.\n\n' +
+          'Ejemplo en SQL Server:\n' +
+          '<strong>DECLARE @mensaje VARCHAR(50) = \'Hola desde SQL Server\';</strong>\n' +
+          'SELECT @mensaje AS Mensaje;';
+      }
+
+      if (mencionaTSql && /(diferencia|compar|sql estandar|sql normal|sql frente)/.test(t)) {
+        return '📘 **Diferencia entre SQL y T-SQL**\n\n' +
+          '• **SQL** es el lenguaje estándar para consultar y administrar bases de datos relacionales.\n' +
+          '• **T-SQL (Transact-SQL)** es la extensión de Microsoft para SQL Server: incorpora variables, condiciones, ciclos, procedimientos almacenados, funciones, transacciones y manejo de errores.\n\n' +
+          'En SQL Server se usa T-SQL para escribir consultas y administrar la base de datos.';
+      }
+
+      if (mencionaTSql) {
+        return '💻 **T-SQL (Transact-SQL)** es el lenguaje que utiliza Microsoft SQL Server para consultar, modificar y administrar datos. Es una extensión de SQL que añade herramientas de programación.\n\n' +
+          '**¿Qué permite hacer?**\n' +
+          '• Consultar datos: SELECT.\n' +
+          '• Crear o modificar objetos: CREATE, ALTER, DROP.\n' +
+          '• Insertar, actualizar o eliminar datos: INSERT, UPDATE, DELETE.\n' +
+          '• Declarar variables: DECLARE.\n' +
+          '• Usar condiciones y ciclos: IF...ELSE, WHILE.\n' +
+          '• Crear procedimientos almacenados, funciones y triggers.\n\n' +
+          '**Ejemplo:**\n' +
+          'SELECT nombre, apellido\nFROM dbo.Estudiantes\nWHERE estado = 1;';
+      }
+
+      if (mencionaCategoriasSQL) {
+        return '🧩 **Principales grupos de comandos que puedes utilizar en SQL Server con T-SQL:**\n\n' +
+          '• **DDL (definición):** CREATE, ALTER, DROP; crean o modifican objetos de la base de datos.\n' +
+          '• **DML (manipulación):** INSERT, UPDATE, DELETE; agregan, cambian o eliminan registros.\n' +
+          '• **DQL (consulta):** SELECT; recupera información. En algunos materiales, SELECT se agrupa dentro de SQL sin separar DQL.\n' +
+          '• **DCL (control de permisos):** GRANT, DENY, REVOKE; gestionan accesos.\n' +
+          '• **TCL (transacciones):** BEGIN TRANSACTION, COMMIT, ROLLBACK; controlan transacciones.\n\n' +
+          'Estos son grupos de instrucciones de SQL/T-SQL, no lenguajes de programación independientes.';
+      }
+
+      return '💻 **El lenguaje principal de Microsoft SQL Server es Transact-SQL (T-SQL).**\n\n' +
+        'T-SQL es una versión ampliada de SQL que permite consultar datos, crear tablas, insertar y actualizar registros, controlar permisos y programar operaciones dentro de la base de datos.\n\n' +
+        '**Grupos de comandos frecuentes:**\n' +
+        '• **DDL:** CREATE, ALTER, DROP (estructura).\n' +
+        '• **DML:** INSERT, UPDATE, DELETE (datos).\n' +
+        '• **DQL:** SELECT (consultas).\n' +
+        '• **DCL:** GRANT, DENY, REVOKE (permisos).\n' +
+        '• **TCL:** COMMIT, ROLLBACK (transacciones).\n\n' +
+        '**Ejemplo de T-SQL:**\n' +
+        'SELECT nombre, apellido\nFROM dbo.Estudiantes\nWHERE estado = 1;\n\n' +
+        '📌 **Importante:** C#, Python o Java también pueden conectarse a SQL Server desde una aplicación, pero no sustituyen a T-SQL como lenguaje principal para ejecutar consultas y administrar la base de datos.';
+    }
+
+    // ---- Reglas generales ----
+    for (let i = 0; i < REGLAS.length; i++) {
+      const regla = REGLAS[i];
+      for (let j = 0; j < regla.claves.length; j++) {
+        if (t.indexOf(regla.claves[j]) !== -1) {
+          // La regla de "unidades" ofrece además el botón directo
+          if (regla.claves.indexOf('unidades') !== -1) {
+            return regla.respuesta + botonIrUnidadesGeneral();
           }
+          return regla.respuesta;
         }
       }
     }
-
-    // ---- Si nada coincide: responde la inteligencia artificial ----
-    return await preguntarIA(entrada.trim());
+    return MENSAJE_FALLBACK;
   }
 
   function agregarMensaje(texto, autor) {
@@ -1305,17 +1256,9 @@
     if (el) el.remove();
   }
 
-  let ocupado = false;
-
-  function bloquearEntrada(valor) {
-    ocupado = valor;
-    chatSend.disabled = valor;
-  }
-
   async function enviarMensaje(texto) {
     const limpio = (texto || '').trim();
-    if (!limpio || ocupado) return;
-    bloquearEntrada(true);
+    if (!limpio) return;
     agregarMensaje(limpio, 'user');
     chatInput.value = '';
     mostrarEscribiendo();
@@ -1326,13 +1269,10 @@
       setTimeout(function () {
         quitarEscribiendo();
         agregarMensaje(respuesta, 'bot');
-        bloquearEntrada(false);
-        chatInput.focus();
       }, espera);
     } catch (e) {
       quitarEscribiendo();
       agregarMensaje('⚠️ Ocurrió un error al procesar tu pregunta: ' + e.message, 'bot');
-      bloquearEntrada(false);
     }
   }
 
@@ -1360,7 +1300,6 @@
 
   chatClear.addEventListener('click', function () {
     chatMessages.innerHTML = '';
-    historialIA.length = 0;
     agregarMensaje(MENSAJE_INICIAL, 'bot');
     chatInput.focus();
   });
